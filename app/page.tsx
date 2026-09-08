@@ -1,15 +1,9 @@
-const tags = ['支付风控', '数据科学', '机器学习', '风险决策', 'AI Agent', 'SQL / Python'];
-
 const workflow = [
-  ['01', '定义问题'],
-  ['02', 'Specification'],
-  ['03', '调用 Agent'],
-  ['04', '执行'],
-  ['05', '评估校验'],
-  ['06', '迭代优化'],
-  ['07', '验证交付'],
-  ['08', 'Human Ownership'],
-];
+  ['01', '定义与约束', ['定义问题', '提供 Context', 'Specification']],
+  ['02', 'Agent 执行', ['Coding Agent', '任务执行', '人工理解结果']],
+  ['03', '批判性评估', ['Critical Evaluation', '发现错误 / 矛盾', '重新约束']],
+  ['04', '验证与交付', ['Iteration', 'Validation', 'Human Ownership']],
+] as const;
 
 export default function Home() {
   return (
@@ -30,16 +24,19 @@ export default function Home() {
       <div className="page-shell">
         <section className="hero card">
           <div className="hero-copy">
-            <p className="kicker"><span /> AI-NATIVE ALGORITHM &amp; DECISION ENGINEER</p>
+            <p className="kicker"><span /> ALGORITHM · RISK DECISION · AI-NATIVE PRACTICE</p>
             <h1>沈鑫达</h1>
-            <h2>风控算法 · 数据科学 · AI 智能决策</h2>
+            <h2>机器学习与风险决策实践者</h2>
             <div className="identity">
               <p>厦门大学 · 应用统计硕士</p>
               <p>滴滴国际支付风控算法实习生</p>
             </div>
-            <div className="tag-list" aria-label="核心能力标签">
-              {tags.map((tag) => <span key={tag}>{tag}</span>)}
+            <div className="positioning" aria-label="当前职业定位">
+              <span>Algorithm First</span>
+              <span>Risk Decision Domain</span>
+              <span>AI-native Operator</span>
             </div>
+            <p className="career-note">算法能力为主线，支付风控是当前真实落地最深的业务场景。</p>
             <div className="actions">
               <a className="button primary" href="#work">查看项目 <span>↗</span></a>
               <a className="button secondary" href="#resume">下载简历</a>
@@ -61,43 +58,53 @@ export default function Home() {
 
         <section className="section" id="about">
           <div className="section-heading">
-            <div><p className="section-index">01 / FOCUS</p><h2>我正在解决的问题</h2></div>
-            <p>从统计建模到智能决策，聚焦可解释、可评估、可持续迭代的工程问题。</p>
+            <div><p className="section-index">01 / CORE CAPABILITIES</p><h2>核心能力</h2></div>
+            <p>以算法能力为主线，连接风险场景、智能决策与 AI-native 工作方式。</p>
           </div>
           <div className="focus-grid">
             <article className="focus-card card">
-              <span className="icon">01</span><h3>支付风控</h3>
-              <p>围绕国际支付场景，理解风险识别、策略与模型之间的协作关系。</p>
+              <span className="icon">01</span><p className="capability-en">ALGORITHM</p><h3>机器学习</h3>
+              <p>以机器学习与统计方法为核心，关注从问题定义到模型评估的完整链路。</p>
             </article>
             <article className="focus-card card">
-              <span className="icon">02</span><h3>数据科学</h3>
-              <p>用统计视角拆解业务问题，让数据证据服务于清晰、可靠的判断。</p>
+              <span className="icon">02</span><p className="capability-en">RISK DECISION</p><h3>风控算法</h3>
+              <p>在国际支付场景中实践风险识别、策略分析与算法评估。</p>
             </article>
             <article className="focus-card card">
-              <span className="icon">03</span><h3>AI Agent</h3>
-              <p>探索 Agent 在分析、执行与评估链路中的工程化工作方式。</p>
+              <span className="icon">03</span><p className="capability-en">DECISION INTELLIGENCE</p><h3>智能决策</h3>
+              <p>连接模型输出、业务约束与风险判断，形成可解释的决策过程。</p>
             </article>
+            <article className="focus-card card">
+              <span className="icon">04</span><p className="capability-en">AI-NATIVE PRACTICE</p><h3>Agent 协作</h3>
+              <p>将 Coding Agent 嵌入分析、开发、评估与交付流程，由人承担最终判断。</p>
+            </article>
+          </div>
+          <div className="foundation-bar card">
+            <div><span>能力底座</span><strong>Statistics · Python · SQL · 数据分析</strong></div>
+            <p>AI-native Operator <span>当前</span> → Agent Engineer <span>进阶中</span></p>
           </div>
         </section>
 
         <section className="section" id="work">
           <div className="section-heading compact">
-            <div><p className="section-index">02 / SELECTED WORK</p><h2>精选项目</h2></div>
-            <p>项目内容将在事实材料确认后逐步补充。</p>
+            <div><p className="section-index">02 / SELECTED WORK</p><h2>精选经历</h2></div>
+            <p>以真实经历建立可信度；具体方法、结果与案例将在完成去敏和事实核验后展开。</p>
           </div>
           <div className="project-grid">
             <article className="project-card card">
-              <div className="project-top"><span className="status wip">[WIP]</span><span className="project-no">P / 01</span></div>
-              <div><h3>项目名称待补充</h3><p>简介、职责与结果将在完成事实核验后展示。</p></div>
-              <div className="project-footer"><span>技术标签待补充</span><span className="detail">查看详情 →</span></div>
+              <div className="project-top"><span className="status fact">[FACT]</span><span className="project-no">EXPERIENCE / 01</span></div>
+              <div><p className="project-company">滴滴</p><h3>国际支付风控算法实习</h3><p>当前最重要的算法实践场景，聚焦支付风险问题、分析判断与评估流程。</p></div>
+              <div className="project-footer"><span>风控算法 · 风险决策</span><span className="detail muted-detail">案例去敏整理中</span></div>
             </article>
             <article className="project-card card">
-              <div className="project-top"><span className="status plan">[PLAN]</span><span className="project-no">P / 02</span></div>
-              <div><h3>项目名称待补充</h3><p>仅保留视觉位置，不添加未经确认的项目经历。</p></div>
-              <div className="project-footer"><span>技术标签待补充</span><span className="detail">查看详情 →</span></div>
+              <div className="project-top"><span className="status fact">[FACT]</span><span className="project-no">EXPERIENCE / 02</span></div>
+              <div><p className="project-company">极氪</p><h3>数据分析实习</h3><p>职业能力路径中的数据分析实践，为后续算法与决策能力奠定基础。</p></div>
+              <div className="project-footer"><span>数据分析 · 业务理解</span><span className="detail muted-detail">经历整理中</span></div>
             </article>
-            <article className="project-card card project-more">
-              <span className="plus">＋</span><h3>更多项目</h3><p>内容整理中</p>
+            <article className="project-card card project-placeholder">
+              <div className="project-top"><span className="status wip">[WIP]</span><span className="project-no">PROJECT / 01</span></div>
+              <div><p className="project-company">代表性项目</p><h3>项目内容待确认</h3><p>确认真实材料后，再补充问题、方法、评估、结果与反思。</p></div>
+              <div className="project-footer"><span>不添加未经确认的信息</span><span className="detail muted-detail">待补充</span></div>
             </article>
           </div>
         </section>
@@ -108,11 +115,14 @@ export default function Home() {
             <p>Agent 扩展执行能力，人始终承担问题定义、判断与最终责任。</p>
           </div>
           <div className="workflow card">
-            {workflow.map(([number, label], index) => (
+            {workflow.map(([number, label, steps], index) => (
               <div className="workflow-item" key={label}>
                 <span className="workflow-number">{number}</span>
                 <div className="workflow-dot" />
                 <strong>{label}</strong>
+                <div className="workflow-steps">
+                  {steps.map((step) => <span key={step}>{step}</span>)}
+                </div>
                 {index < workflow.length - 1 && <span className="workflow-line" />}
               </div>
             ))}
