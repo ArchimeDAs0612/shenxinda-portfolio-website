@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: '沈鑫达｜风控算法 · 数据科学 · AI 智能决策',
+  title: '沈鑫达｜算法 · 风险决策 · AI-native',
   description: '沈鑫达的个人作品集：厦门大学应用统计硕士，滴滴国际支付风控算法实习生。',
 };
 
