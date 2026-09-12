@@ -96,11 +96,9 @@ h1 { margin: 0; font-size: clamp(76px, 10.5vw, 154px); line-height: .84; letter-
 .status.wip { color: #f5c66f; background: #fff6df; border: 1px solid #efd89f; }
 .career-company { align-self: center; color: rgba(255,255,255,.025); font-size: clamp(110px, 18vw, 250px); line-height: .8; letter-spacing: -.09em; font-weight: 750; }
 .career-content { position: relative; z-index: 1; max-width: 600px; }
-.company-lockup { display: inline-flex; align-items: baseline; gap: 9px; width: fit-content; }
-.company-lockup strong { font-size: 21px; letter-spacing: -.05em; }
-.company-lockup span { font: 700 10px var(--font-geist-mono), monospace; letter-spacing: .16em; }
-.didi-lockup { color: #ff8b2b; }.didi-lockup span { color: #ffc18b; }
-.zeekr-lockup { margin-top: 16px; color: #071528; }.zeekr-lockup strong { font-size: 20px; }.zeekr-lockup span { color: #657386; }
+.company-logo-shell { width: fit-content; height: 47px; display: flex; align-items: center; padding: 9px 13px; background: white; border-radius: 9px; }
+.company-logo { display: block; width: auto; height: 26px; max-width: 142px; object-fit: contain; }
+.didi-logo { height: 24px; }.zeekr-logo-shell { margin-top: 16px; padding-inline: 11px; border: 1px solid #e1e7ee; }.zeekr-logo { height: 25px; }
 .company-description { margin: 9px 0 18px !important; color: #91b7df !important; font-size: 11px !important; line-height: 1.4 !important; }
 .career-secondary .company-description { color: #61738a !important; }
 .career-org { margin: 0 0 10px; color: #76b4fb; font-size: 13px; font-weight: 700; }

@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element -- Brand SVG files use stable relative paths across GitHub Pages and local previews. */
+
 import { useEffect, useRef, useState } from 'react';
 import { MaintainableImage } from './components/MaintainableImage';
 import { mediaContent } from '../content/site-content';
@@ -115,8 +117,8 @@ export default function Home() {
       <section className="chapter work-section" id="work">
         <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">02 / EXPERIENCE</p><h2>职业经历，<br />是一条能力进化路径。</h2><p>从数据分析基础走向算法与风险决策。所有内容仅保留已确认事实，细节将在去敏和核验后展开。</p></div>
         <div className="career-story">
-          <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT</span><span>EXPERIENCE 01</span></div><div className="career-company">DIDI</div><div className="career-content"><div className="company-lockup didi-lockup" aria-label="滴滴 DIDI"><strong>滴滴</strong><span>DIDI</span></div><p className="company-description">移动出行平台 · 国际支付业务场景</p><h3>国际支付风控算法实习</h3><p>当前最重要的算法实践场景。围绕支付风险问题参与分析、判断与评估，在真实约束中理解算法如何服务决策。</p><div className="career-tags"><span>机器学习</span><span>支付风控</span><span>风险决策</span></div><p className="privacy-note">案例内容正在进行去敏与事实核验，暂不披露业务指标或内部实现。</p></div></article>
-          <article className="career-secondary" data-reveal><div><span className="status fact">FACT</span><div className="company-lockup zeekr-lockup" aria-label="极氪 ZEEKR"><strong>极氪</strong><span>ZEEKR</span></div><p className="company-description">高端智能电动品牌 · 数据分析实习</p><h3>数据分析实习</h3></div><p>职业能力路径中的数据分析实践，为后续进入算法与决策问题建立业务理解基础。</p><span className="career-index">EXPERIENCE 02</span></article>
+          <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT</span><span>EXPERIENCE 01</span></div><div className="career-company">DIDI</div><div className="career-content"><div className="company-logo-shell didi-logo-shell"><img className="company-logo didi-logo" src="images/brands/didi.svg" alt="滴滴出行 Logo" /></div><p className="company-description">移动出行平台 · 国际支付业务场景</p><h3>国际支付风控算法实习</h3><p>当前最重要的算法实践场景。围绕支付风险问题参与分析、判断与评估，在真实约束中理解算法如何服务决策。</p><div className="career-tags"><span>机器学习</span><span>支付风控</span><span>风险决策</span></div><p className="privacy-note">案例内容正在进行去敏与事实核验，暂不披露业务指标或内部实现。</p></div></article>
+          <article className="career-secondary" data-reveal><div><span className="status fact">FACT</span><div className="company-logo-shell zeekr-logo-shell"><img className="company-logo zeekr-logo" src="images/brands/zeekr.svg" alt="极氪 ZEEKR Logo" /></div><p className="company-description">高端智能电动品牌 · 数据分析实习</p><h3>数据分析实习</h3></div><p>职业能力路径中的数据分析实践，为后续进入算法与决策问题建立业务理解基础。</p><span className="career-index">EXPERIENCE 02</span></article>
           <article className="project-slot" data-reveal><div><span className="status wip">WIP</span><p className="career-org">代表性项目</p><h3>等待真实材料确认</h3></div><p>后续将按 Problem → Method → Evaluation → Result → Reflection 展开，不补充未经确认的项目内容。</p><span className="career-index">PROJECT 01</span></article>
         </div>
       </section>
