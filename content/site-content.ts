@@ -32,3 +32,19 @@ export const mediaContent = {
     objectPosition: 'center center',
   },
 } as const;
+
+/**
+ * 联系方式维护入口
+ *
+ * 修改邮箱、社媒账号或二维码时，只需更新这里。
+ * 微信二维码文件放在 public/images/contact/wechat-qr.jpg。
+ */
+export const contactContent = {
+  email: '19357506009@163.com',
+  wechatQrImage: 'images/contact/wechat-qr.jpg',
+  wechatNote: '添加时请备注：姓名 / 公司 / 来意',
+  xiaohongshuName: '达米鸡A-RandomThought',
+  xiaohongshuId: '552811303',
+  xiaohongshuDescription: '北漂成长、算法 / AI Coding探索与个人生活记录。',
+  xiaohongshuUrl: '',
+} as const;
