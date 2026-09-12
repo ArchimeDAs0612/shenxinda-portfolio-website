@@ -84,6 +84,7 @@ export default function Home() {
       </header>
 
       <section className="hero" aria-labelledby="hero-title">
+        <MaintainableImage className="hero-background" priority {...mediaContent.heroBackground} />
         <div className="hero-copy">
           <p className="eyebrow hero-enter enter-one">ALGORITHM · RISK DECISION · AI-NATIVE</p>
           <h1 className="hero-enter enter-two" id="hero-title">沈鑫达</h1>
@@ -91,6 +92,7 @@ export default function Home() {
           <div className="hero-identity hero-enter enter-four"><p>厦门大学 · 应用统计硕士</p><p>滴滴国际支付风控算法实习生</p></div>
           <p className="hero-statement hero-enter enter-four">以算法能力为主线，在支付风控中建立真实实践；以 AI-native 的方式扩大执行能力，并对最终判断负责。</p>
           <div className="actions hero-enter enter-four"><a className="button primary" href="#work">查看经历 <span>↘</span></a><a className="button quiet" href="#resume">下载简历</a></div>
+          <div className="hero-proof hero-enter enter-four" aria-label="核心经历"><span><b>滴滴</b> 国际支付风控算法实习</span><span><b>ZEEKR 极氪</b> 数据分析实习</span></div>
         </div>
         <div className="portrait-wrap">
           <MaintainableImage className="portrait-frame" priority {...mediaContent.profile} />
@@ -113,8 +115,8 @@ export default function Home() {
       <section className="chapter work-section" id="work">
         <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">02 / EXPERIENCE</p><h2>职业经历，<br />是一条能力进化路径。</h2><p>从数据分析基础走向算法与风险决策。所有内容仅保留已确认事实，细节将在去敏和核验后展开。</p></div>
         <div className="career-story">
-          <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT</span><span>EXPERIENCE 01</span></div><div className="career-company">DIDI</div><div className="career-content"><p className="career-org">滴滴</p><h3>国际支付风控算法实习</h3><p>当前最重要的算法实践场景。围绕支付风险问题参与分析、判断与评估，在真实约束中理解算法如何服务决策。</p><div className="career-tags"><span>机器学习</span><span>支付风控</span><span>风险决策</span></div><p className="privacy-note">案例内容正在进行去敏与事实核验，暂不披露业务指标或内部实现。</p></div></article>
-          <article className="career-secondary" data-reveal><div><span className="status fact">FACT</span><p className="career-org">极氪</p><h3>数据分析实习</h3></div><p>职业能力路径中的数据分析实践，为后续进入算法与决策问题建立业务理解基础。</p><span className="career-index">EXPERIENCE 02</span></article>
+          <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT</span><span>EXPERIENCE 01</span></div><div className="career-company">DIDI</div><div className="career-content"><div className="company-lockup didi-lockup" aria-label="滴滴 DIDI"><strong>滴滴</strong><span>DIDI</span></div><p className="company-description">移动出行平台 · 国际支付业务场景</p><h3>国际支付风控算法实习</h3><p>当前最重要的算法实践场景。围绕支付风险问题参与分析、判断与评估，在真实约束中理解算法如何服务决策。</p><div className="career-tags"><span>机器学习</span><span>支付风控</span><span>风险决策</span></div><p className="privacy-note">案例内容正在进行去敏与事实核验，暂不披露业务指标或内部实现。</p></div></article>
+          <article className="career-secondary" data-reveal><div><span className="status fact">FACT</span><div className="company-lockup zeekr-lockup" aria-label="极氪 ZEEKR"><strong>极氪</strong><span>ZEEKR</span></div><p className="company-description">高端智能电动品牌 · 数据分析实习</p><h3>数据分析实习</h3></div><p>职业能力路径中的数据分析实践，为后续进入算法与决策问题建立业务理解基础。</p><span className="career-index">EXPERIENCE 02</span></article>
           <article className="project-slot" data-reveal><div><span className="status wip">WIP</span><p className="career-org">代表性项目</p><h3>等待真实材料确认</h3></div><p>后续将按 Problem → Method → Evaluation → Result → Reflection 展开，不补充未经确认的项目内容。</p><span className="career-index">PROJECT 01</span></article>
         </div>
       </section>
@@ -127,11 +129,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="life-banner" aria-label="生活片段" data-reveal>
-        <MaintainableImage className="life-banner-image" {...mediaContent.background} />
-        <div className="life-banner-copy"><p className="eyebrow light">04 / LIFE, NOT A SIDELINE</p><h2>工作之外，<br />也在路上。</h2><p>校园、运动和看见世界的时间，让长期的学习与判断保持真实。</p></div>
-      </section>
-
       <section className="chapter about-section" id="about">
         <div className="about-visual" data-reveal>
           <div className="life-carousel" aria-roledescription="carousel" aria-label="生活照片">
@@ -140,10 +137,10 @@ export default function Home() {
             <div className="carousel-dots" aria-label="选择生活照片">{mediaContent.life.photos.map((photo, index) => <button type="button" className={index === lifeIndex ? 'active' : ''} onClick={() => setLifeIndex(index)} aria-label={`查看第 ${index + 1} 张生活照片`} aria-current={index === lifeIndex ? 'true' : undefined} key={photo.src} />)}</div>
           </div>
         </div>
-        <div className="about-copy" data-reveal><p className="eyebrow">05 / ABOUT · LIFE</p><h2>统计、算法、风险与 AI，<br />也是一个人的成长轨迹。</h2><p>从浙江工商大学经济统计学，到厦门大学应用统计，再到真实的支付风控算法场景，我正在把统计基础转化为解决现实问题的能力。</p><p>工作之外，校园、运动和持续学习构成另一面的我。这里保留少量真实影像，不做荣誉墙，也不做照片瀑布流。</p><div className="education-line"><span>本科</span><strong>浙江工商大学 · 经济统计学</strong></div><div className="education-line"><span>硕士</span><strong>厦门大学 · 应用统计</strong></div></div>
+        <div className="about-copy" data-reveal><p className="eyebrow">04 / ABOUT · LIFE</p><h2>统计、算法、风险与 AI，<br />也是一个人的成长轨迹。</h2><p>从浙江工商大学经济统计学，到厦门大学应用统计，再到真实的支付风控算法场景，我正在把统计基础转化为解决现实问题的能力。</p><p>工作之外，校园、运动和持续学习构成另一面的我。这里保留少量真实影像，不做荣誉墙，也不做照片瀑布流。</p><div className="education-line"><span>本科</span><strong>浙江工商大学 · 经济统计学</strong></div><div className="education-line"><span>硕士</span><strong>厦门大学 · 应用统计</strong></div></div>
       </section>
 
-      <section className="closing" id="resume" data-reveal><p className="eyebrow light">06 / RESUME · CONTACT</p><h2>保持判断，持续进化。</h2><p>PDF 简历与联系方式将在信息确认后接入。网站负责深度证明，简历负责标准招聘流程。</p><a className="button light-button" href="#contact">建立联系 <span>↗</span></a></section>
+      <section className="closing" id="resume" data-reveal><p className="eyebrow light">05 / RESUME · CONTACT</p><h2>保持判断，持续进化。</h2><p>PDF 简历与联系方式将在信息确认后接入。网站负责深度证明，简历负责标准招聘流程。</p><a className="button light-button" href="#contact">建立联系 <span>↗</span></a></section>
       <footer id="contact"><div><strong>沈鑫达 / Shen Xinda</strong><p>Algorithm · Risk Decision · AI-native Practice</p></div><a href="#top">返回顶部 ↑</a></footer>
     </main>
   );

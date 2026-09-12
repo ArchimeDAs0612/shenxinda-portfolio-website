@@ -24,11 +24,11 @@ export const mediaContent = {
       { src: 'images/life/01800023a656a81b59b9b2f526542738.jpg', alt: '沈鑫达的生活照片', label: 'LIFE / 07', fallbackTitle: '生活照片', objectPosition: 'center center' },
     ],
   },
-  background: {
-    src: 'images/background/ee50ae865578ee88302cdbbf08897ff9.jpg',
-    alt: '海边与风车的生活场景',
+  heroBackground: {
+    src: 'images/background/01800023a656a81b59b9b2f526542738.jpg',
+    alt: '沈鑫达在路上的生活照片',
     label: 'LIFE / ON THE ROAD',
-    fallbackTitle: '生活影像',
+    fallbackTitle: '背景照片',
     objectPosition: 'center center',
   },
 } as const;

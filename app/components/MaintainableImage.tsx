@@ -23,13 +23,12 @@ export function MaintainableImage({
   objectPosition = 'center center',
   priority = false,
 }: MaintainableImageProps) {
-  const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
   return (
     <div
-      className={`${className} media-frame ${loaded ? 'is-loaded' : ''} ${failed ? 'is-missing' : ''}`}
-      aria-label={loaded ? undefined : fallbackTitle}
+      className={`${className} media-frame ${failed ? 'is-missing' : 'is-loaded'}`}
+      aria-label={failed ? fallbackTitle : undefined}
     >
       {!failed && (
         // A plain img keeps one relative asset path working on localhost, Sites,
@@ -45,11 +44,10 @@ export function MaintainableImage({
           fetchPriority={priority ? 'high' : 'auto'}
           decoding="async"
           style={{ objectPosition }}
-          onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
         />
       )}
-      <div className="media-fallback" aria-hidden={loaded}>
+      <div className="media-fallback" aria-hidden={!failed}>
         <span>{label}</span>
         <strong>{fallbackTitle}</strong>
         {caption && <p>{caption}</p>}
