@@ -28,6 +28,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:pages
+      - name: Place base-path assets at the GitHub Pages artifact root
+        run: cp -R dist/client/shenxinda-portfolio-website/_next dist/client/_next
       - name: Render static homepage from the production build
         run: |
           GITHUB_PAGES=true npm start &
