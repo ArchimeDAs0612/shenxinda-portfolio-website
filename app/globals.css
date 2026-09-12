@@ -47,9 +47,13 @@ h1 { margin: 0; font-size: clamp(76px, 10.5vw, 154px); line-height: .84; letter-
 .button.quiet { border: 1px solid #cbd5e0; background: white; }
 .portrait-wrap { align-self: center; }
 .portrait-frame { position: relative; aspect-ratio: .79; overflow: hidden; border-radius: 5px; background: linear-gradient(145deg, #dce9f7, #afc6dd); box-shadow: 0 36px 80px rgba(17,42,70,.19); }
+.media-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s ease; }
+.media-frame.is-loaded .media-image { opacity: 1; }
+.media-fallback { transition: opacity .3s ease; }
+.media-frame.is-loaded .media-fallback { opacity: 0; pointer-events: none; }
 .portrait-frame::before { content: ''; position: absolute; inset: 0; opacity: .42; background-image: linear-gradient(rgba(255,255,255,.45) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.45) 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, black, transparent 80%); }
 .portrait-frame::after { content: ''; position: absolute; width: 1px; height: 70%; right: 25%; top: 15%; background: rgba(7,21,40,.18); transform: rotate(25deg); }
-.portrait-frame > div { position: absolute; inset: auto 32px 32px; padding: 24px; color: white; background: rgba(7,21,40,.84); backdrop-filter: blur(14px); }
+.portrait-frame > .media-fallback { position: absolute; z-index: 2; inset: auto 32px 32px; padding: 24px; color: white; background: rgba(7,21,40,.84); backdrop-filter: blur(14px); }
 .portrait-frame span { color: #94bdea; font: 700 9px var(--font-geist-mono), monospace; letter-spacing: .14em; }
 .portrait-frame strong { display: block; margin-top: 9px; font-size: 18px; }
 .portrait-frame p { margin: 7px 0 0; color: #bdcad8; font-size: 12px; }
@@ -121,6 +125,8 @@ h1 { margin: 0; font-size: clamp(76px, 10.5vw, 154px); line-height: .84; letter-
 .about-visual { min-height: 690px; position: relative; }
 .life-image { position: absolute; display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; color: white; overflow: hidden; background: #a9bfd4; }
 .life-image::before { content: ''; position: absolute; inset: 0; opacity: .55; background: linear-gradient(145deg, transparent 35%, #607d98); }
+.life-image .media-fallback { position: relative; z-index: 2; margin-top: auto; }
+.life-image .media-fallback strong { display: block; margin-top: 7px; font-size: 13px; }
 .life-image span, .life-image p { position: relative; z-index: 1; }
 .life-image span { font: 700 9px var(--font-geist-mono), monospace; letter-spacing: .12em; }
 .life-image p { margin: 7px 0 0; font-size: 13px; }

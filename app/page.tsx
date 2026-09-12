@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { MaintainableImage } from './components/MaintainableImage';
+import { mediaContent } from '../content/site-content';
 
 const steps = [
   ['01', 'Problem Definition', '定义问题'],
@@ -81,8 +83,8 @@ export default function Home() {
           <p className="hero-statement hero-enter enter-four">以算法能力为主线，在支付风控中建立真实实践；以 AI-native 的方式扩大执行能力，并对最终判断负责。</p>
           <div className="actions hero-enter enter-four"><a className="button primary" href="#work">查看经历 <span>↘</span></a><a className="button quiet" href="#resume">下载简历</a></div>
         </div>
-        <div className="portrait-wrap" aria-label="个人照片待补充">
-          <div className="portrait-frame"><div><span>PORTRAIT / 01</span><strong>个人照片待补充</strong><p>职业与生活气质融合的主照片</p></div></div>
+        <div className="portrait-wrap">
+          <MaintainableImage className="portrait-frame" priority {...mediaContent.profile} />
           <div className="portrait-caption"><span>XIAMEN · CHINA</span><span>2026</span></div>
         </div>
         <a className="scroll-cue" href="#capabilities"><span />SCROLL TO EXPLORE</a>
@@ -117,7 +119,7 @@ export default function Home() {
       </section>
 
       <section className="chapter about-section" id="about">
-        <div className="about-visual" data-reveal><div className="life-image life-main"><span>LIFE / CAMPUS</span><p>真实照片待补充</p></div><div className="life-image life-small"><span>RUNNING / MOMENTS</span><p>生活照片待补充</p></div></div>
+        <div className="about-visual" data-reveal><MaintainableImage className="life-image life-main" {...mediaContent.life.campus} /><MaintainableImage className="life-image life-small" {...mediaContent.life.running} /></div>
         <div className="about-copy" data-reveal><p className="eyebrow">04 / ABOUT · LIFE</p><h2>统计、算法、风险与 AI，<br />也是一个人的成长轨迹。</h2><p>从浙江工商大学经济统计学，到厦门大学应用统计，再到真实的支付风控算法场景，我正在把统计基础转化为解决现实问题的能力。</p><p>工作之外，校园、运动和持续学习构成另一面的我。这里未来只放少量真实影像，不做荣誉墙，也不做照片瀑布流。</p><div className="education-line"><span>本科</span><strong>浙江工商大学 · 经济统计学</strong></div><div className="education-line"><span>硕士</span><strong>厦门大学 · 应用统计</strong></div></div>
       </section>
 

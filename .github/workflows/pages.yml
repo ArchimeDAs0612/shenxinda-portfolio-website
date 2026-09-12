@@ -27,6 +27,9 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run verify:source
       - run: npm run build:pages
       - name: Place base-path assets at the GitHub Pages artifact root
         run: cp -R dist/client/shenxinda-portfolio-website/_next dist/client/_next
@@ -50,3 +53,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify public page and stylesheet
+        run: |
+          SITE_URL="https://archimedas0612.github.io/shenxinda-portfolio-website/"
+          curl --fail --retry 6 --retry-delay 5 "$SITE_URL" --output /tmp/portfolio-page.html
+          grep --quiet "沈鑫达" /tmp/portfolio-page.html
+          CSS_PATH=$(grep -o 'href="[^"]*\.css"' /tmp/portfolio-page.html | head -1 | cut -d'"' -f2)
+          test -n "$CSS_PATH"
+          curl --fail --retry 6 --retry-delay 5 "https://archimedas0612.github.io$CSS_PATH" --output /tmp/portfolio-style.css
+          test -s /tmp/portfolio-style.css
