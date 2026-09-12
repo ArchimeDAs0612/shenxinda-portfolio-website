@@ -8,6 +8,7 @@ const requiredDirectories = [
   'public/images/profile',
   'public/images/life',
   'public/images/projects',
+  'public/images/contact',
 ];
 const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx'];
 const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif']);
@@ -27,7 +28,7 @@ for (const anchor of literalAnchors) {
   if (!ids.has(anchor)) errors.push(`页面锚点不存在：#${anchor}`);
 }
 
-const imagePaths = [...contentSource.matchAll(/src:\s*['"]([^'"]+)['"]/g)].map((match) => match[1]);
+const imagePaths = [...contentSource.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]);
 for (const imagePath of imagePaths) {
   if (!imagePath.startsWith('images/')) {
     errors.push(`图片路径必须从 images/ 开始：${imagePath}`);
