@@ -121,17 +121,31 @@ h1 { margin: 0; font-size: clamp(76px, 10.5vw, 154px); line-height: .84; letter-
 .flow-step h3 { margin: 0; font-size: clamp(25px, 3vw, 40px); letter-spacing: -.045em; }
 .flow-step p { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
 
+.life-banner { min-height: min(680px, 72vw); position: relative; display: grid; place-items: center; overflow: hidden; color: white; background: #0a1c31; }
+.life-banner-image { position: absolute; inset: 0; width: 100%; height: 100%; background: #0a1c31; }
+.life-banner-image .media-image { opacity: .76; filter: saturate(.8) contrast(.96); }
+.life-banner-image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(3,15,29,.82) 0%, rgba(3,15,29,.46) 53%, rgba(3,15,29,.08) 100%); }
+.life-banner-copy { width: min(1180px, calc(100% - 48px)); position: relative; z-index: 2; padding: 88px 0; }
+.life-banner-copy h2 { max-width: 640px; margin: 0; font-size: clamp(54px, 8vw, 112px); line-height: .93; letter-spacing: -.075em; }
+.life-banner-copy > p:last-child { max-width: 360px; margin: 30px 0 0; color: #d5e0ec; font-size: 15px; line-height: 1.9; }
 .about-section { padding: 150px max(24px, calc((100% - 1180px)/2)); display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(60px, 9vw, 130px); background: var(--paper); }
 .about-visual { min-height: 690px; position: relative; }
-.life-image { position: absolute; display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; color: white; overflow: hidden; background: #a9bfd4; }
-.life-image::before { content: ''; position: absolute; inset: 0; opacity: .55; background: linear-gradient(145deg, transparent 35%, #607d98); }
+.life-carousel { position: absolute; inset: 0 10% 0 0; overflow: hidden; background: #b8ccdc; box-shadow: 0 32px 72px rgba(12,34,59,.15); }
+.life-image { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; color: white; overflow: hidden; background: #a9bfd4; }
+.life-image::before { content: ''; position: absolute; z-index: 1; inset: 0; opacity: .55; background: linear-gradient(180deg, transparent 40%, rgba(5,20,38,.74)); pointer-events: none; }
+.life-image .media-image { z-index: 0; }
 .life-image .media-fallback { position: relative; z-index: 2; margin-top: auto; }
 .life-image .media-fallback strong { display: block; margin-top: 7px; font-size: 13px; }
 .life-image span, .life-image p { position: relative; z-index: 1; }
 .life-image span { font: 700 9px var(--font-geist-mono), monospace; letter-spacing: .12em; }
 .life-image p { margin: 7px 0 0; font-size: 13px; }
-.life-main { inset: 0 18% 12% 0; }
-.life-small { width: 46%; height: 38%; right: 0; bottom: 0; background: #365b7d; box-shadow: -22px -22px 0 var(--paper); }
+.carousel-controls { position: absolute; z-index: 3; left: 22px; right: 22px; bottom: 20px; display: flex; justify-content: space-between; align-items: center; color: white; font: 700 10px var(--font-geist-mono), monospace; letter-spacing: .14em; }
+.carousel-buttons { display: flex; gap: 7px; }
+.carousel-buttons button { width: 34px; height: 34px; display: grid; place-items: center; color: white; border: 1px solid rgba(255,255,255,.52); border-radius: 50%; background: rgba(4,18,33,.24); cursor: pointer; font-size: 16px; transition: background .2s ease, transform .2s ease; }
+.carousel-buttons button:hover { background: var(--blue); transform: translateY(-2px); }
+.carousel-dots { position: absolute; z-index: 3; left: 22px; top: 22px; display: flex; gap: 6px; }
+.carousel-dots button { width: 5px; height: 5px; padding: 0; border: 0; border-radius: 99px; background: rgba(255,255,255,.48); cursor: pointer; transition: width .25s ease, background .25s ease; }
+.carousel-dots button.active { width: 24px; background: white; }
 .about-copy h2 { font-size: clamp(40px, 4.8vw, 66px); }
 .about-copy > p:not(.eyebrow) { margin: 28px 0 0; color: var(--muted); font-size: 15px; line-height: 1.9; }
 .education-line { margin-top: 36px; padding-top: 18px; display: flex; gap: 24px; border-top: 1px solid #cbd5df; }
@@ -156,7 +170,7 @@ footer strong { font-size: 14px; } footer p { margin: 6px 0 0; color: var(--mute
   .capability-list article { grid-template-columns: 45px 1fr; }.capability-list p { grid-column: 2; }.capability-list small { grid-column: 2; justify-self: start; }
   .career-story { grid-template-columns: 1fr; }.career-feature { min-height: 650px; grid-row: auto; }
   .workflow-stage { grid-template-columns: 1fr; }.workflow-principle { position: relative; top: auto; }
-  .about-section { grid-template-columns: 1fr; }.about-visual { min-height: 580px; }
+  .about-section { grid-template-columns: 1fr; }.about-visual { min-height: 580px; }.life-carousel { right: 0; }
 }
 
 @media (max-width: 640px) {
@@ -168,7 +182,8 @@ footer strong { font-size: 14px; } footer p { margin: 6px 0 0; color: var(--mute
   .capability-list { margin-top: 60px; }.capability-list article { padding: 28px 0; gap: 8px 12px; }.capability-list h3 { font-size: 26px; }.capability-list p { font-size: 13px; }.foundation span { width: 100%; }
   .career-story { margin-top: 64px; }.career-feature { min-height: 590px; padding: 28px; border-radius: 20px; }.career-content h3 { font-size: 36px; }.career-secondary, .project-slot { min-height: 320px; padding: 28px; }
   .workflow-stage { margin-top: 68px; gap: 66px; }.workflow-principle strong { font-size: 48px; }.flow-step { min-height: 142px; grid-template-columns: 28px 22px 1fr; gap: 0 10px; }.flow-line { left: 39px; }.flow-step h3 { font-size: 24px; }.flow-step.is-active { transform: none; }
-  .about-visual { min-height: 440px; }.life-main { right: 12%; }.life-small { width: 48%; height: 36%; }.about-copy { margin-top: 16px; }
+  .life-banner { min-height: 540px; }.life-banner-copy { width: 100%; padding: 72px 20px; }.life-banner-copy h2 { font-size: 60px; }.life-banner-copy > p:last-child { font-size: 14px; }
+  .about-visual { min-height: 440px; }.life-carousel { right: 0; }.about-copy { margin-top: 16px; }
   .closing h2 { font-size: 58px; } footer { align-items: flex-start; gap: 24px; }
 }
 

@@ -24,7 +24,16 @@ const navItems = [
 export default function Home() {
   const [active, setActive] = useState('top');
   const [compact, setCompact] = useState(false);
+  const [lifeIndex, setLifeIndex] = useState(0);
   const flowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = window.setInterval(() => {
+      setLifeIndex((current) => (current + 1) % mediaContent.life.photos.length);
+    }, 5200);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const sectionObserver = new IntersectionObserver((entries) => {
@@ -118,12 +127,23 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="chapter about-section" id="about">
-        <div className="about-visual" data-reveal><MaintainableImage className="life-image life-main" {...mediaContent.life.campus} /><MaintainableImage className="life-image life-small" {...mediaContent.life.running} /></div>
-        <div className="about-copy" data-reveal><p className="eyebrow">04 / ABOUT · LIFE</p><h2>统计、算法、风险与 AI，<br />也是一个人的成长轨迹。</h2><p>从浙江工商大学经济统计学，到厦门大学应用统计，再到真实的支付风控算法场景，我正在把统计基础转化为解决现实问题的能力。</p><p>工作之外，校园、运动和持续学习构成另一面的我。这里未来只放少量真实影像，不做荣誉墙，也不做照片瀑布流。</p><div className="education-line"><span>本科</span><strong>浙江工商大学 · 经济统计学</strong></div><div className="education-line"><span>硕士</span><strong>厦门大学 · 应用统计</strong></div></div>
+      <section className="life-banner" aria-label="生活片段" data-reveal>
+        <MaintainableImage className="life-banner-image" {...mediaContent.background} />
+        <div className="life-banner-copy"><p className="eyebrow light">04 / LIFE, NOT A SIDELINE</p><h2>工作之外，<br />也在路上。</h2><p>校园、运动和看见世界的时间，让长期的学习与判断保持真实。</p></div>
       </section>
 
-      <section className="closing" id="resume" data-reveal><p className="eyebrow light">05 / RESUME · CONTACT</p><h2>保持判断，持续进化。</h2><p>PDF 简历与联系方式将在信息确认后接入。网站负责深度证明，简历负责标准招聘流程。</p><a className="button light-button" href="#contact">建立联系 <span>↗</span></a></section>
+      <section className="chapter about-section" id="about">
+        <div className="about-visual" data-reveal>
+          <div className="life-carousel" aria-roledescription="carousel" aria-label="生活照片">
+            <MaintainableImage key={lifeIndex} className="life-image life-current" {...mediaContent.life.photos[lifeIndex]} />
+            <div className="carousel-controls"><span>{String(lifeIndex + 1).padStart(2, '0')} / {String(mediaContent.life.photos.length).padStart(2, '0')}</span><div className="carousel-buttons"><button type="button" onClick={() => setLifeIndex((lifeIndex - 1 + mediaContent.life.photos.length) % mediaContent.life.photos.length)} aria-label="上一张生活照片">←</button><button type="button" onClick={() => setLifeIndex((lifeIndex + 1) % mediaContent.life.photos.length)} aria-label="下一张生活照片">→</button></div></div>
+            <div className="carousel-dots" aria-label="选择生活照片">{mediaContent.life.photos.map((photo, index) => <button type="button" className={index === lifeIndex ? 'active' : ''} onClick={() => setLifeIndex(index)} aria-label={`查看第 ${index + 1} 张生活照片`} aria-current={index === lifeIndex ? 'true' : undefined} key={photo.src} />)}</div>
+          </div>
+        </div>
+        <div className="about-copy" data-reveal><p className="eyebrow">05 / ABOUT · LIFE</p><h2>统计、算法、风险与 AI，<br />也是一个人的成长轨迹。</h2><p>从浙江工商大学经济统计学，到厦门大学应用统计，再到真实的支付风控算法场景，我正在把统计基础转化为解决现实问题的能力。</p><p>工作之外，校园、运动和持续学习构成另一面的我。这里保留少量真实影像，不做荣誉墙，也不做照片瀑布流。</p><div className="education-line"><span>本科</span><strong>浙江工商大学 · 经济统计学</strong></div><div className="education-line"><span>硕士</span><strong>厦门大学 · 应用统计</strong></div></div>
+      </section>
+
+      <section className="closing" id="resume" data-reveal><p className="eyebrow light">06 / RESUME · CONTACT</p><h2>保持判断，持续进化。</h2><p>PDF 简历与联系方式将在信息确认后接入。网站负责深度证明，简历负责标准招聘流程。</p><a className="button light-button" href="#contact">建立联系 <span>↗</span></a></section>
       <footer id="contact"><div><strong>沈鑫达 / Shen Xinda</strong><p>Algorithm · Risk Decision · AI-native Practice</p></div><a href="#top">返回顶部 ↑</a></footer>
     </main>
   );
