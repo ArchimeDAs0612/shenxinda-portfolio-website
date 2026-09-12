@@ -215,7 +215,7 @@ export default function Home() {
             <div className="contact-row-heading"><span>02</span><p>WeChat / 微信</p></div>
             <div className="contact-row-content compact-contact-content">
               <p>国内沟通的辅助入口</p>
-              <button className="contact-action" type="button" ref={wechatTriggerRef} onClick={() => setWechatOpen(true)}>微信联系 <span aria-hidden="true">↗</span></button>
+              <button className="contact-action" type="button" ref={wechatTriggerRef} onClick={() => { setWechatQrMissing(false); setWechatOpen(true); }}>微信联系 <span aria-hidden="true">↗</span></button>
             </div>
           </article>
 
@@ -242,7 +242,7 @@ export default function Home() {
             <p className="wechat-modal-kicker">WECHAT / 微信</p>
             <h2 id="wechat-modal-title">扫码添加微信</h2>
             <div className={`wechat-qr ${wechatQrMissing ? 'is-missing' : ''}`}>
-              {!wechatQrMissing && <img src={contactContent.wechatQrImage} alt="沈鑫达的微信二维码" onError={() => setWechatQrMissing(true)} />}
+              {!wechatQrMissing && <img src={`${contactContent.wechatQrImage}?v=20260912`} alt="沈鑫达的微信二维码" onError={() => setWechatQrMissing(true)} />}
               {wechatQrMissing && <div className="wechat-qr-fallback"><span>QR</span><strong>二维码待放入</strong><p>替换图片后将自动显示</p></div>}
             </div>
             <p className="wechat-modal-note">{contactContent.wechatNote}</p>
