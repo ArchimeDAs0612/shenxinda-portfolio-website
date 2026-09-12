@@ -41,7 +41,7 @@ export const mediaContent = {
  */
 export const contactContent = {
   email: '19357506009@163.com',
-  wechatQrImage: 'images/contact/wechat-qr.jpg',
+  wechatQrImage: 'images/contact/accc2a130881e0357b7de430ed488240.jpg',
   wechatNote: '添加时请备注：姓名 / 公司 / 来意',
   xiaohongshuName: '达米鸡A-RandomThought',
   xiaohongshuId: '552811303',
