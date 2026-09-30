@@ -6,18 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import { MaintainableImage } from './components/MaintainableImage';
 import { contactContent, mediaContent } from '../content/site-content';
 import { careerContent } from '../content/career-content';
-
-const steps = [
-  ['01', 'Problem Definition', '定义问题'],
-  ['02', 'Context', '提供必要背景'],
-  ['03', 'Specification', '明确任务与约束'],
-  ['04', 'Coding Agent', '调度执行代理'],
-  ['05', 'Execution', '分析、开发与调试'],
-  ['06', 'Critical Evaluation', '理解并质疑结果'],
-  ['07', 'Iteration', '发现矛盾后重新约束'],
-  ['08', 'Validation', '验证与交叉检查'],
-  ['09', 'Human Ownership', '由我判断并承担最终责任'],
-] as const;
+import { CareerWorkspace } from './components/CareerWorkspace';
+import { ContributionMetrics, ProjectAIWorkflow, ProjectEvidence } from './components/EvidenceExplorer';
 
 const navItems = [
   ['top', '首页'], ['work', '经历'], ['projects', '项目'],
@@ -33,7 +23,6 @@ export default function Home() {
   const [emailCopyError, setEmailCopyError] = useState(false);
   const [wechatOpen, setWechatOpen] = useState(false);
   const [wechatQrMissing, setWechatQrMissing] = useState(false);
-  const flowRef = useRef<HTMLDivElement>(null);
   const copyFeedbackTimerRef = useRef<number | null>(null);
   const wechatTriggerRef = useRef<HTMLButtonElement>(null);
   const wechatCloseRef = useRef<HTMLButtonElement>(null);
@@ -122,13 +111,6 @@ export default function Home() {
 
     const update = () => {
       setCompact(window.scrollY > 36);
-      const flow = flowRef.current;
-      if (!flow) return;
-      const rect = flow.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(1, (window.innerHeight * .68 - rect.top) / Math.max(rect.height - window.innerHeight * .18, 1)));
-      flow.style.setProperty('--flow-progress', `${progress}`);
-      const current = Math.min(steps.length - 1, Math.floor(progress * steps.length));
-      flow.querySelectorAll('.flow-step').forEach((node, index) => node.classList.toggle('is-active', index <= current));
     };
     update();
     window.addEventListener('scroll', update, { passive: true });
@@ -162,19 +144,40 @@ export default function Home() {
           <div className="hero-identity hero-enter enter-four"><p>厦门大学 · 应用统计硕士</p><p>滴滴国际支付风控算法实习生</p></div>
           <p className="hero-statement hero-enter enter-four">以应用统计为底座，以算法与机器学习为主线。支付风险与智能决策是我当前最深的业务实践；AI Agent 是执行杠杆，而非判断的替代品。</p>
           <div className="actions hero-enter enter-four"><a className="button primary" href="#projects">查看项目 <span>↘</span></a><a className="button quiet" href="#contact">简历与联系</a></div>
-          <div className="hero-proof hero-enter enter-four" aria-label="核心经历"><span><b>滴滴</b> 国际支付风控算法实习</span><span><b>ZEEKR 极氪</b> 数据分析实习</span><span><b>国家级竞赛</b> 特等奖 / 一等奖</span></div>
+          <div className="hero-proof hero-enter enter-four" aria-label="核心经历"><span><b>滴滴</b> 国际支付风控算法实习</span><span><b>ZEEKR 极氪</b> 数据分析实习</span><span><b>挑战杯国家级特等奖</b> 国赛前3%</span></div>
         </div>
         <div className="portrait-wrap">
           <MaintainableImage className="portrait-frame" priority {...mediaContent.profile} />
           <div className="portrait-caption"><span>XIAMEN · CHINA</span><span>2026</span></div>
         </div>
-        <a className="scroll-cue" href="#work"><span />SCROLL TO EXPLORE</a>
+        <a className="scroll-cue" href="#education"><span />MEET THE PERSON</a>
       </section>
 
+      <div className="identity-overview">
+        <section className="chapter education-section" id="education" aria-labelledby="education-title">
+          <p className="eyebrow">BACKGROUND / EDUCATION</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2>
+          <div className="education-grid"><article><span className="field-label">硕士 / FACT</span><h3>厦门大学</h3><p>应用统计硕士</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科 / FACT</span><h3>浙江工商大学</h3><p>经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3% · 保研综合第一</small></article></div>
+          {careerContent.selectedCoursework.length > 0 && <div className="coursework"><span className="field-label">SELECTED COURSEWORK / 已修课程</span><ul>{careerContent.selectedCoursework.map((course) => <li key={course}>{course}</li>)}</ul></div>}
+          <div className="credential-line"><span className="field-label">代表荣誉 / FACT</span><p><strong>挑战杯国家级特等奖（国赛前3%）</strong><span>山海协作</span></p><p>正大杯国家一等奖 <span>数字经济 × 杭州数字文旅</span></p></div>
+          <p className="journey-caption">统计基础 → 业务数据分析 → 支付风险算法与决策</p>
+        </section>
+        <section className="chapter about-section" id="about">
+          <div className="about-visual">
+            <div className="life-carousel" aria-roledescription="carousel" aria-label="生活照片">
+              <MaintainableImage key={lifeIndex} className="life-image life-current" {...mediaContent.life.photos[lifeIndex]} />
+              <div className="carousel-controls"><span>{String(lifeIndex + 1).padStart(2, '0')} / {String(mediaContent.life.photos.length).padStart(2, '0')}</span><div className="carousel-buttons"><button type="button" onClick={() => setLifePaused(!lifePaused)} aria-label={lifePaused ? '恢复照片轮播' : '暂停照片轮播'}>{lifePaused ? '▶' : 'Ⅱ'}</button><button type="button" onClick={() => setLifeIndex((lifeIndex - 1 + mediaContent.life.photos.length) % mediaContent.life.photos.length)} aria-label="上一张生活照片">←</button><button type="button" onClick={() => setLifeIndex((lifeIndex + 1) % mediaContent.life.photos.length)} aria-label="下一张生活照片">→</button></div></div>
+              <div className="carousel-dots" aria-label="选择生活照片">{mediaContent.life.photos.map((photo, index) => <button type="button" className={index === lifeIndex ? 'active' : ''} onClick={() => setLifeIndex(index)} aria-label={`查看第 ${index + 1} 张生活照片`} aria-current={index === lifeIndex ? 'true' : undefined} key={photo.src} />)}</div>
+            </div>
+          </div>
+          <div className="about-copy"><p className="eyebrow">XIAMEN → BEIJING / LIFE</p><h2>生活也在场。</h2><p>厦大校园、北漂实习、跑步与马拉松。专业之外的探索，是我的另一面。</p><a className="life-contact-link" href="#contact">交流工作，也交流新的想法 ↘</a></div>
+        </section>
+      </div>
+
+      <CareerWorkspace>
       <section className="chapter work-section" id="work">
-        <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">01 / CURRENT EXPERIENCE</p><h2>真实场景，<br />锻炼判断。</h2><p>统计与数据分析是起点；当前的工作重心，是支付风险中的特征、模型、Pattern 与决策验证。</p></div>
+        <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">CURRENT / SELECTED EXPERIENCE</p><h2>从业务数据，<br />走向风险算法。</h2><p>经历不是岗位标签。这里展示我实际研究的问题、已经完成的分析与交付，以及形成的方法判断。</p></div>
         <div className="career-story">
-          <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>INTERNATIONAL PAYMENT RISK</span></div><div className="career-company" aria-hidden="true">DIDI</div><div className="career-content"><div className="company-logo-shell didi-logo-shell"><img className="company-logo didi-logo" src="images/brands/didi.svg" alt="滴滴出行 Logo" /></div><p className="company-description">滴滴 · 移动出行平台 · 国际支付风险场景</p><h3>国际支付风控算法实习</h3><p>关注风险识别，也关注误伤与策略判断。从特征分析走向机器学习辅助发现，再回到证据是否支持业务结论。</p><ul className="experience-focus">{careerContent.didiFocus.map((focus) => <li key={focus}>{focus}</li>)}</ul><div className="career-tags"><span>支付风险业务理解</span><span>机器学习</span><span>风险决策</span><span>AI-native Workflow</span></div><a className="career-project-link" href="#projects">阅读两条项目线与验证边界 ↘</a><p className="privacy-note">以下项目均为 WIP。仅展示去敏方法，不披露内部数据、规则、业务指标或实现。</p></div></article>
+          <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>INTERNATIONAL PAYMENT RISK</span></div><div className="career-content"><div className="company-logo-shell didi-logo-shell"><img className="company-logo didi-logo" src="images/brands/didi.svg" alt="滴滴出行 Logo" /></div><p className="company-description">滴滴 · 移动出行平台 · 国际支付风险场景</p><h3>国际支付风控算法实习</h3><p>围绕短窗口误伤复盘，推进样本关系、策略条件解释与宽特征树模型实验；另一条线研究业务字段如何变成可信的风险输入。</p><ContributionMetrics /><ul className="experience-focus">{careerContent.didiFocus.map((focus) => <li key={focus}>{focus}</li>)}</ul><div className="career-tags"><span>Python / SQL</span><span>PySpark GBT</span><span>Feature Engineering</span><span>Risk Decision</span></div><a className="career-project-link" href="#projects">打开项目证据与流程图 ↘</a><p className="privacy-note">上述数量是已完成的实验与汇报贡献。项目仍为 WIP；不将离线指标或研究产物写成线上收益。</p></div></article>
           <article className="career-secondary" data-reveal>
             <div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>{careerContent.zeekr.period} / EXPERIENCE 02</span></div>
             <div className="company-logo-shell zeekr-logo-shell"><img className="company-logo zeekr-logo" src="images/brands/zeekr.svg" alt="极氪 ZEEKR Logo" /></div>
@@ -189,52 +192,19 @@ export default function Home() {
       </section>
 
       <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="chapter-intro" data-reveal><p className="eyebrow">02 / SELECTED PROJECTS</p><h2 id="projects-title">讲清方法，<br />守住边界。</h2><p>两条互补的支付风险研究线：一条探索 Pattern 与模型，一条建设可信的特征输入。阶段工作已发生，项目结论仍在验证。</p></div>
-        <div className="project-narratives">
-          {careerContent.projects.map((project) => <article className="project-narrative" id={project.id} key={project.id} data-reveal>
-            <div className="project-heading"><div className="project-number">{project.number}</div><div><span className="status wip">{project.status}</span><h3>{project.title}</h3><p className="project-english">{project.english}</p></div></div>
-            <div className="project-body"><div><span className="field-label">PROBLEM / 问题</span><p>{project.problem}</p></div><div><span className="field-label">MY WORK / 我的工作</span><p>{project.work}</p></div></div>
-            <p className="project-evidence"><strong>当前进展</strong>{project.evidence}</p>
-            <div className="project-tags">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-            <details className="project-details"><summary>展开方法、评价与反思 <span aria-hidden="true">＋</span></summary><dl>{project.details.map(([label, text]) => <div key={label}><dt>{label}</dt><dd>{text}</dd></div>)}</dl></details>
-          </article>)}
-        </div>
-        <p className="content-boundary">公开摘要 ≠ 公司官方口径。没有上线、正式策略、收益提升或生产模型所有权的声明。</p>
+        <div className="chapter-intro" data-reveal><p className="eyebrow">SELECTED PROJECTS / EVIDENCE</p><h2 id="projects-title">问题拆解，<br />实验求证。</h2><p>点击阶段与流程节点，查看问题如何拆解、实验如何设计，以及我如何审查结果。</p></div>
+        <ProjectEvidence />
+        <p className="content-boundary">公开去敏案例：展示个人方法与交付贡献，不展示公司原始数据、内部字段、规则阈值或内部链接。</p>
       </section>
 
       <section className="chapter workflow-section" id="ai">
-        <div className="workflow-intro" data-reveal><p className="eyebrow">03 / HOW I WORK WITH AI</p><h2>让 Agent 扩大执行能力，<br />让人保留最终判断。</h2><p>AI-native Practitioner / Agent Operator 是我当前的真实定位。通过 Context 管理、任务委派和多轮结果审查，把 Coding Agent 嵌入工作；不把调用工具包装成成熟 Agent 系统工程。</p><div className="agent-use"><span className="field-label">真实使用场景</span><p>{careerContent.agentUses}</p><p>我定义问题与约束，理解输出、检查矛盾、重新迭代，再验证交付。</p></div></div>
-        <div className="workflow-stage" ref={flowRef}>
-          <aside className="workflow-principle"><span>CURRENT POSITION</span><strong>AI-native<br />Operator</strong><p>Define clearly.<br />Review critically.<br />Own the outcome.</p></aside>
-          <div className="workflow-rail"><div className="flow-line"><span /></div>{steps.map(([number, en, zh]) => <article className="flow-step" key={number}><span className="flow-number">{number}</span><div className="flow-node" /><div><h3>{en}</h3><p>{zh}</p></div></article>)}</div>
-        </div>
+        <div className="workflow-intro" data-reveal><p className="eyebrow">AI / PROJECT COLLABORATION</p><h2>把 Agent 放进任务，<br />把判断留给自己。</h2><p>不只列流程名。以项目中的真实执行、方法纠偏与进度约束，说明我如何定义任务、审查结果和完成交付。</p></div>
+        <ProjectAIWorkflow />
       </section>
+      </CareerWorkspace>
 
       <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
-        <div className="chapter-intro" data-reveal><p className="eyebrow">04 / AI EXPLORATION</p><h2 id="exploration-title">跨界创作，<br />持续验证。</h2><p>工作之外，我也用生成式 AI 做连续内容实验。这里展示的是产品实验意识与生产思维，不把流量当作算法能力的证明。</p></div>
-        <div className="aigc-story" data-reveal>
-          <div className="aigc-overview"><p className="field-label">{careerContent.aigc.english}</p><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.question}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>抖音累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><p className="metric-source"><span className="status fact">FACT · 用户确认</span>截至 {careerContent.aigc.dataAsOf} · 非实时数据</p><p className="aigc-state"><span className="status wip">WIP</span> 内容生产体系持续迭代。已发布作品与脚本储备分开记录，不承诺下一次播放结果。</p></div>
-          <ol className="production-flow" aria-label="AIGC 内容生产工作流">{careerContent.aigc.process.map(([title, description], index) => <li key={title}><span>{String(index + 1).padStart(2, '0')}</span><div><h4>{title}</h4><p>{description}</p></div></li>)}</ol>
-        </div>
-        <p className="content-boundary">AI 协作，而非全自动发布：创意取舍、素材验收、剪辑与最终交付仍由人负责。跨平台差异保留为反馈，不宣称跨平台成功。</p>
-      </section>
-
-      <section className="chapter education-section" id="education" aria-labelledby="education-title">
-        <div className="chapter-intro" data-reveal><p className="eyebrow">05 / EDUCATION & JOURNEY</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2><p>统计基础 → 数据分析 → 支付风险算法与决策。AI 工作方式伴随这条路径成长，而不是替代专业能力。</p></div>
-        <div className="education-grid" data-reveal><article><span className="field-label">硕士 / FACT</span><h3>厦门大学</h3><p>应用统计硕士</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科 / FACT</span><h3>浙江工商大学</h3><p>经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3% · 保研综合第一</small></article></div>
-        {careerContent.selectedCoursework.length > 0 && <div className="coursework" data-reveal><span className="field-label">SELECTED COURSEWORK / 已修课程</span><ul>{careerContent.selectedCoursework.map((course) => <li key={course}>{course}</li>)}</ul></div>}
-        <div className="credential-line" data-reveal><span className="field-label">代表荣誉 / FACT</span><p>挑战杯国家特等奖 <span>山海协作</span></p><p>正大杯国家一等奖 <span>数字经济 × 杭州数字文旅</span></p></div>
-      </section>
-
-      <section className="chapter about-section" id="about">
-        <div className="about-visual" data-reveal>
-          <div className="life-carousel" aria-roledescription="carousel" aria-label="生活照片">
-            <MaintainableImage key={lifeIndex} className="life-image life-current" {...mediaContent.life.photos[lifeIndex]} />
-            <div className="carousel-controls"><span>{String(lifeIndex + 1).padStart(2, '0')} / {String(mediaContent.life.photos.length).padStart(2, '0')}</span><div className="carousel-buttons"><button type="button" onClick={() => setLifePaused(!lifePaused)} aria-label={lifePaused ? '恢复照片轮播' : '暂停照片轮播'}>{lifePaused ? '▶' : 'Ⅱ'}</button><button type="button" onClick={() => setLifeIndex((lifeIndex - 1 + mediaContent.life.photos.length) % mediaContent.life.photos.length)} aria-label="上一张生活照片">←</button><button type="button" onClick={() => setLifeIndex((lifeIndex + 1) % mediaContent.life.photos.length)} aria-label="下一张生活照片">→</button></div></div>
-            <div className="carousel-dots" aria-label="选择生活照片">{mediaContent.life.photos.map((photo, index) => <button type="button" className={index === lifeIndex ? 'active' : ''} onClick={() => setLifeIndex(index)} aria-label={`查看第 ${index + 1} 张生活照片`} aria-current={index === lifeIndex ? 'true' : undefined} key={photo.src} />)}</div>
-          </div>
-        </div>
-        <div className="about-copy" data-reveal><p className="eyebrow">06 / LIFE · PERSONAL</p><h2>不只在工作里，<br />也在生活里持续探索。</h2><p>从厦大校园走到北京实习，在统计、算法和真实业务之间寻找连接；也在跑步与马拉松中，把耐心带回日常。</p><p>生活影像、AIGC 创作与小红书里的成长记录，是职业主页的另一面。它们不替代专业经历，但让这里不只是一份履历。</p><a className="life-contact-link" href="#contact">交流工作，也交流新的想法 ↘</a></div>
+        <div className="aigc-compact" data-reveal><div><p className="eyebrow">SIDE EXPLORATION / AIGC</p><h2 id="exploration-title">《{careerContent.aigc.title}》</h2><p>生成式 AI 内容实验 · 创作、发布与反馈迭代</p></div><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>抖音累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><p className="metric-source">截至 {careerContent.aigc.dataAsOf} · 用户确认 · 非实时数据<br />体现跨领域 AI 实践，不作为算法效果证明。</p></div>
       </section>
 
       <section className="contact-section" id="contact" data-reveal aria-labelledby="contact-title">

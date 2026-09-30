@@ -25,11 +25,12 @@ await Promise.all(assets.map(async (asset) => {
   if (asset.endsWith('.css')) assert.match(response.headers.get('content-type'), /text\/css/);
 }));
 const career = await readFile('content/career-content.ts', 'utf8');
+const evidence = await readFile('content/project-evidence.ts', 'utf8');
 const report = {
   checkedAt: new Date().toISOString(), publicUrl: url.href, passed: true,
   assetsChecked: assets.length,
   // Fingerprints establish which approved public content was checked, not a new fact source.
-  approvedContentHash: createHash('sha256').update(career).digest('hex'),
+  approvedContentHash: createHash('sha256').update(career).update(evidence).digest('hex'),
   mediaConfigHash: createHash('sha256').update(site).digest('hex'),
 };
 await mkdir('outputs/refresh-20260930', { recursive: true });

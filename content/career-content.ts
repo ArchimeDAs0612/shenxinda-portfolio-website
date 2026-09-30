@@ -17,10 +17,10 @@ export const careerContent = {
   // 只填写经本人确认、实际修读的课程；空数组时页面不显示该模块。
   selectedCoursework: [] as string[],
   didiFocus: [
-    '支付风险识别与策略决策分析',
-    '样本构造、特征研究与风险 Pattern 探索',
-    '树模型辅助发现、模型解释与方法验证',
-    'Evaluation、稳定性理解与数据质量审计',
+    '构造 Rej → Pass 观察关系，组织同质样本与短窗口复盘范围',
+    '设计订单级策略条件对比，连接分布、窗口、分支与实际命中',
+    '推进 Score-only / Raw-all / Hybrid 树模型对照、消融与重复实验',
+    '审查来源混淆与信息泄漏；将 OOT 和 Pattern 准入纳入验证边界',
   ],
   projects: [
     {
@@ -44,7 +44,7 @@ export const careerContent = {
       english: 'International Payment Risk Feature Research',
       problem: '复杂原始字段如何变成可以理解、可以判断、适合风险研究的特征输入？',
       work: '从物理可解析性、业务语义和决策价值理解字段，整理 Feature Family，并判断其用于 Pattern 研究的可用性。',
-      evidence: '正在建设结构化的特征输入资产，连接业务理解、Feature Engineering 与后续风险建模。',
+      evidence: '外卖字段部分已做并有知识沉淀；钱包字段尚未做。整体仍为 WIP，不写成全量完成。',
       tags: ['Business Semantics', 'Feature Family', 'Data Quality', 'Pattern-ready Input'],
       details: [
         ['Context / 角色', '参与国际支付风险特征研究，重点是把字段理解转化为可复用的分析输入，而非仅做字段列表。'],

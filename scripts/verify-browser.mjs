@@ -33,28 +33,51 @@ try {
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
     await page.locator('.hero img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
     await page.waitForTimeout(150);
-    const sections = await page.locator('main > section').evaluateAll((nodes) => nodes.map((node) => node.id || 'hero'));
-    assert.deepEqual(sections, ['hero', 'work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']);
-    assert.match(await page.locator('#projects').innerText(), /PySpark GBT/);
+    const sections = await page.locator('main section.hero, main section.chapter, main section.contact-section').evaluateAll((nodes) => nodes.map((node) => node.id || 'hero'));
+    assert.deepEqual(sections, ['hero', 'education', 'about', 'work', 'projects', 'ai', 'exploration', 'contact']);
+    assert.match(await page.locator('#projects').textContent(), /PySpark GBT/);
     assert.match(await page.locator('#exploration').innerText(), /约183万/);
     assert.match(await page.locator('#exploration').innerText(), /2026-09-30/);
     assert.match(await page.locator('#education').innerText(), /GPA 3.93/);
     assert.match(await page.locator('.career-secondary').innerText(), /3000\+/);
     assert.match(await page.locator('.career-secondary').innerText(), /约 5 分钟/);
+    assert.match(await page.locator('#education').innerText(), /挑战杯国家级特等奖（国赛前3%）/);
     assert.equal(await page.locator('meta[property="og:image"]').count(), 1);
     assert.equal(await page.locator('link[rel="canonical"]').count(), 1);
     const anchors = await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')));
     for (const anchor of anchors) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, `Broken anchor: ${anchor}`);
     await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-hero.png` });
     for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
+      if (['work', 'projects', 'ai'].includes(id)) await page.locator(`#tab-${id}`).click();
       await page.locator(`#${id}`).scrollIntoViewIfNeeded();
       await page.locator(`#${id}`).evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + scrollY - 84));
       await page.waitForTimeout(120);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id}: horizontal overflow at ${viewport.width}`);
-      if (['work', 'projects', 'exploration', 'contact'].includes(id)) await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-${id}.png` });
+      if (['work', 'projects', 'education', 'exploration', 'contact'].includes(id)) await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-${id}.png` });
     }
-    await page.locator('#projects summary').first().click();
-    assert(await page.locator('#projects details').first().evaluate((node) => node.open));
+    await page.locator('#tab-projects').click();
+    assert.equal(await page.locator('#panel-projects').isVisible(), true);
+    assert.equal(await page.locator('#panel-work').isVisible(), false);
+    assert.match(await page.locator('#risk-pattern').innerText(), /30页/);
+    await page.getByRole('button', { name: '02 · 解释候选与策略', exact: true }).click();
+    assert.match(await page.locator('.phase-content').innerText(), /订单级覆盖/);
+    await page.locator('.phase-content .process-nodes button').nth(1).click();
+    assert.match(await page.locator('.phase-content .process-detail').innerText(), /任一事件曾达到/);
+    await page.getByRole('button', { name: '03 · 模型发现与审计', exact: true }).click();
+    await page.locator('.phase-content .process-nodes button').last().click();
+    assert.match(await page.locator('.phase-content .process-detail').innerText(), /阻断 OOT/);
+    await page.locator('.phase-content').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-diagram.png` });
+    assert.match(await page.locator('#feature-research').innerText(), /钱包字段\s+尚未做/);
+    await page.locator('#tab-ai').click();
+    await page.locator('.project-ai .process-nodes button').nth(1).click();
+    assert.match(await page.locator('.project-ai .process-detail').innerText(), /PySpark GBT/);
+    await page.getByRole('button', {name: '字段治理的协作约束', exact: true}).click();
+    assert.match(await page.locator('.project-ai').innerText(), /钱包未做/);
+    await page.locator('#tab-ai').focus();
+    await page.keyboard.press('ArrowLeft');
+    assert.equal(await page.locator('#tab-projects').getAttribute('aria-selected'), 'true');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'tab-projects');
     await page.getByRole('button', { name: '下一张生活照片' }).click();
     assert.match(await page.locator('.carousel-controls').innerText(), /02/);
     await page.getByRole('button', { name: '复制邮箱', exact: true }).click();
@@ -79,7 +102,7 @@ try {
       assert.equal(await page.locator('.mobile-nav').evaluate((node) => node.open), false);
     }
     assert.deepEqual(errors, [], 'Client JavaScript errors');
-    results.push({ url: siteUrl, viewport, sections, images: images.length, checks: 'HTML/CSS, anchors, overflow, project details, carousel, clipboard, mailto, QR, keyboard, mobile menu', passed: true });
+    results.push({ url: siteUrl, viewport, sections, images: images.length, checks: 'HTML/CSS, anchors, overflow, workspace tabs/keyboard, research stages/process nodes, scope, carousel, clipboard, mailto, QR, mobile menu', passed: true });
     await context.close();
   }
   // Motion enabled: content becomes visible as it enters the viewport.
@@ -87,6 +110,7 @@ try {
   const page = await context.newPage();
   await page.goto(siteUrl, { waitUntil: 'networkidle' });
   for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
+    if (['work', 'projects', 'ai'].includes(id)) await page.locator(`#tab-${id}`).click();
     await page.locator(`#${id}`).scrollIntoViewIfNeeded();
     await page.waitForTimeout(800);
     const candidates = page.locator(`#${id}[data-reveal], #${id} [data-reveal]`);
