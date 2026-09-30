@@ -28,6 +28,7 @@ export default function Home() {
   const [active, setActive] = useState('top');
   const [compact, setCompact] = useState(false);
   const [lifeIndex, setLifeIndex] = useState(0);
+  const [lifePaused, setLifePaused] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
   const [emailCopyError, setEmailCopyError] = useState(false);
   const [wechatOpen, setWechatOpen] = useState(false);
@@ -38,12 +39,12 @@ export default function Home() {
   const wechatCloseRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (lifePaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const timer = window.setInterval(() => {
       setLifeIndex((current) => (current + 1) % mediaContent.life.photos.length);
     }, 5200);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [lifePaused]);
 
   useEffect(() => {
     if (!wechatOpen) return;
@@ -114,6 +115,9 @@ export default function Home() {
         if (entry.isIntersecting) entry.target.classList.add('is-visible');
       });
     }, { threshold: .12 });
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('motion-ready');
+    }
     document.querySelectorAll('[data-reveal]').forEach((node) => revealObserver.observe(node));
 
     const update = () => {
@@ -132,6 +136,7 @@ export default function Home() {
       window.removeEventListener('scroll', update);
       sectionObserver.disconnect();
       revealObserver.disconnect();
+      document.documentElement.classList.remove('motion-ready');
     };
   }, []);
 
@@ -170,7 +175,16 @@ export default function Home() {
         <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">01 / CURRENT EXPERIENCE</p><h2>真实场景，<br />锻炼判断。</h2><p>统计与数据分析是起点；当前的工作重心，是支付风险中的特征、模型、Pattern 与决策验证。</p></div>
         <div className="career-story">
           <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>INTERNATIONAL PAYMENT RISK</span></div><div className="career-company" aria-hidden="true">DIDI</div><div className="career-content"><div className="company-logo-shell didi-logo-shell"><img className="company-logo didi-logo" src="images/brands/didi.svg" alt="滴滴出行 Logo" /></div><p className="company-description">滴滴 · 移动出行平台 · 国际支付风险场景</p><h3>国际支付风控算法实习</h3><p>关注风险识别，也关注误伤与策略判断。从特征分析走向机器学习辅助发现，再回到证据是否支持业务结论。</p><ul className="experience-focus">{careerContent.didiFocus.map((focus) => <li key={focus}>{focus}</li>)}</ul><div className="career-tags"><span>支付风险业务理解</span><span>机器学习</span><span>风险决策</span><span>AI-native Workflow</span></div><a className="career-project-link" href="#projects">阅读两条项目线与验证边界 ↘</a><p className="privacy-note">以下项目均为 WIP。仅展示去敏方法，不披露内部数据、规则、业务指标或实现。</p></div></article>
-          <article className="career-secondary" data-reveal><div><span className="status fact">FACT</span><div className="company-logo-shell zeekr-logo-shell"><img className="company-logo zeekr-logo" src="images/brands/zeekr.svg" alt="极氪 ZEEKR Logo" /></div><p className="company-description">高端智能电动品牌 · 数据分析实习</p><h3>数据分析实习</h3></div><p>职业能力路径中的数据分析实践，为后续进入算法与决策问题建立业务理解基础。</p><span className="career-index">EXPERIENCE 02</span></article>
+          <article className="career-secondary" data-reveal>
+            <div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>{careerContent.zeekr.period} / EXPERIENCE 02</span></div>
+            <div className="company-logo-shell zeekr-logo-shell"><img className="company-logo zeekr-logo" src="images/brands/zeekr.svg" alt="极氪 ZEEKR Logo" /></div>
+            <p className="company-description">{careerContent.zeekr.company}<br />{careerContent.zeekr.context}</p>
+            <h3>从业务数据，<br />走向决策支持。</h3>
+            <p className="zeekr-role">{careerContent.zeekr.role}</p>
+            <div className="experience-metrics">{careerContent.zeekr.metrics.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
+            <dl className="zeekr-work">{careerContent.zeekr.work.map(([title, description]) => <div key={title}><dt>{title}</dt><dd>{description}</dd></div>)}</dl>
+            <p className="experience-takeaway">这是一段数据分析经历，而非算法实习。指标体系、用户分群与工程化分析，成为后续风险研究的基础。</p>
+          </article>
         </div>
       </section>
 
@@ -208,6 +222,7 @@ export default function Home() {
       <section className="chapter education-section" id="education" aria-labelledby="education-title">
         <div className="chapter-intro" data-reveal><p className="eyebrow">05 / EDUCATION & JOURNEY</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2><p>统计基础 → 数据分析 → 支付风险算法与决策。AI 工作方式伴随这条路径成长，而不是替代专业能力。</p></div>
         <div className="education-grid" data-reveal><article><span className="field-label">硕士 / FACT</span><h3>厦门大学</h3><p>应用统计硕士</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科 / FACT</span><h3>浙江工商大学</h3><p>经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3% · 保研综合第一</small></article></div>
+        {careerContent.selectedCoursework.length > 0 && <div className="coursework" data-reveal><span className="field-label">SELECTED COURSEWORK / 已修课程</span><ul>{careerContent.selectedCoursework.map((course) => <li key={course}>{course}</li>)}</ul></div>}
         <div className="credential-line" data-reveal><span className="field-label">代表荣誉 / FACT</span><p>挑战杯国家特等奖 <span>山海协作</span></p><p>正大杯国家一等奖 <span>数字经济 × 杭州数字文旅</span></p></div>
       </section>
 
@@ -215,7 +230,7 @@ export default function Home() {
         <div className="about-visual" data-reveal>
           <div className="life-carousel" aria-roledescription="carousel" aria-label="生活照片">
             <MaintainableImage key={lifeIndex} className="life-image life-current" {...mediaContent.life.photos[lifeIndex]} />
-            <div className="carousel-controls"><span>{String(lifeIndex + 1).padStart(2, '0')} / {String(mediaContent.life.photos.length).padStart(2, '0')}</span><div className="carousel-buttons"><button type="button" onClick={() => setLifeIndex((lifeIndex - 1 + mediaContent.life.photos.length) % mediaContent.life.photos.length)} aria-label="上一张生活照片">←</button><button type="button" onClick={() => setLifeIndex((lifeIndex + 1) % mediaContent.life.photos.length)} aria-label="下一张生活照片">→</button></div></div>
+            <div className="carousel-controls"><span>{String(lifeIndex + 1).padStart(2, '0')} / {String(mediaContent.life.photos.length).padStart(2, '0')}</span><div className="carousel-buttons"><button type="button" onClick={() => setLifePaused(!lifePaused)} aria-label={lifePaused ? '恢复照片轮播' : '暂停照片轮播'}>{lifePaused ? '▶' : 'Ⅱ'}</button><button type="button" onClick={() => setLifeIndex((lifeIndex - 1 + mediaContent.life.photos.length) % mediaContent.life.photos.length)} aria-label="上一张生活照片">←</button><button type="button" onClick={() => setLifeIndex((lifeIndex + 1) % mediaContent.life.photos.length)} aria-label="下一张生活照片">→</button></div></div>
             <div className="carousel-dots" aria-label="选择生活照片">{mediaContent.life.photos.map((photo, index) => <button type="button" className={index === lifeIndex ? 'active' : ''} onClick={() => setLifeIndex(index)} aria-label={`查看第 ${index + 1} 张生活照片`} aria-current={index === lifeIndex ? 'true' : undefined} key={photo.src} />)}</div>
           </div>
         </div>
@@ -258,7 +273,7 @@ export default function Home() {
               {contactContent.xiaohongshuUrl ? (
                 <a className="contact-action" href={contactContent.xiaohongshuUrl} target="_blank" rel="noreferrer">查看小红书 <span aria-hidden="true">↗</span></a>
               ) : (
-                <button className="contact-action" type="button" disabled title="准确链接接入后开放">查看小红书 <span aria-hidden="true">↗</span></button>
+                <span className="social-search-note">请在小红书搜索以上账号<br />直链待本人确认</span>
               )}
             </div>
           </article>

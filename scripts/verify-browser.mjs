@@ -39,6 +39,10 @@ try {
     assert.match(await page.locator('#exploration').innerText(), /约183万/);
     assert.match(await page.locator('#exploration').innerText(), /2026-09-30/);
     assert.match(await page.locator('#education').innerText(), /GPA 3.93/);
+    assert.match(await page.locator('.career-secondary').innerText(), /3000\+/);
+    assert.match(await page.locator('.career-secondary').innerText(), /约 5 分钟/);
+    assert.equal(await page.locator('meta[property="og:image"]').count(), 1);
+    assert.equal(await page.locator('link[rel="canonical"]').count(), 1);
     const anchors = await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')));
     for (const anchor of anchors) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, `Broken anchor: ${anchor}`);
     await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-hero.png` });
@@ -47,7 +51,7 @@ try {
       await page.locator(`#${id}`).evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + scrollY - 84));
       await page.waitForTimeout(120);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id}: horizontal overflow at ${viewport.width}`);
-      if (['projects', 'exploration', 'contact'].includes(id)) await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-${id}.png` });
+      if (['work', 'projects', 'exploration', 'contact'].includes(id)) await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-${id}.png` });
     }
     await page.locator('#projects summary').first().click();
     assert(await page.locator('#projects details').first().evaluate((node) => node.open));
@@ -93,6 +97,13 @@ try {
     }
   }
   await context.close();
+  // Without JavaScript the public content must stay readable, not reveal as blank.
+  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+  const noJsPage = await noJs.newPage();
+  await noJsPage.goto(siteUrl, { waitUntil: 'networkidle' });
+  assert.equal(await noJsPage.locator('#work [data-reveal]').first().evaluate((node) => getComputedStyle(node).opacity), '1');
+  assert.equal(await noJsPage.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1');
+  await noJs.close();
   await writeFile('outputs/refresh-20260930/browser-result.json', JSON.stringify(results, null, 2));
   console.log(JSON.stringify({ passed: true, results }));
 } finally {

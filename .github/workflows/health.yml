@@ -1,0 +1,47 @@
+name: Portfolio scheduled health check
+
+on:
+  schedule:
+    - cron: '17 1 * * *'
+  workflow_dispatch:
+
+# Read-only: this schedule cannot commit content or deploy a new version.
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-health
+  cancel-in-progress: false
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+      - name: Check public HTML, styles, images and metadata
+        run: node scripts/verify-public.mjs
+      - name: Prepare isolated browser runtime
+        run: |
+          npm install --prefix "$RUNNER_TEMP/portfolio-browser" --no-package-lock playwright@1.58.2
+          "$RUNNER_TEMP/portfolio-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Desktop and mobile public interaction tests
+        run: PORTFOLIO_PLAYWRIGHT_MODULE="$RUNNER_TEMP/portfolio-browser/node_modules/playwright" node scripts/verify-browser.mjs https://archimedas0612.github.io/shenxinda-portfolio-website/
+      - name: Save audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-health-evidence
+          path: outputs/refresh-20260930/
+          retention-days: 7
+      - name: Record outcome
+        if: always()
+        run: |
+          echo "## Portfolio scheduled check" >> "$GITHUB_STEP_SUMMARY"
+          echo "Status: ${{ job.status }}. This workflow is read-only and does not publish content." >> "$GITHUB_STEP_SUMMARY"
