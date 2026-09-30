@@ -1,0 +1,100 @@
+// Headless regression checks. Never attaches to a user's foreground browser.
+// npm install --no-save playwright is optional; a bundled module can be supplied
+// with PORTFOLIO_PLAYWRIGHT_MODULE, without adding a project dependency.
+import assert from 'node:assert/strict';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { chromium } = require(process.env.PORTFOLIO_PLAYWRIGHT_MODULE || 'playwright');
+const siteUrl = process.argv[2] || 'http://127.0.0.1:3100/';
+const results = [];
+const mediaSource = await readFile('content/site-content.ts', 'utf8');
+const assets = [...new Set([...mediaSource.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
+assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg');
+await mkdir('outputs/refresh-20260930', { recursive: true });
+const browser = await chromium.launch({ headless: true });
+try {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 820, height: 1180 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
+    const context = await browser.newContext({ viewport, isMobile: viewport.width < 640, hasTouch: viewport.width < 900, reducedMotion: 'reduce', permissions: ['clipboard-read', 'clipboard-write'] });
+    const page = await context.newPage();
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    const response = await page.goto(siteUrl, { waitUntil: 'networkidle' });
+    assert.equal(response.status(), 200, 'Public HTML must load');
+    if (viewport.width === 1440) {
+      await Promise.all(assets.map(async (asset) => {
+        const assetResponse = await context.request.get(new URL(asset, siteUrl).href);
+        assert.equal(assetResponse.status(), 200, `Missing public asset: ${asset}`);
+        assert.match(assetResponse.headers()['content-type'], /^image\//, `Wrong public asset type: ${asset}`);
+      }));
+    }
+    await page.waitForFunction(() => document.querySelector('.hero-role') && getComputedStyle(document.querySelector('.hero-role')).fontSize !== '16px');
+    await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
+    await page.locator('.hero img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+    await page.waitForTimeout(150);
+    const sections = await page.locator('main > section').evaluateAll((nodes) => nodes.map((node) => node.id || 'hero'));
+    assert.deepEqual(sections, ['hero', 'work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']);
+    assert.match(await page.locator('#projects').innerText(), /PySpark GBT/);
+    assert.match(await page.locator('#exploration').innerText(), /约183万/);
+    assert.match(await page.locator('#exploration').innerText(), /2026-09-30/);
+    assert.match(await page.locator('#education').innerText(), /GPA 3.93/);
+    const anchors = await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')));
+    for (const anchor of anchors) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, `Broken anchor: ${anchor}`);
+    await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-hero.png` });
+    for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
+      await page.locator(`#${id}`).scrollIntoViewIfNeeded();
+      await page.locator(`#${id}`).evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + scrollY - 84));
+      await page.waitForTimeout(120);
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id}: horizontal overflow at ${viewport.width}`);
+      if (['projects', 'exploration', 'contact'].includes(id)) await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-${id}.png` });
+    }
+    await page.locator('#projects summary').first().click();
+    assert(await page.locator('#projects details').first().evaluate((node) => node.open));
+    await page.getByRole('button', { name: '下一张生活照片' }).click();
+    assert.match(await page.locator('.carousel-controls').innerText(), /02/);
+    await page.getByRole('button', { name: '复制邮箱', exact: true }).click();
+    await page.getByRole('status').filter({ hasText: '已复制' }).waitFor();
+    assert.equal(await page.evaluate(() => navigator.clipboard.readText()), '19357506009@163.com');
+    assert.equal(await page.getByRole('link', { name: /发送邮件/ }).getAttribute('href'), 'mailto:19357506009@163.com');
+    await page.getByRole('button', { name: /微信联系/ }).click();
+    await page.getByRole('dialog').waitFor();
+    await page.waitForFunction(() => document.querySelector('.wechat-qr img')?.naturalWidth > 0);
+    assert(await page.getByRole('dialog').evaluate((node) => node.getBoundingClientRect().width <= innerWidth));
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), '关闭微信二维码');
+    await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-wechat.png` });
+    await page.keyboard.press('Escape');
+    assert.equal(await page.getByRole('dialog').count(), 0);
+    const images = await page.locator('img').evaluateAll((nodes) => nodes.map((node) => ({ src: node.getAttribute('src'), loaded: node.complete && node.naturalWidth > 0 })));
+    assert(images.every((image) => image.loaded), `Unloaded images: ${JSON.stringify(images)}`);
+    if (viewport.width < 900) {
+      await page.locator('.mobile-nav summary').click();
+      await page.locator('.mobile-nav a[href="#projects"]').click();
+      assert.equal(new URL(page.url()).hash, '#projects');
+      assert.equal(await page.locator('.mobile-nav').evaluate((node) => node.open), false);
+    }
+    assert.deepEqual(errors, [], 'Client JavaScript errors');
+    results.push({ url: siteUrl, viewport, sections, images: images.length, checks: 'HTML/CSS, anchors, overflow, project details, carousel, clipboard, mailto, QR, keyboard, mobile menu', passed: true });
+    await context.close();
+  }
+  // Motion enabled: content becomes visible as it enters the viewport.
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await context.newPage();
+  await page.goto(siteUrl, { waitUntil: 'networkidle' });
+  for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
+    await page.locator(`#${id}`).scrollIntoViewIfNeeded();
+    await page.waitForTimeout(800);
+    const candidates = page.locator(`#${id}[data-reveal], #${id} [data-reveal]`);
+    for (const element of await candidates.all()) {
+      await element.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(800);
+      assert.equal(await element.evaluate((node) => getComputedStyle(node).opacity), '1', `${id}: hidden reveal content`);
+    }
+  }
+  await context.close();
+  await writeFile('outputs/refresh-20260930/browser-result.json', JSON.stringify(results, null, 2));
+  console.log(JSON.stringify({ passed: true, results }));
+} finally {
+  await browser.close();
+}

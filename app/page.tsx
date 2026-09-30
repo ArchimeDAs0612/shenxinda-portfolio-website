@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { MaintainableImage } from './components/MaintainableImage';
 import { contactContent, mediaContent } from '../content/site-content';
+import { careerContent } from '../content/career-content';
 
 const steps = [
   ['01', 'Problem Definition', '定义问题'],
@@ -19,8 +20,8 @@ const steps = [
 ] as const;
 
 const navItems = [
-  ['top', '首页'], ['capabilities', '能力'], ['work', 'Work'],
-  ['ai', 'AI Engineering'], ['about', 'About'],
+  ['top', '首页'], ['work', '经历'], ['projects', '项目'],
+  ['ai', 'AI 实践'], ['about', '关于我'],
 ] as const;
 
 export default function Home() {
@@ -28,6 +29,7 @@ export default function Home() {
   const [compact, setCompact] = useState(false);
   const [lifeIndex, setLifeIndex] = useState(0);
   const [emailCopied, setEmailCopied] = useState(false);
+  const [emailCopyError, setEmailCopyError] = useState(false);
   const [wechatOpen, setWechatOpen] = useState(false);
   const [wechatQrMissing, setWechatQrMissing] = useState(false);
   const flowRef = useRef<HTMLDivElement>(null);
@@ -50,6 +52,11 @@ export default function Home() {
     const trigger = wechatTriggerRef.current;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setWechatOpen(false);
+      // This dialog has one interactive control; keep keyboard focus inside it.
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        wechatCloseRef.current?.focus();
+      }
     };
 
     document.body.style.overflow = 'hidden';
@@ -68,6 +75,7 @@ export default function Home() {
   }, []);
 
   const copyEmail = async () => {
+    setEmailCopyError(false);
     try {
       await navigator.clipboard.writeText(contactContent.email);
     } catch {
@@ -77,8 +85,13 @@ export default function Home() {
       textArea.style.opacity = '0';
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      const copied = document.execCommand('copy');
       textArea.remove();
+      if (!copied) {
+        setEmailCopyError(true);
+        setEmailCopied(false);
+        return;
+      }
     }
 
     setEmailCopied(true);
@@ -130,6 +143,7 @@ export default function Home() {
           <div className="nav-links">
             {navItems.map(([id, label]) => <a className={active === id ? 'active' : ''} href={`#${id}`} key={id}>{label}</a>)}
           </div>
+          <details className="mobile-nav"><summary>导航</summary><div>{[...navItems, ['exploration', 'AI 创作'], ['education', '教育背景']].map(([id, label]) => <a href={`#${id}`} key={id} onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}>{label}</a>)}</div></details>
           <a className="contact-button" href="#contact">联系我</a>
         </nav>
       </header>
@@ -141,43 +155,60 @@ export default function Home() {
           <h1 className="hero-enter enter-two" id="hero-title">沈鑫达</h1>
           <p className="hero-role hero-enter enter-three">机器学习与风险决策实践者</p>
           <div className="hero-identity hero-enter enter-four"><p>厦门大学 · 应用统计硕士</p><p>滴滴国际支付风控算法实习生</p></div>
-          <p className="hero-statement hero-enter enter-four">以算法能力为主线，在支付风控中建立真实实践；以 AI-native 的方式扩大执行能力，并对最终判断负责。</p>
-          <div className="actions hero-enter enter-four"><a className="button primary" href="#work">查看经历 <span>↘</span></a><a className="button quiet" href="#contact">下载简历</a></div>
-          <div className="hero-proof hero-enter enter-four" aria-label="核心经历"><span><b>滴滴</b> 国际支付风控算法实习</span><span><b>ZEEKR 极氪</b> 数据分析实习</span></div>
+          <p className="hero-statement hero-enter enter-four">以应用统计为底座，以算法与机器学习为主线。支付风险与智能决策是我当前最深的业务实践；AI Agent 是执行杠杆，而非判断的替代品。</p>
+          <div className="actions hero-enter enter-four"><a className="button primary" href="#projects">查看项目 <span>↘</span></a><a className="button quiet" href="#contact">简历与联系</a></div>
+          <div className="hero-proof hero-enter enter-four" aria-label="核心经历"><span><b>滴滴</b> 国际支付风控算法实习</span><span><b>ZEEKR 极氪</b> 数据分析实习</span><span><b>国家级竞赛</b> 特等奖 / 一等奖</span></div>
         </div>
         <div className="portrait-wrap">
           <MaintainableImage className="portrait-frame" priority {...mediaContent.profile} />
           <div className="portrait-caption"><span>XIAMEN · CHINA</span><span>2026</span></div>
         </div>
-        <a className="scroll-cue" href="#capabilities"><span />SCROLL TO EXPLORE</a>
-      </section>
-
-      <section className="chapter capability-section" id="capabilities">
-        <div className="chapter-intro" data-reveal><p className="eyebrow">01 / CORE CAPABILITIES</p><h2>算法是主线，<br />场景让判断落地。</h2><p>不是技能标签墙。我的能力从机器学习出发，进入支付风控与智能决策，并通过 Agentic Workflow 延伸执行边界。</p></div>
-        <div className="capability-list" data-reveal>
-          <article><span>01</span><h3>机器学习</h3><p>以统计与机器学习方法为核心，关注问题定义、建模与评估的完整链路。</p><small>ALGORITHM</small></article>
-          <article><span>02</span><h3>风控算法</h3><p>当前最深的真实业务 Domain：国际支付风险识别、分析判断与评估。</p><small>RISK DECISION</small></article>
-          <article><span>03</span><h3>智能决策</h3><p>连接算法输出、业务约束与风险判断，形成可理解的决策过程。</p><small>DECISION INTELLIGENCE</small></article>
-          <article><span>04</span><h3>AI Agent</h3><p>以 AI-native Operator 的角色调度 Agent，人负责理解、验证与最终责任。</p><small>AGENTIC WORKFLOW</small></article>
-        </div>
-        <div className="foundation" data-reveal><span>能力底座</span><p>Statistics</p><p>Python</p><p>SQL</p><p>数据分析</p></div>
+        <a className="scroll-cue" href="#work"><span />SCROLL TO EXPLORE</a>
       </section>
 
       <section className="chapter work-section" id="work">
-        <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">02 / EXPERIENCE</p><h2>职业经历，<br />是一条能力进化路径。</h2><p>从数据分析基础走向算法与风险决策。所有内容仅保留已确认事实，细节将在去敏和核验后展开。</p></div>
+        <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">01 / CURRENT EXPERIENCE</p><h2>真实场景，<br />锻炼判断。</h2><p>统计与数据分析是起点；当前的工作重心，是支付风险中的特征、模型、Pattern 与决策验证。</p></div>
         <div className="career-story">
-          <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT</span><span>EXPERIENCE 01</span></div><div className="career-company">DIDI</div><div className="career-content"><div className="company-logo-shell didi-logo-shell"><img className="company-logo didi-logo" src="images/brands/didi.svg" alt="滴滴出行 Logo" /></div><p className="company-description">移动出行平台 · 国际支付业务场景</p><h3>国际支付风控算法实习</h3><p>当前最重要的算法实践场景。围绕支付风险问题参与分析、判断与评估，在真实约束中理解算法如何服务决策。</p><div className="career-tags"><span>机器学习</span><span>支付风控</span><span>风险决策</span></div><p className="privacy-note">案例内容正在进行去敏与事实核验，暂不披露业务指标或内部实现。</p></div></article>
+          <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>INTERNATIONAL PAYMENT RISK</span></div><div className="career-company" aria-hidden="true">DIDI</div><div className="career-content"><div className="company-logo-shell didi-logo-shell"><img className="company-logo didi-logo" src="images/brands/didi.svg" alt="滴滴出行 Logo" /></div><p className="company-description">滴滴 · 移动出行平台 · 国际支付风险场景</p><h3>国际支付风控算法实习</h3><p>关注风险识别，也关注误伤与策略判断。从特征分析走向机器学习辅助发现，再回到证据是否支持业务结论。</p><ul className="experience-focus">{careerContent.didiFocus.map((focus) => <li key={focus}>{focus}</li>)}</ul><div className="career-tags"><span>支付风险业务理解</span><span>机器学习</span><span>风险决策</span><span>AI-native Workflow</span></div><a className="career-project-link" href="#projects">阅读两条项目线与验证边界 ↘</a><p className="privacy-note">以下项目均为 WIP。仅展示去敏方法，不披露内部数据、规则、业务指标或实现。</p></div></article>
           <article className="career-secondary" data-reveal><div><span className="status fact">FACT</span><div className="company-logo-shell zeekr-logo-shell"><img className="company-logo zeekr-logo" src="images/brands/zeekr.svg" alt="极氪 ZEEKR Logo" /></div><p className="company-description">高端智能电动品牌 · 数据分析实习</p><h3>数据分析实习</h3></div><p>职业能力路径中的数据分析实践，为后续进入算法与决策问题建立业务理解基础。</p><span className="career-index">EXPERIENCE 02</span></article>
-          <article className="project-slot" data-reveal><div><span className="status wip">WIP</span><p className="career-org">代表性项目</p><h3>等待真实材料确认</h3></div><p>后续将按 Problem → Method → Evaluation → Result → Reflection 展开，不补充未经确认的项目内容。</p><span className="career-index">PROJECT 01</span></article>
         </div>
       </section>
 
+      <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
+        <div className="chapter-intro" data-reveal><p className="eyebrow">02 / SELECTED PROJECTS</p><h2 id="projects-title">讲清方法，<br />守住边界。</h2><p>两条互补的支付风险研究线：一条探索 Pattern 与模型，一条建设可信的特征输入。阶段工作已发生，项目结论仍在验证。</p></div>
+        <div className="project-narratives">
+          {careerContent.projects.map((project) => <article className="project-narrative" id={project.id} key={project.id} data-reveal>
+            <div className="project-heading"><div className="project-number">{project.number}</div><div><span className="status wip">{project.status}</span><h3>{project.title}</h3><p className="project-english">{project.english}</p></div></div>
+            <div className="project-body"><div><span className="field-label">PROBLEM / 问题</span><p>{project.problem}</p></div><div><span className="field-label">MY WORK / 我的工作</span><p>{project.work}</p></div></div>
+            <p className="project-evidence"><strong>当前进展</strong>{project.evidence}</p>
+            <div className="project-tags">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
+            <details className="project-details"><summary>展开方法、评价与反思 <span aria-hidden="true">＋</span></summary><dl>{project.details.map(([label, text]) => <div key={label}><dt>{label}</dt><dd>{text}</dd></div>)}</dl></details>
+          </article>)}
+        </div>
+        <p className="content-boundary">公开摘要 ≠ 公司官方口径。没有上线、正式策略、收益提升或生产模型所有权的声明。</p>
+      </section>
+
       <section className="chapter workflow-section" id="ai">
-        <div className="workflow-intro" data-reveal><p className="eyebrow">03 / HOW I WORK WITH AI</p><h2>让 Agent 扩大执行能力，<br />让人保留最终判断。</h2><p>我当前更准确的定位是 AI-native Operator：能够把 Coding Agent 嵌入真实工作流，下一阶段才是构建 Agent。</p></div>
+        <div className="workflow-intro" data-reveal><p className="eyebrow">03 / HOW I WORK WITH AI</p><h2>让 Agent 扩大执行能力，<br />让人保留最终判断。</h2><p>AI-native Practitioner / Agent Operator 是我当前的真实定位。通过 Context 管理、任务委派和多轮结果审查，把 Coding Agent 嵌入工作；不把调用工具包装成成熟 Agent 系统工程。</p><div className="agent-use"><span className="field-label">真实使用场景</span><p>{careerContent.agentUses}</p><p>我定义问题与约束，理解输出、检查矛盾、重新迭代，再验证交付。</p></div></div>
         <div className="workflow-stage" ref={flowRef}>
           <aside className="workflow-principle"><span>CURRENT POSITION</span><strong>AI-native<br />Operator</strong><p>Define clearly.<br />Review critically.<br />Own the outcome.</p></aside>
           <div className="workflow-rail"><div className="flow-line"><span /></div>{steps.map(([number, en, zh]) => <article className="flow-step" key={number}><span className="flow-number">{number}</span><div className="flow-node" /><div><h3>{en}</h3><p>{zh}</p></div></article>)}</div>
         </div>
+      </section>
+
+      <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
+        <div className="chapter-intro" data-reveal><p className="eyebrow">04 / AI EXPLORATION</p><h2 id="exploration-title">跨界创作，<br />持续验证。</h2><p>工作之外，我也用生成式 AI 做连续内容实验。这里展示的是产品实验意识与生产思维，不把流量当作算法能力的证明。</p></div>
+        <div className="aigc-story" data-reveal>
+          <div className="aigc-overview"><p className="field-label">{careerContent.aigc.english}</p><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.question}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>抖音累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><p className="metric-source"><span className="status fact">FACT · 用户确认</span>截至 {careerContent.aigc.dataAsOf} · 非实时数据</p><p className="aigc-state"><span className="status wip">WIP</span> 内容生产体系持续迭代。已发布作品与脚本储备分开记录，不承诺下一次播放结果。</p></div>
+          <ol className="production-flow" aria-label="AIGC 内容生产工作流">{careerContent.aigc.process.map(([title, description], index) => <li key={title}><span>{String(index + 1).padStart(2, '0')}</span><div><h4>{title}</h4><p>{description}</p></div></li>)}</ol>
+        </div>
+        <p className="content-boundary">AI 协作，而非全自动发布：创意取舍、素材验收、剪辑与最终交付仍由人负责。跨平台差异保留为反馈，不宣称跨平台成功。</p>
+      </section>
+
+      <section className="chapter education-section" id="education" aria-labelledby="education-title">
+        <div className="chapter-intro" data-reveal><p className="eyebrow">05 / EDUCATION & JOURNEY</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2><p>统计基础 → 数据分析 → 支付风险算法与决策。AI 工作方式伴随这条路径成长，而不是替代专业能力。</p></div>
+        <div className="education-grid" data-reveal><article><span className="field-label">硕士 / FACT</span><h3>厦门大学</h3><p>应用统计硕士</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科 / FACT</span><h3>浙江工商大学</h3><p>经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3% · 保研综合第一</small></article></div>
+        <div className="credential-line" data-reveal><span className="field-label">代表荣誉 / FACT</span><p>挑战杯国家特等奖 <span>山海协作</span></p><p>正大杯国家一等奖 <span>数字经济 × 杭州数字文旅</span></p></div>
       </section>
 
       <section className="chapter about-section" id="about">
@@ -188,14 +219,15 @@ export default function Home() {
             <div className="carousel-dots" aria-label="选择生活照片">{mediaContent.life.photos.map((photo, index) => <button type="button" className={index === lifeIndex ? 'active' : ''} onClick={() => setLifeIndex(index)} aria-label={`查看第 ${index + 1} 张生活照片`} aria-current={index === lifeIndex ? 'true' : undefined} key={photo.src} />)}</div>
           </div>
         </div>
-        <div className="about-copy" data-reveal><p className="eyebrow">04 / ABOUT · LIFE</p><h2>统计、算法、风险与 AI，<br />也是一个人的成长轨迹。</h2><p>从浙江工商大学经济统计学，到厦门大学应用统计，再到真实的支付风控算法场景，我正在把统计基础转化为解决现实问题的能力。</p><p>工作之外，校园、运动和持续学习构成另一面的我。这里保留少量真实影像，不做荣誉墙，也不做照片瀑布流。</p><div className="education-line"><span>本科</span><strong>浙江工商大学 · 经济统计学</strong></div><div className="education-line"><span>硕士</span><strong>厦门大学 · 应用统计</strong></div></div>
+        <div className="about-copy" data-reveal><p className="eyebrow">06 / LIFE · PERSONAL</p><h2>不只在工作里，<br />也在生活里持续探索。</h2><p>从厦大校园走到北京实习，在统计、算法和真实业务之间寻找连接；也在跑步与马拉松中，把耐心带回日常。</p><p>生活影像、AIGC 创作与小红书里的成长记录，是职业主页的另一面。它们不替代专业经历，但让这里不只是一份履历。</p><a className="life-contact-link" href="#contact">交流工作，也交流新的想法 ↘</a></div>
       </section>
 
       <section className="contact-section" id="contact" data-reveal aria-labelledby="contact-title">
         <div className="contact-intro">
-          <p className="eyebrow light">05 / CONTACT</p>
+          <p className="eyebrow light">07 / RESUME & CONTACT</p>
           <h2 id="contact-title">保持判断，<br />持续进化。</h2>
           <p>欢迎交流算法、风险决策、AI Agent，以及实习、校招与职业合作机会。</p>
+          <p className="resume-note">需要 PDF 简历，可通过邮箱联系。当前尚未提供可公开下载的 PDF，不设置无效下载入口。</p>
         </div>
 
         <div className="contact-list">
@@ -206,7 +238,7 @@ export default function Home() {
               <div className="contact-actions">
                 <a className="contact-action primary-contact-action" href={`mailto:${contactContent.email}`}>发送邮件 <span aria-hidden="true">↗</span></a>
                 <button className="contact-action" type="button" onClick={copyEmail}>复制邮箱</button>
-                <span className={`copy-feedback ${emailCopied ? 'is-visible' : ''}`} role="status" aria-live="polite">{emailCopied ? '已复制' : ''}</span>
+                <span className={`copy-feedback ${emailCopied || emailCopyError ? 'is-visible' : ''}`} role="status" aria-live="polite">{emailCopied ? '已复制' : emailCopyError ? '复制失败，请手动选择邮箱' : ''}</span>
               </div>
             </div>
           </article>
@@ -233,7 +265,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer><div><strong>沈鑫达 / Shen Xinda</strong><p>Algorithm · Risk Decision · AI-native Practice</p></div><a href="#top">返回顶部 ↑</a></footer>
+      <footer><div><strong>沈鑫达 / Shen Xinda</strong><p>Algorithm · Risk Decision · AI-native Practice</p><p>内容更新：{careerContent.updatedAt} · FACT 已确认 / WIP 进行中 / PLAN 未来目标 / INFERENCE 合理解释</p></div><a href="#top">返回顶部 ↑</a></footer>
 
       {wechatOpen && (
         <div className="wechat-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setWechatOpen(false); }}>

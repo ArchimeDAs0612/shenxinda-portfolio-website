@@ -10,7 +10,7 @@ const requiredDirectories = [
   'public/images/projects',
   'public/images/contact',
 ];
-const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx'];
+const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'content/career-content.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg'];
 const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif']);
 const errors = [];
 const warnings = [];
@@ -38,7 +38,7 @@ for (const imagePath of imagePaths) {
   if (!allowedExtensions.has(extension)) errors.push(`不支持的图片格式：${imagePath}`);
   const diskPath = join(projectRoot, 'public', imagePath);
   if (!existsSync(diskPath)) {
-    warnings.push(`尚未放入（页面会显示安全占位）：public/${imagePath}`);
+    errors.push(`配置图片不存在：public/${imagePath}（页面虽有安全占位，不能算交付）`);
     continue;
   }
   const sizeMb = statSync(diskPath).size / 1024 / 1024;
