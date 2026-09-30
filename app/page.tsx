@@ -8,6 +8,7 @@ import { contactContent, mediaContent } from '../content/site-content';
 import { careerContent } from '../content/career-content';
 import { CareerWorkspace } from './components/CareerWorkspace';
 import { ContributionMetrics, ProjectAIWorkflow, ProjectEvidence } from './components/EvidenceExplorer';
+import { AmbientMusic } from './components/AmbientMusic';
 
 const navItems = [
   ['top', '首页'], ['work', '经历'], ['projects', '项目'],
@@ -244,6 +245,8 @@ export default function Home() {
       </section>
 
       <footer><div><strong>沈鑫达 / Shen Xinda</strong><p>Algorithm · Risk Decision · AI-native Practice</p><p>内容更新：{careerContent.updatedAt} · FACT 已确认 / WIP 进行中 / PLAN 未来目标 / INFERENCE 合理解释</p></div><a href="#top">返回顶部 ↑</a></footer>
+
+      <AmbientMusic />
 
       {wechatOpen && (
         <div className="wechat-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setWechatOpen(false); }}>

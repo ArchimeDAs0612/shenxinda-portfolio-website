@@ -13,11 +13,39 @@ const mediaSource = await readFile('content/site-content.ts', 'utf8');
 const assets = [...new Set([...mediaSource.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
 assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg');
 await mkdir('outputs/refresh-20260930', { recursive: true });
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, args: ['--mute-audio'] });
 try {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 820, height: 1180 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
     const context = await browser.newContext({ viewport, isMobile: viewport.width < 640, hasTouch: viewport.width < 900, reducedMotion: 'reduce', permissions: ['clipboard-read', 'clipboard-write'] });
     const page = await context.newPage();
+    // Observe the actual audio graph without exposing a debug API on the site.
+    await page.addInitScript(() => {
+      window.__audioContexts = [];
+      const NativeAudioContext = window.AudioContext;
+      window.AudioContext = class extends NativeAudioContext {
+        constructor(...args) {
+          super(...args);
+          window.__audioContexts.push(this);
+          const originalCreateGain = this.createGain.bind(this);
+          this.createGain = () => {
+            const gain = originalCreateGain();
+            const connect = gain.connect.bind(gain);
+            gain.connect = (destination, ...ports) => {
+              if (destination === this.destination) {
+                const analyser = this.createAnalyser();
+                analyser.fftSize = 2048;
+                window.__musicAnalyser = analyser;
+                connect(analyser);
+                analyser.connect(destination);
+                return destination;
+              }
+              return connect(destination, ...ports);
+            };
+            return gain;
+          };
+        }
+      };
+    });
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     const response = await page.goto(siteUrl, { waitUntil: 'networkidle' });
@@ -112,6 +140,44 @@ try {
     await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-wechat.png` });
     await page.keyboard.press('Escape');
     assert.equal(await page.getByRole('dialog').count(), 0);
+    assert.equal(await page.evaluate(() => window.__audioContexts.length), 0, 'Never create or autoplay audio before a gesture');
+    await page.getByRole('button', { name: '开启音乐', exact: true }).click();
+    await page.getByRole('button', { name: '暂停音乐', exact: true }).waitFor();
+    await page.waitForTimeout(1600);
+    const signal = await page.evaluate(() => {
+      const samples = new Float32Array(window.__musicAnalyser.fftSize);
+      window.__musicAnalyser.getFloatTimeDomainData(samples);
+      return { state: window.__audioContexts[0].state, peak: Math.max(...samples.map(Math.abs)), rms: Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length) };
+    });
+    assert.equal(signal.state, 'running');
+    assert(signal.rms > .00001 && signal.peak < .5, `Music must generate a restrained, non-clipped signal: ${JSON.stringify(signal)}`);
+    await page.getByRole('button', { name: '音乐设置', exact: true }).click();
+    await page.locator('#music-volume').fill('0');
+    await page.waitForTimeout(700);
+    assert.equal(await page.locator('#music-volume').inputValue(), '0');
+    assert(await page.evaluate(() => {
+      const samples = new Float32Array(window.__musicAnalyser.fftSize);
+      window.__musicAnalyser.getFloatTimeDomainData(samples);
+      return Math.max(...samples.map(Math.abs)) < .001;
+    }), 'Zero volume must actually mute the signal');
+    await page.locator('#music-volume').fill('25');
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Music panel must fit mobile');
+    await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-music.png` });
+    await page.getByRole('button', { name: '收起音乐设置' }).click();
+    await page.getByRole('button', { name: '暂停音乐', exact: true }).click();
+    await page.waitForFunction(() => window.__audioContexts[0].state === 'suspended');
+    await page.getByRole('button', { name: '开启音乐', exact: true }).click();
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await page.waitForFunction(() => window.__audioContexts[0].state === 'suspended');
+    await page.evaluate(() => {
+      delete document.hidden;
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    assert.equal(await page.getByRole('button', { name: '开启音乐', exact: true }).getAttribute('aria-pressed'), 'false', 'Returning to the page must not restart music');
+    assert.equal(await page.evaluate(() => window.__audioContexts.length), 1, 'Only reuse one audio engine');
     const images = await page.locator('img').evaluateAll((nodes) => nodes.map((node) => ({ src: node.getAttribute('src'), loaded: node.complete && node.naturalWidth > 0 })));
     assert(images.every((image) => image.loaded), `Unloaded images: ${JSON.stringify(images)}`);
     if (viewport.width < 900) {
@@ -121,7 +187,7 @@ try {
       assert.equal(await page.locator('.mobile-nav').evaluate((node) => node.open), false);
     }
     assert.deepEqual(errors, [], 'Client JavaScript errors');
-    results.push({ url: siteUrl, viewport, sections, images: images.length, checks: 'all career sections/stages/workflow descriptions readable without clicks; warm palette; anchors/keyboard, overflow, scope, carousel, clipboard, mailto, QR, mobile menu', passed: true });
+    results.push({ url: siteUrl, viewport, sections, images: images.length, audioSignal: signal, checks: 'all career sections/stages/workflow descriptions readable without clicks; warm palette; anchors/keyboard, overflow, scope, carousel, clipboard, mailto, QR, mobile menu; opt-in audio/volume/pause/background suspend', passed: true });
     await context.close();
   }
   // Motion enabled: content becomes visible as it enters the viewport.
