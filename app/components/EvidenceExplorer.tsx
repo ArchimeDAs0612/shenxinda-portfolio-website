@@ -8,12 +8,12 @@ type Node = readonly [string, string, string];
 function ProcessMap({ nodes, label }: { nodes: readonly Node[]; label: string }) {
   const [selected, setSelected] = useState(0);
   return <div className="process-map">
-    <ol className="process-nodes" aria-label={label}>{nodes.map(([title, english], index) => <li key={title}>
-      <button type="button" aria-pressed={selected === index} onClick={() => setSelected(index)} aria-controls={`${label}-detail`}>
+    <ol className="process-nodes" aria-label={label}>{nodes.map(([title, english, description], index) => <li className={selected === index ? 'is-focused' : ''} key={title}>
+      <button type="button" aria-pressed={selected === index} onClick={() => setSelected(index)} aria-controls={`${label}-detail-${index}`}>
         <span className="process-index">{String(index + 1).padStart(2, '0')}</span><strong>{title}</strong><small>{english}</small>
       </button>
+      <p className="process-detail" id={`${label}-detail-${index}`}>{description}</p>
     </li>)}</ol>
-    <div className="process-detail" id={`${label}-detail`} aria-live="polite"><span className="field-label">{nodes[selected][1]}</span><h4>{nodes[selected][0]}</h4><p>{nodes[selected][2]}</p></div>
   </div>;
 }
 
@@ -22,16 +22,15 @@ export function ContributionMetrics() {
 }
 
 export function ProjectEvidence() {
-  const [phase, setPhase] = useState(2);
-  const current = riskPhases[phase];
+  const [phase, setPhase] = useState(0);
   return <div className="project-evidence-library">
     <article id="risk-pattern" className="risk-case">
       <div className="case-heading"><span className="status wip">WIP · 项目持续推进</span><p className="field-label">PAYMENT RISK · ALGORITHM · DECISION</p><h3>支付风控误伤识别<br />与风险 Pattern 分析</h3><p>从样本关系、策略解释走到宽特征模型实验。可量化的是已经完成的研究与交付，不是尚未验证的线上收益。</p></div>
       <ContributionMetrics />
-      <div className="phase-selector" aria-label="选择风险研究阶段">{riskPhases.map((item, index) => <button type="button" key={item.title} aria-pressed={phase === index} onClick={() => setPhase(index)}>{item.title}</button>)}</div>
-      <div className="phase-content" key={phase}><span className="field-label">{current.english}</span><h4 className="phase-question">{current.question}</h4><p className="diagram-hint">点击流程节点，查看方法与判断 ↓</p><ProcessMap nodes={current.nodes} label={`risk-phase-${phase}`} />
+      <div className="phase-selector" aria-label="快速定位风险研究阶段">{riskPhases.map((item, index) => <button type="button" key={item.title} aria-pressed={phase === index} onClick={() => { setPhase(index); document.getElementById(`risk-phase-${index}`)?.scrollIntoView({block: 'start'}); }}>{item.title}</button>)}</div>
+      {riskPhases.map((current, index) => <div className="phase-content" id={`risk-phase-${index}`} key={current.title}><p className="phase-label">{current.title}</p><span className="field-label">{current.english}</span><h4 className="phase-question">{current.question}</h4><ProcessMap nodes={current.nodes} label={`risk-phase-${index}`} />
         <dl className="ownership-evidence"><div><dt>我的贡献</dt><dd>{current.role}</dd></div><div><dt>实际交付</dt><dd>{current.output}</dd></div><div><dt>当前边界</dt><dd>{current.limit}</dd></div></dl>
-      </div>
+      </div>)}
     </article>
     <article id="feature-research" className="field-case">
       <div className="case-heading"><span className="status wip">WIP · 部分完成</span><p className="field-label">FEATURE GOVERNANCE · BUSINESS SEMANTICS</p><h3>支付风险字段治理<br />与特征输入建设</h3><p>把复杂原始信息整理成可理解、可判断的风险研究输入。整体项目仍在进行，不能把一个业务分支写成全量完成。</p></div>
@@ -44,10 +43,9 @@ export function ProjectEvidence() {
 
 export function ProjectAIWorkflow() {
   const [selected, setSelected] = useState(0);
-  const current = aiCases[selected];
   return <div className="project-ai">
-    <div className="phase-selector" aria-label="选择 AI 协作案例">{aiCases.map((item, index) => <button type="button" aria-pressed={selected === index} onClick={() => setSelected(index)} key={item.title}>{item.title}</button>)}</div>
-    <div key={selected}><p className="case-subtitle">{current.subtitle}</p><ProcessMap nodes={current.steps} label={`ai-case-${selected}`} /></div>
+    <div className="phase-selector" aria-label="快速定位 AI 协作案例">{aiCases.map((item, index) => <button type="button" aria-pressed={selected === index} onClick={() => { setSelected(index); document.getElementById(`ai-case-${index}`)?.scrollIntoView({block: 'start'}); }} key={item.title}>{item.title}</button>)}</div>
+    {aiCases.map((current, index) => <div className="ai-case-readthrough" id={`ai-case-${index}`} key={current.title}><h3>{current.title}</h3><p className="case-subtitle">{current.subtitle}</p><ProcessMap nodes={current.steps} label={`ai-case-${index}`} /></div>)}
     <p className="ai-ownership">AI-native Practitioner / Agent Operator <span>AI 扩大执行能力；问题定义、结果理解与最终责任由我承担。</span></p>
   </div>;
 }

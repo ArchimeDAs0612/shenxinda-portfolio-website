@@ -35,6 +35,14 @@ try {
     await page.waitForTimeout(150);
     const sections = await page.locator('main section.hero, main section.chapter, main section.contact-section').evaluateAll((nodes) => nodes.map((node) => node.id || 'hero'));
     assert.deepEqual(sections, ['hero', 'education', 'about', 'work', 'projects', 'ai', 'exploration', 'contact']);
+    // Reading without interaction is the primary user journey, not a fallback.
+    for (const id of ['panel-work', 'panel-projects', 'panel-ai']) assert(await page.locator(`#${id}`).isVisible(), `${id} must be readable without a click`);
+    assert.equal(await page.locator('.phase-content').count(), 3);
+    assert.equal(await page.locator('.ai-case-readthrough').count(), 2);
+    for (const node of await page.locator('.process-detail').all()) assert(await node.isVisible(), 'No workflow description may be gated behind a click');
+    const palette = await page.evaluate(() => ({ accent: getComputedStyle(document.documentElement).getPropertyValue('--blue').trim(), background: getComputedStyle(document.body).backgroundColor }));
+    assert.equal(palette.accent, '#8e5737');
+    assert.equal(palette.background, 'rgb(251, 249, 244)');
     assert.match(await page.locator('#projects').textContent(), /PySpark GBT/);
     assert.match(await page.locator('#exploration').innerText(), /约183万/);
     assert.match(await page.locator('#exploration').innerText(), /2026-09-30/);
@@ -48,36 +56,47 @@ try {
     for (const anchor of anchors) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, `Broken anchor: ${anchor}`);
     await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-hero.png` });
     for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
-      if (['work', 'projects', 'ai'].includes(id)) await page.locator(`#tab-${id}`).click();
       await page.locator(`#${id}`).scrollIntoViewIfNeeded();
       await page.locator(`#${id}`).evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + scrollY - 84));
       await page.waitForTimeout(120);
+      if (['work', 'projects', 'ai'].includes(id)) {
+        assert.equal(await page.locator(`#tab-${id}`).getAttribute('aria-current'), 'location', 'Directory must follow scrolling');
+        assert(await page.locator(`.nav-links a[href="#${id}"]`).evaluate((node) => node.classList.contains('active')), 'Main navigation must follow scrolling');
+      }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id}: horizontal overflow at ${viewport.width}`);
       if (['work', 'projects', 'education', 'exploration', 'contact'].includes(id)) await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-${id}.png` });
     }
     await page.locator('#tab-projects').click();
     assert.equal(await page.locator('#panel-projects').isVisible(), true);
+    assert.equal(await page.locator('#panel-work').isVisible(), true);
+    assert.equal(await page.locator('#panel-ai').isVisible(), true);
+    await page.getByRole('button', { name: '专注浏览', exact: true }).click();
+    await page.locator('#tab-projects').click();
     assert.equal(await page.locator('#panel-work').isVisible(), false);
+    assert.equal(await page.locator('#panel-projects').isVisible(), true);
+    await page.getByRole('button', { name: '连续阅读', exact: true }).click();
+    for (const id of ['panel-work', 'panel-projects', 'panel-ai']) assert(await page.locator(`#${id}`).isVisible());
     assert.match(await page.locator('#risk-pattern').innerText(), /30页/);
     await page.getByRole('button', { name: '02 · 解释候选与策略', exact: true }).click();
-    assert.match(await page.locator('.phase-content').innerText(), /订单级覆盖/);
-    await page.locator('.phase-content .process-nodes button').nth(1).click();
-    assert.match(await page.locator('.phase-content .process-detail').innerText(), /任一事件曾达到/);
+    assert.match(await page.locator('#risk-phase-1').innerText(), /订单级覆盖/);
+    await page.locator('#risk-phase-1 .process-nodes button').nth(1).click();
+    assert.match(await page.locator('#risk-phase-1 .process-detail').nth(1).innerText(), /任一事件曾达到/);
+    assert(await page.locator('#risk-phase-0').isVisible());
     await page.getByRole('button', { name: '03 · 模型发现与审计', exact: true }).click();
-    await page.locator('.phase-content .process-nodes button').last().click();
-    assert.match(await page.locator('.phase-content .process-detail').innerText(), /阻断 OOT/);
-    await page.locator('.phase-content').scrollIntoViewIfNeeded();
+    await page.locator('#risk-phase-2 .process-nodes button').last().click();
+    assert.match(await page.locator('#risk-phase-2 .process-detail').last().innerText(), /阻断 OOT/);
+    await page.locator('#risk-phase-2').scrollIntoViewIfNeeded();
     await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-diagram.png` });
     assert.match(await page.locator('#feature-research').innerText(), /钱包字段\s+尚未做/);
     await page.locator('#tab-ai').click();
     await page.locator('.project-ai .process-nodes button').nth(1).click();
-    assert.match(await page.locator('.project-ai .process-detail').innerText(), /PySpark GBT/);
+    assert.match(await page.locator('#ai-case-0 .process-detail').nth(1).innerText(), /PySpark GBT/);
     await page.getByRole('button', {name: '字段治理的协作约束', exact: true}).click();
     assert.match(await page.locator('.project-ai').innerText(), /钱包未做/);
     await page.locator('#tab-ai').focus();
-    await page.keyboard.press('ArrowLeft');
-    assert.equal(await page.locator('#tab-projects').getAttribute('aria-selected'), 'true');
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'tab-projects');
+    await page.keyboard.press('Enter');
+    assert.equal(new URL(page.url()).hash, '#ai');
+    for (const id of ['panel-work', 'panel-projects', 'panel-ai']) assert(await page.locator(`#${id}`).isVisible());
     await page.getByRole('button', { name: '下一张生活照片' }).click();
     assert.match(await page.locator('.carousel-controls').innerText(), /02/);
     await page.getByRole('button', { name: '复制邮箱', exact: true }).click();
@@ -102,7 +121,7 @@ try {
       assert.equal(await page.locator('.mobile-nav').evaluate((node) => node.open), false);
     }
     assert.deepEqual(errors, [], 'Client JavaScript errors');
-    results.push({ url: siteUrl, viewport, sections, images: images.length, checks: 'HTML/CSS, anchors, overflow, workspace tabs/keyboard, research stages/process nodes, scope, carousel, clipboard, mailto, QR, mobile menu', passed: true });
+    results.push({ url: siteUrl, viewport, sections, images: images.length, checks: 'all career sections/stages/workflow descriptions readable without clicks; warm palette; anchors/keyboard, overflow, scope, carousel, clipboard, mailto, QR, mobile menu', passed: true });
     await context.close();
   }
   // Motion enabled: content becomes visible as it enters the viewport.
@@ -110,7 +129,6 @@ try {
   const page = await context.newPage();
   await page.goto(siteUrl, { waitUntil: 'networkidle' });
   for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
-    if (['work', 'projects', 'ai'].includes(id)) await page.locator(`#tab-${id}`).click();
     await page.locator(`#${id}`).scrollIntoViewIfNeeded();
     await page.waitForTimeout(800);
     const candidates = page.locator(`#${id}[data-reveal], #${id} [data-reveal]`);
@@ -127,6 +145,8 @@ try {
   await noJsPage.goto(siteUrl, { waitUntil: 'networkidle' });
   assert.equal(await noJsPage.locator('#work [data-reveal]').first().evaluate((node) => getComputedStyle(node).opacity), '1');
   assert.equal(await noJsPage.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1');
+  assert.equal(await noJsPage.locator('.phase-content').count(), 3);
+  for (const node of await noJsPage.locator('.process-detail').all()) assert(await node.isVisible());
   await noJs.close();
   await writeFile('outputs/refresh-20260930/browser-result.json', JSON.stringify(results, null, 2));
   console.log(JSON.stringify({ passed: true, results }));

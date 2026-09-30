@@ -4,9 +4,10 @@ import { Children, type ReactNode, useEffect, useState } from 'react';
 
 const panels = [['work', '经历', 'Experience'], ['projects', '风控项目', 'Project Evidence'], ['ai', 'AI 协作', 'Agent in Practice']] as const;
 
-/** No-JS readers retain all sections; hydrated readers get a compact workbench. */
+/** Navigation shortcuts supplement continuous reading; no section is ever hidden. */
 export function CareerWorkspace({ children }: { children: ReactNode }) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState('work');
+  const [focused, setFocused] = useState(false);
   useEffect(() => {
     const resolve = () => {
       const hash = location.hash.slice(1);
@@ -16,21 +17,28 @@ export function CareerWorkspace({ children }: { children: ReactNode }) {
     };
     resolve();
     window.addEventListener('hashchange', resolve);
-    return () => window.removeEventListener('hashchange', resolve);
-  }, []);
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (focused) return;
+      const current = panels.map(([id]) => ({ id, top: document.getElementById(id)?.getBoundingClientRect().top ?? Infinity }))
+        .filter((item) => item.top <= 185).sort((a, b) => b.top - a.top)[0];
+      if (current) setSelected(current.id);
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+    return () => { window.removeEventListener('hashchange', resolve); window.removeEventListener('scroll', onScroll); cancelAnimationFrame(frame); };
+  }, [focused]);
   const choose = (id: string) => {
     setSelected(id);
-    history.pushState(null, '', `#${id}`);
   };
   return <div className="career-workspace" id="career-workspace">
-    <div className="workspace-heading"><p className="eyebrow">CAREER / RESEARCH / AI</p><h2>经历有来路，<br />方法有证据。</h2><p>不用一页页往下找。选择一个模块，直接阅读经历、研究过程与真实协作。</p></div>
-    <div className="workspace-tabs" role="tablist" aria-label="职业内容模块">
-      {panels.map(([id, title, english], index) => <button type="button" role="tab" id={`tab-${id}`} aria-controls={`panel-${id}`} aria-selected={selected === id} tabIndex={selected === null || selected === id ? 0 : -1} key={id} onClick={() => choose(id)} onKeyDown={(event) => {
-        const target = event.key === 'ArrowRight' ? (index + 1) % panels.length : event.key === 'ArrowLeft' ? (index + panels.length - 1) % panels.length : event.key === 'Home' ? 0 : event.key === 'End' ? panels.length - 1 : -1;
-        if (target < 0) return;
-        event.preventDefault(); choose(panels[target][0]); document.getElementById(`tab-${panels[target][0]}`)?.focus();
-      }}><span>0{index + 1}</span><strong>{title}</strong><small>{english}</small></button>)}
-    </div>
-    {Children.toArray(children).map((child, index) => <div role="tabpanel" tabIndex={0} id={`panel-${panels[index][0]}`} aria-labelledby={`tab-${panels[index][0]}`} hidden={selected !== null && selected !== panels[index][0]} key={panels[index][0]}>{child}</div>)}
+    <div className="workspace-heading"><p className="eyebrow">CAREER / RESEARCH / AI</p><h2>经历有来路，<br />方法有证据。</h2><p>向下阅读，即可了解全部经历、研究过程与 AI 协作。也可以使用下方目录快速定位。</p></div>
+    <div className="reading-mode" aria-label="阅读方式"><button type="button" aria-pressed={!focused} onClick={() => setFocused(false)}>连续阅读</button><button type="button" aria-pressed={focused} onClick={() => setFocused(true)}>专注浏览</button><span>{focused ? '按模块切换 · 可随时返回全部内容' : '默认展示全部内容 · 无需切换'}</span></div>
+    <nav className="workspace-tabs" aria-label="职业内容快捷目录">
+      {panels.map(([id, title, english], index) => <a href={`#${id}`} id={`tab-${id}`} aria-current={selected === id ? 'location' : undefined} key={id} onClick={() => choose(id)}><span>0{index + 1}</span><strong>{title}</strong><small>{english}</small></a>)}
+    </nav>
+    {Children.toArray(children).map((child, index) => <div id={`panel-${panels[index][0]}`} hidden={focused && selected !== panels[index][0]} key={panels[index][0]}>{child}</div>)}
   </div>;
 }

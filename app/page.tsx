@@ -90,15 +90,6 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const sectionObserver = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible) setActive(visible.target.id);
-    }, { rootMargin: '-25% 0px -58% 0px', threshold: [0, .2, .5] });
-    navItems.forEach(([id]) => {
-      const section = document.getElementById(id);
-      if (section) sectionObserver.observe(section);
-    });
-
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) entry.target.classList.add('is-visible');
@@ -111,12 +102,14 @@ export default function Home() {
 
     const update = () => {
       setCompact(window.scrollY > 36);
+      const current = navItems.map(([id]) => ({ id, top: document.getElementById(id)?.getBoundingClientRect().top ?? Infinity }))
+        .filter((item) => item.top <= 185).sort((a, b) => b.top - a.top)[0];
+      if (current) setActive(current.id);
     };
     update();
     window.addEventListener('scroll', update, { passive: true });
     return () => {
       window.removeEventListener('scroll', update);
-      sectionObserver.disconnect();
       revealObserver.disconnect();
       document.documentElement.classList.remove('motion-ready');
     };
@@ -192,7 +185,7 @@ export default function Home() {
       </section>
 
       <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="chapter-intro" data-reveal><p className="eyebrow">SELECTED PROJECTS / EVIDENCE</p><h2 id="projects-title">问题拆解，<br />实验求证。</h2><p>点击阶段与流程节点，查看问题如何拆解、实验如何设计，以及我如何审查结果。</p></div>
+        <div className="chapter-intro" data-reveal><p className="eyebrow">SELECTED PROJECTS / EVIDENCE</p><h2 id="projects-title">问题拆解，<br />实验求证。</h2><p>三个阶段连续呈现：问题如何拆解、实验如何设计，以及我如何审查结果。不需要点击，也能读到完整方法与贡献。</p></div>
         <ProjectEvidence />
         <p className="content-boundary">公开去敏案例：展示个人方法与交付贡献，不展示公司原始数据、内部字段、规则阈值或内部链接。</p>
       </section>
