@@ -227,7 +227,7 @@ export default function Home() {
           <p className="eyebrow light">07 / RESUME & CONTACT</p>
           <h2 id="contact-title">保持判断，<br />持续进化。</h2>
           <p>欢迎交流算法、风险决策、AI Agent，以及实习、校招与职业合作机会。</p>
-          <p className="resume-note">需要 PDF 简历，可通过邮箱联系。当前尚未提供可公开下载的 PDF，不设置无效下载入口。</p>
+          <p className="resume-note">需要 PDF 简历，欢迎通过邮箱联系。</p>
         </div>
 
         <div className="contact-list">

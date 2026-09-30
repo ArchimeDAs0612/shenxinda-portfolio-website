@@ -29,7 +29,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .nav-links a::after { content: ''; position: absolute; left: 50%; bottom: -9px; width: 4px; height: 4px; border-radius: 50%; background: var(--blue); opacity: 0; transform: translateX(-50%); transition: opacity .2s ease; }
 .nav-links a:hover, .nav-links a.active { color: white; }
 .nav-links a.active::after { opacity: 1; }
-.contact-button { min-height: 38px; display: grid; place-items: center; color: white; background: var(--blue); border-radius: 10px; font-size: 12px; font-weight: 700; }
+.contact-button { min-height: 38px; min-width: 104px; display: grid; place-items: center; color: white; background: var(--blue); border-radius: 10px; font-size: 12px; font-weight: 700; }
 .mobile-nav { display: none; position: relative; }
 .mobile-nav summary { list-style: none; min-height: 44px; padding: 14px 10px; color: #d9e7f5; font-size: 12px; cursor: pointer; }
 .mobile-nav summary::-webkit-details-marker { display: none; }
@@ -232,7 +232,7 @@ summary:focus-visible, .career-project-link:focus-visible, .life-contact-link:fo
 .contact-section { padding: 150px max(24px, calc((100% - 1180px)/2)); display: grid; grid-template-columns: minmax(0, .82fr) minmax(500px, 1.18fr); gap: clamp(72px, 9vw, 150px); color: white; background: #06172c; }
 .contact-intro { align-self: start; position: sticky; top: 116px; }
 .contact-intro h2 { max-width: 620px; margin: 0; font-size: clamp(54px, 6.6vw, 94px); line-height: .98; letter-spacing: -.07em; }
-.contact-intro > p:last-child { max-width: 480px; margin: 34px 0 0; color: #aebdcd; font-size: 15px; line-height: 1.8; }
+.contact-intro > p:not(.eyebrow) { max-width: 480px; margin: 34px 0 0; color: #aebdcd; font-size: 15px; line-height: 1.8; }
 .contact-list { border-top: 1px solid rgba(255,255,255,.18); border-bottom: 1px solid rgba(255,255,255,.18); }
 .contact-row { padding: 34px 0; display: grid; grid-template-columns: 158px minmax(0, 1fr); gap: 28px; border-top: 1px solid rgba(255,255,255,.12); transition: transform .25s ease, border-color .25s ease; }
 .contact-row:first-child { border-top: 0; }
@@ -295,7 +295,7 @@ footer strong { font-size: 14px; } footer p { margin: 6px 0 0; color: var(--mute
 }
 
 @media (max-width: 640px) {
-  .site-header { padding: 10px 12px; }.nav { height: 58px; padding: 0 10px 0 16px; border-radius: 14px; }.brand strong { font-size: 15px; }.contact-button { min-height: 36px; width: 86px; }
+  .site-header { padding: 10px 12px; }.nav { height: 58px; padding: 0 10px 0 16px; border-radius: 14px; }.brand strong { font-size: 15px; }.contact-button { min-height: 36px; min-width: 86px; width: 86px; }
   .hero { width: 100%; min-height: auto; padding: 118px 20px 80px; grid-template-columns: 1fr; gap: 48px; }
   h1 { font-size: clamp(68px, 24vw, 96px); }.hero-role { margin-top: 26px; font-size: 27px; }.hero-identity { flex-direction: column; gap: 6px; font-size: 13px; }.hero-statement { font-size: 14px; }.portrait-frame { aspect-ratio: .88; }.scroll-cue { display: none; }
   .capability-section, .work-section, .workflow-section, .about-section, .contact-section { padding: 100px 20px; }
