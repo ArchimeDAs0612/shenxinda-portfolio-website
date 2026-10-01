@@ -9,11 +9,11 @@ const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PORTFOLIO_PLAYWRIGHT_MODULE || 'playwright');
 const siteUrl = process.argv[2] || 'http://127.0.0.1:3100/';
 const results = [];
-const mediaSource = await readFile('content/site-content.ts', 'utf8');
+const mediaSource = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
 const assets = [...new Set([...mediaSource.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
 assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg');
 await mkdir('outputs/refresh-20260930', { recursive: true });
-const browser = await chromium.launch({ headless: true, args: ['--mute-audio'] });
+const browser = await chromium.launch({ headless: true, args: ['--mute-audio', '--autoplay-policy=document-user-activation-required'] });
 try {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 820, height: 1180 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
     const context = await browser.newContext({ viewport, isMobile: viewport.width < 640, hasTouch: viewport.width < 900, reducedMotion: 'reduce', permissions: ['clipboard-read', 'clipboard-write'] });
@@ -24,7 +24,9 @@ try {
       const NativeAudioContext = window.AudioContext;
       window.AudioContext = class extends NativeAudioContext {
         constructor(...args) {
-          super(...args);
+          // Render the real graph into Chromium's silent sink. This avoids
+          // depending on (or changing) the user's Mac audio output device.
+          super({ ...args[0], sinkId: { type: 'none' } });
           window.__audioContexts.push(this);
           const originalCreateGain = this.createGain.bind(this);
           this.createGain = () => {
@@ -61,12 +63,23 @@ try {
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
     await page.locator('.hero img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
     await page.waitForTimeout(150);
+    assert.equal(await page.evaluate(() => window.__audioContexts.length), 1, 'Autoplay should be attempted once');
+    assert.equal(await page.evaluate(() => window.__audioContexts[0].state), 'closed', 'Release blocked autoplay audio resources before a gesture');
+    assert.equal(await page.getByRole('button', { name: '开启音乐', exact: true }).getAttribute('aria-pressed'), 'false');
     const sections = await page.locator('main section.hero, main section.chapter, main section.contact-section').evaluateAll((nodes) => nodes.map((node) => node.id || 'hero'));
     assert.deepEqual(sections, ['hero', 'education', 'about', 'work', 'projects', 'ai', 'exploration', 'contact']);
     // Reading without interaction is the primary user journey, not a fallback.
     for (const id of ['panel-work', 'panel-projects', 'panel-ai']) assert(await page.locator(`#${id}`).isVisible(), `${id} must be readable without a click`);
     assert.equal(await page.locator('.phase-content').count(), 3);
     assert.equal(await page.locator('.ai-case-readthrough').count(), 2);
+    assert.equal(await page.locator('svg.research-svg[role="img"]').count(), 6);
+    for (const figure of await page.locator('.research-figure').all()) {
+      assert(await figure.isVisible(), 'Research diagrams remain visible without clicking');
+      assert.equal(await figure.locator('svg title').count(), 1);
+      assert.equal(await figure.locator('svg desc').count(), 1);
+    }
+    assert.match(await page.locator('#risk-phase-2 .research-svg').textContent(), /Score-only.*Raw-all.*Hybrid.*PySpark GBT/s);
+    assert.match(await page.locator('#field-governance-detail-0').textContent(), /稳定解析/);
     for (const node of await page.locator('.process-detail').all()) assert(await node.isVisible(), 'No workflow description may be gated behind a click');
     const palette = await page.evaluate(() => ({ accent: getComputedStyle(document.documentElement).getPropertyValue('--blue').trim(), background: getComputedStyle(document.body).backgroundColor }));
     assert.equal(palette.accent, '#8e5737');
@@ -87,6 +100,16 @@ try {
       await page.locator(`#${id}`).scrollIntoViewIfNeeded();
       await page.locator(`#${id}`).evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + scrollY - 84));
       await page.waitForTimeout(120);
+      if (id === 'work') {
+        await page.waitForFunction(() => [...document.querySelectorAll('.company-brand-visual img')].every((image) => image.complete && image.naturalWidth > 0));
+        for (const frame of await page.locator('.brand-reference-image').all()) {
+          assert(await frame.evaluate((node) => {
+            const outer = node.getBoundingClientRect();
+            const image = node.querySelector('img').getBoundingClientRect();
+            return Math.abs(outer.top - image.top) < 1 && Math.abs(outer.height - image.height) < 1 && Math.abs(outer.width - image.width) < 1;
+          }), 'Brand images must stay inside their own frames, not cover company titles');
+        }
+      }
       if (['work', 'projects', 'ai'].includes(id)) {
         assert.equal(await page.locator(`#tab-${id}`).getAttribute('aria-current'), 'location', 'Directory must follow scrolling');
         assert(await page.locator(`.nav-links a[href="#${id}"]`).evaluate((node) => node.classList.contains('active')), 'Main navigation must follow scrolling');
@@ -115,6 +138,16 @@ try {
     assert.match(await page.locator('#risk-phase-2 .process-detail').last().innerText(), /阻断 OOT/);
     await page.locator('#risk-phase-2').scrollIntoViewIfNeeded();
     await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-diagram.png` });
+    const figureCaptureStyle = '.site-header, .workspace-tabs, .ambient-music { visibility: hidden !important; }';
+    await page.locator('#risk-phase-2 .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-model.png`, style: figureCaptureStyle });
+    await page.locator('#ai-case-0 .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-ai.png`, style: figureCaptureStyle });
+    await page.locator('#feature-research .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-fields.png`, style: figureCaptureStyle });
+    if (viewport.width < 900) {
+      const pan = page.locator('#risk-phase-2 .research-pan');
+      await pan.evaluate((node) => { node.scrollLeft = node.scrollWidth; });
+      assert(await pan.evaluate((node) => node.scrollLeft > 0), 'Mobile diagrams must pan inside their own container');
+      await pan.evaluate((node) => { node.scrollLeft = 0; });
+    }
     assert.match(await page.locator('#feature-research').innerText(), /钱包字段\s+尚未做/);
     await page.locator('#tab-ai').click();
     await page.locator('.project-ai .process-nodes button').nth(1).click();
@@ -140,14 +173,14 @@ try {
     await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-wechat.png` });
     await page.keyboard.press('Escape');
     assert.equal(await page.getByRole('dialog').count(), 0);
-    assert.equal(await page.evaluate(() => window.__audioContexts.length), 0, 'Never create or autoplay audio before a gesture');
+    assert.equal(await page.evaluate(() => window.__audioContexts.length), 1, 'Do not duplicate the autoplay audio context');
     await page.getByRole('button', { name: '开启音乐', exact: true }).click();
     await page.getByRole('button', { name: '暂停音乐', exact: true }).waitFor();
     await page.waitForTimeout(1600);
     const signal = await page.evaluate(() => {
       const samples = new Float32Array(window.__musicAnalyser.fftSize);
       window.__musicAnalyser.getFloatTimeDomainData(samples);
-      return { state: window.__audioContexts[0].state, peak: Math.max(...samples.map(Math.abs)), rms: Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length) };
+      return { state: window.__audioContexts.at(-1).state, peak: Math.max(...samples.map(Math.abs)), rms: Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length) };
     });
     assert.equal(signal.state, 'running');
     assert(signal.rms > .00001 && signal.peak < .5, `Music must generate a restrained, non-clipped signal: ${JSON.stringify(signal)}`);
@@ -165,19 +198,19 @@ try {
     await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-music.png` });
     await page.getByRole('button', { name: '收起音乐设置' }).click();
     await page.getByRole('button', { name: '暂停音乐', exact: true }).click();
-    await page.waitForFunction(() => window.__audioContexts[0].state === 'suspended');
+    await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
     await page.getByRole('button', { name: '开启音乐', exact: true }).click();
     await page.evaluate(() => {
       Object.defineProperty(document, 'hidden', { configurable: true, value: true });
       document.dispatchEvent(new Event('visibilitychange'));
     });
-    await page.waitForFunction(() => window.__audioContexts[0].state === 'suspended');
+    await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
     await page.evaluate(() => {
       delete document.hidden;
       document.dispatchEvent(new Event('visibilitychange'));
     });
     assert.equal(await page.getByRole('button', { name: '开启音乐', exact: true }).getAttribute('aria-pressed'), 'false', 'Returning to the page must not restart music');
-    assert.equal(await page.evaluate(() => window.__audioContexts.length), 1, 'Only reuse one audio engine');
+    assert.equal(await page.evaluate(() => window.__audioContexts.filter((context) => context.state !== 'closed').length), 1, 'Only keep one live audio engine');
     const images = await page.locator('img').evaluateAll((nodes) => nodes.map((node) => ({ src: node.getAttribute('src'), loaded: node.complete && node.naturalWidth > 0 })));
     assert(images.every((image) => image.loaded), `Unloaded images: ${JSON.stringify(images)}`);
     if (viewport.width < 900) {
@@ -187,7 +220,7 @@ try {
       assert.equal(await page.locator('.mobile-nav').evaluate((node) => node.open), false);
     }
     assert.deepEqual(errors, [], 'Client JavaScript errors');
-    results.push({ url: siteUrl, viewport, sections, images: images.length, audioSignal: signal, checks: 'all career sections/stages/workflow descriptions readable without clicks; warm palette; anchors/keyboard, overflow, scope, carousel, clipboard, mailto, QR, mobile menu; opt-in audio/volume/pause/background suspend', passed: true });
+    results.push({ url: siteUrl, viewport, sections, images: images.length, audioSignal: signal, checks: 'continuous content; 6 research diagrams and mobile panning; brand imagery; warm palette; navigation/carousel/clipboard/QR; autoplay blocked fallback, volume, pause, background suspend', passed: true });
     await context.close();
   }
   // Motion enabled: content becomes visible as it enters the viewport.
@@ -214,8 +247,50 @@ try {
   assert.equal(await noJsPage.locator('.phase-content').count(), 3);
   for (const node of await noJsPage.locator('.process-detail').all()) assert(await node.isVisible());
   await noJs.close();
-  await writeFile('outputs/refresh-20260930/browser-result.json', JSON.stringify(results, null, 2));
-  console.log(JSON.stringify({ passed: true, results }));
 } finally {
   await browser.close();
 }
+// Test the allowed-autoplay path too, always muted at the operating-system level.
+const autoplayBrowser = await chromium.launch({ headless: true, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
+try {
+  const page = await autoplayBrowser.newPage();
+  await page.addInitScript(() => {
+    const Original = window.AudioContext;
+    window.AudioContext = class extends Original {
+      constructor(...args) {
+        super({ ...args[0], sinkId: { type: 'none' } });
+        window.__autoplayContext = this;
+        const createGain = this.createGain.bind(this);
+        this.createGain = () => {
+          const gain = createGain();
+          const connect = gain.connect.bind(gain);
+          gain.connect = (destination, ...ports) => {
+            if (destination === this.destination) {
+              const analyser = this.createAnalyser();
+              analyser.fftSize = 2048;
+              window.__autoplayAnalyser = analyser;
+              connect(analyser);
+              analyser.connect(destination);
+              return destination;
+            }
+            return connect(destination, ...ports);
+          };
+          return gain;
+        };
+      }
+    };
+  });
+  await page.goto(siteUrl, { waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: '暂停音乐', exact: true }).waitFor({ timeout: 10000 });
+  assert.equal(await page.getByRole('button', { name: '暂停音乐', exact: true }).getAttribute('aria-pressed'), 'true', 'Allowed autoplay starts without a click');
+  await page.waitForFunction(() => window.__autoplayContext?.currentTime > 1, undefined, { timeout: 5000 });
+  const autoplaySignal = await page.evaluate(() => {
+    const samples = new Float32Array(window.__autoplayAnalyser.fftSize);
+    window.__autoplayAnalyser.getFloatTimeDomainData(samples);
+    return { state: window.__autoplayContext.state, peak: Math.max(...samples.map(Math.abs)), rms: Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length) };
+  });
+  assert(autoplaySignal.rms > .00001 && autoplaySignal.peak < .5, 'Allowed autoplay must render actual audio, not just change button text');
+  const report = { passed: true, results, allowedAutoplay: { withoutInteraction: true, audioSignal: autoplaySignal, passed: true } };
+  await writeFile('outputs/refresh-20260930/browser-result.json', JSON.stringify(report, null, 2));
+  console.log(JSON.stringify(report));
+} finally { await autoplayBrowser.close(); }

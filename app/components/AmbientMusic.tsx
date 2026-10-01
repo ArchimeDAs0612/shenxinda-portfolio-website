@@ -5,13 +5,33 @@ import { AmbientScore } from './ambient-score';
 
 export function AmbientMusic() {
   const score = useRef<AmbientScore | null>(null);
+  const autoplayAllowed = useRef(true);
   const [playing, setPlaying] = useState(false);
   const [busy, setBusy] = useState(false);
   const [volume, setVolume] = useState(25);
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState(false);
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+    autoplayAllowed.current = true;
+    try {
+      const soundtrack = new AmbientScore();
+      score.current = soundtrack;
+      soundtrack.context.onstatechange = () => {
+        if (!cancelled && score.current === soundtrack && soundtrack.context.state !== 'running') setPlaying(false);
+      };
+      void soundtrack.tryAutoplay(() => !cancelled && autoplayAllowed.current).then((started) => {
+        if (cancelled || !autoplayAllowed.current) return;
+        if (!started && score.current === soundtrack) {
+          score.current = null;
+          soundtrack.dispose();
+        }
+        setPlaying(started);
+        setAutoplayBlocked(!started);
+      }).catch(() => { if (!cancelled) setAutoplayBlocked(true); });
+    } catch { /* Unsupported audio must not affect reading. */ }
     const pause = () => {
       if (score.current) {
         setPlaying(false);
@@ -22,6 +42,7 @@ export function AmbientMusic() {
     document.addEventListener('visibilitychange', pauseWhenHidden);
     window.addEventListener('pagehide', pause);
     return () => {
+      cancelled = true;
       document.removeEventListener('visibilitychange', pauseWhenHidden);
       window.removeEventListener('pagehide', pause);
       score.current?.dispose();
@@ -31,8 +52,15 @@ export function AmbientMusic() {
 
   const toggle = async () => {
     if (busy) return;
+    const cancellingAutoplay = autoplayAllowed.current;
+    autoplayAllowed.current = false;
+    if (!playing && cancellingAutoplay && score.current?.context.state !== 'running') {
+      score.current?.dispose();
+      score.current = null;
+    }
     setBusy(true);
     setError(false);
+    setAutoplayBlocked(false);
     try {
       if (playing) {
         setPlaying(false);
@@ -70,10 +98,10 @@ export function AmbientMusic() {
           setVolume(nextVolume);
           score.current?.setVolume(nextVolume);
         }} />
-        <small>默认关闭 · 离开页面自动暂停</small>
+        <small>{autoplayBlocked ? '浏览器限制自动播放，请点击开启' : '允许时自动播放 · 切后台自动暂停'}</small>
       </div>}
       <div className="music-controls">
-        <button className="music-toggle" type="button" onClick={toggle} aria-pressed={playing} disabled={busy}>
+        <button className="music-toggle" type="button" onClick={toggle} aria-pressed={playing} disabled={busy} title={autoplayBlocked ? '浏览器拦截了有声自动播放，点击即可开启' : 'SIGNAL / 原创电子氛围'}>
           <span className="music-symbol" aria-hidden="true"><i /><i /><i /><i /></span>
           <span>{error ? '点击重试音乐' : playing ? '暂停音乐' : '开启音乐'}</span>
         </button>

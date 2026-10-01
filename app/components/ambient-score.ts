@@ -97,6 +97,16 @@ export class AmbientScore {
     this.timer = window.setInterval(this.schedule, 100);
   }
 
+  async tryAutoplay(shouldStart: () => boolean = () => true) {
+    // A browser may leave resume() pending until a gesture. Never wait forever,
+    // simulate a gesture or start audio later because an unrelated click occurred.
+    void this.context.resume().catch(() => {});
+    await new Promise((resolve) => window.setTimeout(resolve, 250));
+    if (!shouldStart() || this.context.state !== 'running' || document.hidden) return false;
+    await this.play();
+    return true;
+  }
+
   setVolume(volume: number) {
     this.volume = volume;
     if (this.context.state === 'running') {

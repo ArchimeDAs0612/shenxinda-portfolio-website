@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { aiCases, contributionMetrics, fieldSteps, riskPhases } from '../../content/project-evidence';
+import { ScientificDiagram } from './ScientificDiagram';
 
 type Node = readonly [string, string, string];
 
 function ProcessMap({ nodes, label }: { nodes: readonly Node[]; label: string }) {
   const [selected, setSelected] = useState(0);
   return <div className="process-map">
+    <ScientificDiagram kind={label} />
     <ol className="process-nodes" aria-label={label}>{nodes.map(([title, english, description], index) => <li className={selected === index ? 'is-focused' : ''} key={title}>
       <button type="button" aria-pressed={selected === index} onClick={() => setSelected(index)} aria-controls={`${label}-detail-${index}`}>
         <span className="process-index">{String(index + 1).padStart(2, '0')}</span><strong>{title}</strong><small>{english}</small>

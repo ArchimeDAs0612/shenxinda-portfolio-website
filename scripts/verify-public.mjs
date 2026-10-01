@@ -16,7 +16,7 @@ assert.match(html, /property="og:image"/);
 assert.match(html, /rel="canonical"/);
 const styles = [...html.matchAll(/href="([^"<>]+\.css)"/g)].map((match) => match[1]);
 assert(styles.length > 0, 'Stylesheet missing');
-const site = await readFile('content/site-content.ts', 'utf8');
+const site = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
 const images = [...new Set([...site.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
 const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', '404.html'];
 await Promise.all(assets.map(async (asset) => {

@@ -20,7 +20,7 @@ for (const relativePath of [...requiredDirectories, ...requiredFiles]) {
 }
 
 const pageSource = readFileSync(pagePath, 'utf8');
-const contentSource = readFileSync(contentPath, 'utf8');
+const contentSource = readFileSync(contentPath, 'utf8') + readFileSync(join(projectRoot, 'content/brand-content.ts'), 'utf8');
 const ids = new Set([...pageSource.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
 const literalAnchors = [...pageSource.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]);
 
