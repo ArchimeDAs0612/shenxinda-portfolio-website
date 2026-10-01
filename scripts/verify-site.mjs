@@ -11,7 +11,7 @@ const requiredDirectories = [
   'public/images/contact',
 ];
 const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'content/career-content.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg'];
-const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif']);
+const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg']);
 const errors = [];
 const warnings = [];
 

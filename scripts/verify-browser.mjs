@@ -77,7 +77,13 @@ try {
       assert(await figure.isVisible(), 'Research diagrams remain visible without clicking');
       assert.equal(await figure.locator('svg title').count(), 1);
       assert.equal(await figure.locator('svg desc').count(), 1);
+      assert(await figure.locator('.research-heading strong').isVisible(), 'Each figure needs a plain-language research question');
+      assert.equal(await figure.locator('.research-readout > div').count(), 3);
+      assert(await figure.locator('.research-interpretation').isVisible(), 'Each figure needs a visible reading conclusion');
+      assert.equal(await figure.locator('.research-terms > div').count(), 2);
     }
+    assert.match(await page.locator('.didi-brand-visual img').getAttribute('src'), /didi-xiaoju\.svg/);
+    assert.match(await page.locator('.zeekr-brand-visual img').getAttribute('src'), /zeekr-9x-front\.webp/);
     assert.match(await page.locator('#risk-phase-2 .research-svg').textContent(), /Score-only.*Raw-all.*Hybrid.*PySpark GBT/s);
     assert.match(await page.locator('#field-governance-detail-0').textContent(), /稳定解析/);
     for (const node of await page.locator('.process-detail').all()) assert(await node.isVisible(), 'No workflow description may be gated behind a click');

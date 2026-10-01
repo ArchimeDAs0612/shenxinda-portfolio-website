@@ -628,7 +628,7 @@ footer { padding-bottom: 100px; }
 @media (max-width: 640px) { .ambient-music { left: 12px; bottom: max(12px, env(safe-area-inset-bottom)); }.music-toggle { padding-inline: 13px; } }
 @media (prefers-reduced-motion: reduce) { .is-playing .music-symbol i { animation: none; } }
 /* Research figures use a restrained, semantic teal / ochre palette. */
-.research-figure { margin: 28px 0; background: #fbfaf6; border: 1px solid #d9d4ca; border-radius: 10px; overflow: hidden; }
+.research-figure { margin: 32px 0; background: #fffdf8; border: 1px solid #dfd8cb; border-radius: 3px; overflow: hidden; box-shadow: 0 12px 36px #3e392508; }
 .research-figure figcaption { display: flex; gap: 12px 24px; flex-wrap: wrap; align-items: baseline; padding: 20px 26px; border-bottom: 1px solid #e6e1d7; }
 .research-figure figcaption span { font: 10px var(--font-geist-mono), monospace; letter-spacing: .08em; color: #787165; }.research-figure figcaption strong { font-size: 17px; font-weight: 650; color: #303b38; }
 .research-pan { overflow-x: auto; overscroll-behavior-x: contain; padding: 22px 18px 8px; }.research-pan:focus-visible { outline: 2px solid #1e796c; outline-offset: -3px; }
@@ -656,6 +656,24 @@ footer { padding-bottom: 100px; }
 .didi-brand-visual .brand-reference-image { height: 258px; }.zeekr-brand-visual .brand-reference-image { height: 230px; }
 .company-brand-visual figcaption { margin-top: 8px; color: #777267; font-size: 9px; line-height: 1.8; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 14px; }.company-brand-visual figcaption a { text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 640px) { .research-figure figcaption { padding: 18px 16px; gap: 8px; flex-direction: column; }.research-pan { padding: 12px 8px; }.research-legend { margin-inline: 16px; }.research-note { padding-inline: 16px; }.process-map .process-nodes { grid-template-columns: 1fr; gap: 10px; }.didi-brand-visual .brand-reference-image, .zeekr-brand-visual .brand-reference-image { height: 210px; } }
+/* A research plate has a readable thesis before its technical schematic. */
+.research-figure .research-heading { padding: 32px 30px 26px; display: grid; grid-template-columns: 68px minmax(0, 1fr); align-items: start; gap: 22px; }
+.research-heading .research-number { font: italic 54px Georgia, serif; color: #aca18b; letter-spacing: -.06em; line-height: 1; }
+.research-heading .research-kicker { display: block; font-size: 10px; letter-spacing: .12em; color: #6d776b; margin-bottom: 14px; }
+.research-figure .research-heading strong { display: block; font-size: clamp(20px, 2.1vw, 28px); line-height: 1.45; letter-spacing: -.025em; color: #243c32; }
+.research-heading p { margin: 12px 0 0; max-width: 72ch; font-size: 14px; color: #78776b; line-height: 1.9; }
+.research-readout { display: grid; grid-template-columns: 1fr 1.3fr 1.2fr; gap: 26px; margin: 0; padding: 22px 30px; background: #f2f1e9; border-bottom: 1px solid #dfd8cb; }
+.research-readout div { min-width: 0; }.research-readout dt { font-size: 10px; letter-spacing: .06em; color: #777b6d; margin-bottom: 9px; }.research-readout dd { margin: 0; color: #284f40; font-size: 14px; line-height: 1.65; font-weight: 550; }
+.research-group > text { fill: #526659; font-size: 13px; }.research-block.tone-teal rect { fill: #e5f1e9; stroke: #438e76; }.research-block.tone-teal .block-accent { fill: #076a50; }.research-block.tone-orange rect { fill: #fbecd9; stroke: #c7874b; }.research-block.tone-orange .block-accent { fill: #ac592b; }
+.observation-states circle { fill: #e6ede4; stroke: #729077; stroke-width: 1.5; }.observation-states circle:first-child { fill: #f6e8d7; stroke: #bb8c61; }.observation-states text { fill: #324e40; font-size: 20px; font-weight: 600; text-anchor: middle; dominant-baseline: middle; }.observation-states path { stroke: #9b9d88; stroke-width: 2; }.observation-states .state-caption { font-size: 17px; }.observation-states .state-caption.small { font-size: 12px; font-weight: 400; }
+.evidence-pyramid path { fill: #cfdfd1; stroke: #6d957c; stroke-width: 1; }.evidence-pyramid path:nth-child(2) { fill: #e1eadb; }.evidence-pyramid path:nth-child(3) { fill: #ecf0e5; }.evidence-pyramid text { text-anchor: middle; fill: #355840; font-weight: 600; font-size: 16px; }
+.research-model rect { fill: #e8f0e6; stroke: #46866d; }.research-model .model-name { font-size: 18px; font-weight: 650; text-anchor: middle; fill: #19513d; }.research-model path { fill: none; stroke: #43765e; stroke-width: 1.5; }.research-model circle { fill: #1d7156; stroke: #fffdf8; stroke-width: 2; }.research-model .model-caption { font-size: 10px; fill: #637765; text-anchor: middle; }
+.semantic-cycle { fill: none; stroke: #c3d3bf; stroke-width: 18; opacity: .5; }
+.research-interpretation { margin: 16px 30px 0; padding: 18px 22px; border-left: 3px solid #ab5b2a; background: #f6efe0; display: flex; align-items: baseline; gap: 18px; }.research-interpretation > span { flex-shrink: 0; font-size: 10px; color: #95622f; letter-spacing: .04em; }.research-interpretation p { margin: 0; color: #604a2f; font-size: 14px; line-height: 1.8; }
+.research-terms { margin: 20px 30px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }.research-terms dt { font-size: 11px; font-weight: 650; color: #455b46; }.research-terms dd { margin: 6px 0 0; color: #818174; font-size: 11px; line-height: 1.8; }
+.didi-brand-visual .brand-reference-image { background: #f4eddf; }.didi-brand-visual .media-image { object-fit: contain; padding: 4px; }
+.zeekr-brand-visual .media-image { object-fit: cover; }
+@media (max-width: 640px) { .research-figure .research-heading { padding: 24px 18px; grid-template-columns: 38px minmax(0, 1fr); gap: 14px; }.research-heading .research-number { font-size: 36px; }.research-heading .research-kicker { font-size: 8px; line-height: 1.6; }.research-heading p { font-size: 12px; }.research-readout { padding: 18px; grid-template-columns: 1fr; gap: 16px; }.research-readout dt { margin-bottom: 4px; }.research-readout dd { font-size: 13px; }.research-interpretation { margin-inline: 18px; padding: 15px; flex-direction: column; gap: 7px; }.research-interpretation p { font-size: 12px; }.research-terms { margin-inline: 18px; grid-template-columns: 1fr; gap: 14px; } }
 .hero { background: #eee9df; }.hero::before { background: linear-gradient(90deg, #faf8f2f5, #f4eee4d9 54%, #ede5d455); }
 .nav { background: #faf8f1ee; border-color: #ded6c9; }
 .is-compact .nav { background: #faf8f1ed; }
