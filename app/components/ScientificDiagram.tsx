@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { AgentExperimentLoop, AgentSemanticAtlas } from './AgentResearchFigures';
 
 type Tone = 'teal' | 'orange' | 'neutral';
 function Block({ x, y, w = 180, h = 76, title, sub, tone = 'neutral', dashed = false, children }: { x: number; y: number; w?: number; h?: number; title: string; sub?: string; tone?: Tone; dashed?: boolean; children?: ReactNode }) {
@@ -87,7 +88,7 @@ export function ScientificDiagram({ kind }: { kind: string }) {
     <figcaption className="research-heading"><span className="research-number">{guide.number}</span><div><span className="research-kicker">{guide.category}</span><strong>{guide.headline}</strong><p>{guide.summary}</p></div></figcaption>
     <dl className="research-readout">{guide.lenses.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
     <div className="research-pan" tabIndex={0} role="region" aria-label={`${title}，可左右滚动`}>
-      <svg className="research-svg" viewBox="0 0 1040 420" role="img" aria-labelledby={`${id}-title ${id}-desc`}>
+      <svg className="research-svg" viewBox={kind.startsWith('ai-case-') ? '0 0 1040 580' : '0 0 1040 420'} role="img" aria-labelledby={`${id}-title ${id}-desc`}>
         <title id={`${id}-title`}>{title}</title><desc id={`${id}-desc`}>{description}</desc>
         <defs>{(['neutral', 'teal', 'orange'] as const).map((tone) => <marker key={tone} id={`${id}-arrow-${tone}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 1L9 5L0 9" className={`arrow-${tone}`} /></marker>)}</defs>
         {kind === 'risk-phase-0' && <>
@@ -149,21 +150,8 @@ export function ScientificDiagram({ kind }: { kind: string }) {
           <Edge id={id} d="M749 272H788V215H824" tone="orange" />
           <Edge id={id} d="M642 310V375H394V310" dashed tone="orange" /><Label x={433} y={397}>未知语义 / 待核验项保留</Label>
         </>}
-        {(kind === 'ai-case-0' || kind === 'ai-case-1') && <>
-          <Group x={18} y={34} w={1004} h={154} title="HUMAN / 问题定义 · 审查 · 最终责任" tone="orange" />
-          <Group x={18} y={217} w={1004} h={157} title="AGENT / 执行与整理 · 不替代业务判断" tone="teal" />
-          <Block x={42} y={89} w={220} title={kind === 'ai-case-0' ? '问题与实验约束' : '范围与研究口径'} sub={kind === 'ai-case-0' ? 'Score / Raw / Hybrid 对照' : '外卖已做 / 钱包未做'} tone="orange" />
-          <Block x={358} y={89} w={242} title={kind === 'ai-case-0' ? '结果理解与方法审查' : '业务语义与可用性审查'} sub={kind === 'ai-case-0' ? '来源混淆 / 标签关系' : '未知保留 / 不凭字段名猜测'} tone="orange" />
-          <Block x={748} y={89} w={247} title={kind === 'ai-case-0' ? '验证与 Human Ownership' : '进度边界与 Human Ownership'} sub={kind === 'ai-case-0' ? '时间条件不足 → 不允许伪 OOT' : '钱包：未来分支 / 非已完成'} tone="orange" />
-          <Block x={118} y={271} w={242} title={kind === 'ai-case-0' ? '代码 · Debug · 运行' : '已限定范围内的字段研究'} sub={kind === 'ai-case-0' ? '环境重约束 → PySpark GBT' : '组织语义 / 特征族 / 输入资产'} tone="teal" />
-          <Block x={564} y={271} w={265} title={kind === 'ai-case-0' ? '纠偏 · 重复实验 · 交付资产' : '保留待核验项 · 分支独立'} sub={kind === 'ai-case-0' ? '日志 / 证据索引 / HTML 汇报' : '外卖已有沉淀，不合并钱包成果'} tone="teal" />
-          <Edge id={id} d="M152 165V203H239V271" tone="orange" /><Edge id={id} d="M360 309H398V165" tone="teal" />
-          <Edge id={id} d="M529 165V203H697V271" tone="orange" /><Edge id={id} d="M829 309H872V165" tone="teal" />
-          <Edge id={id} d="M479 89V16H28V203H239V271" dashed tone="orange" />
-          <Label x={510} y={26}>审查发现矛盾 → 重新约束执行</Label>
-          <path className="research-bracket" d="M42 390v12h953v-12" />
-          <Label x={302} y={418}>执行能力可扩大 · 判断与责任不可外包</Label>
-        </>}
+        {kind === 'ai-case-0' && <AgentExperimentLoop id={id} />}
+        {kind === 'ai-case-1' && <AgentSemanticAtlas id={id} />}
       </svg>
     </div>
     <div className="research-interpretation"><span>读图结论</span><p>{guide.takeaway}</p></div>

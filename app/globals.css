@@ -669,6 +669,18 @@ footer { padding-bottom: 100px; }
 .evidence-pyramid path { fill: #cfdfd1; stroke: #6d957c; stroke-width: 1; }.evidence-pyramid path:nth-child(2) { fill: #e1eadb; }.evidence-pyramid path:nth-child(3) { fill: #ecf0e5; }.evidence-pyramid text { text-anchor: middle; fill: #355840; font-weight: 600; font-size: 16px; }
 .research-model rect { fill: #e8f0e6; stroke: #46866d; }.research-model .model-name { font-size: 18px; font-weight: 650; text-anchor: middle; fill: #19513d; }.research-model path { fill: none; stroke: #43765e; stroke-width: 1.5; }.research-model circle { fill: #1d7156; stroke: #fffdf8; stroke-width: 2; }.research-model .model-caption { font-size: 10px; fill: #637765; text-anchor: middle; }
 .semantic-cycle { fill: none; stroke: #c3d3bf; stroke-width: 18; opacity: .5; }
+/* Distinct AI case topologies: experimental feedback loop vs semantic evidence atlas. */
+.agent-plate > rect, .agent-comparison > rect { fill: #edf4ed; stroke: #82aa94; stroke-width: 1.2; }
+.agent-plate.tone-orange > rect { fill: #faf0e0; stroke: #bf8b52; }.agent-plate.tone-neutral > rect { fill: #f0f0e8; stroke: #b6bcad; }.pending-plate > rect { stroke-dasharray: 5 4; }
+.agent-overline { font-size: 10px; letter-spacing: .07em; fill: #728273; }.agent-title { font-size: 17px; font-weight: 650; fill: #28503c; }.agent-copy { font-size: 12px; fill: #6a7868; }.tone-orange .agent-title { fill: #82522b; }.tone-neutral .agent-title { fill: #616d5c; }
+.agent-comparison > g > rect { fill: #dfece0; stroke: #b4cab7; }.comparison-name { font-size: 12px; font-weight: 650; fill: #23553e; }
+.agent-orbit { fill: none; stroke: #f2eee3; stroke-width: 30; stroke-linejoin: round; }
+.agent-review-core > circle, .agent-validation-gate > path { fill: #f7e8d0; stroke: #b78247; stroke-width: 1.5; }.agent-review-core .core-orbit { fill: none; stroke: #e5caa3; stroke-width: 1; stroke-dasharray: 3 5; }
+.agent-review-core text, .agent-semantic-core text { text-anchor: middle; }.core-title { font-size: 19px; font-weight: 650; fill: #74532e; }
+.agent-edge-label { font-size: 11px; fill: #97754a; }.agent-footnote { font-size: 11px; fill: #858373; }
+.agent-knowledge-links path { fill: none; stroke: #8eaa91; stroke-width: 1.6; }.agent-knowledge-links circle { fill: none; stroke: #deded0; stroke-width: 1; stroke-dasharray: 3 6; }.agent-review-bus { fill: none; stroke: #be9664; stroke-width: 1.4; }
+.agent-context-stack rect { fill: #f0f1e5; stroke: #a9b39b; }.agent-context-stack > rect:nth-child(3) { fill: #f8f8ee; }
+.agent-semantic-core > circle { fill: #e2eee1; stroke: #679374; stroke-width: 1.5; }.agent-semantic-core .core-orbit { fill: none; stroke: #b2c5ac; stroke-width: 1; }.agent-semantic-core .core-title { fill: #305b3b; }
 .research-interpretation { margin: 16px 30px 0; padding: 18px 22px; border-left: 3px solid #ab5b2a; background: #f6efe0; display: flex; align-items: baseline; gap: 18px; }.research-interpretation > span { flex-shrink: 0; font-size: 10px; color: #95622f; letter-spacing: .04em; }.research-interpretation p { margin: 0; color: #604a2f; font-size: 14px; line-height: 1.8; }
 .research-terms { margin: 20px 30px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }.research-terms dt { font-size: 11px; font-weight: 650; color: #455b46; }.research-terms dd { margin: 6px 0 0; color: #818174; font-size: 11px; line-height: 1.8; }
 .didi-brand-visual .brand-reference-image { background: #f4eddf; }.didi-brand-visual .media-image { object-fit: contain; padding: 4px; }

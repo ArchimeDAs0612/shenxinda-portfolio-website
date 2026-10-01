@@ -84,6 +84,10 @@ try {
     }
     assert.match(await page.locator('.didi-brand-visual img').getAttribute('src'), /didi-xiaoju\.svg/);
     assert.match(await page.locator('.zeekr-brand-visual img').getAttribute('src'), /zeekr-9x-front\.webp/);
+    assert.equal(await page.locator('#ai-case-0 [data-diagram-layout="experiment-feedback-loop"]').count(), 1);
+    assert.equal(await page.locator('#ai-case-1 [data-diagram-layout="semantic-evidence-atlas"]').count(), 1);
+    assert.match(await page.locator('#ai-case-0 .research-svg').textContent(), /Score-only.*Raw-all.*Hybrid.*人工方法审查/s);
+    assert.match(await page.locator('#ai-case-1 .research-svg').textContent(), /物理可解析性.*业务语义.*特征族组织.*决策可用性/s);
     assert.match(await page.locator('#risk-phase-2 .research-svg').textContent(), /Score-only.*Raw-all.*Hybrid.*PySpark GBT/s);
     assert.match(await page.locator('#field-governance-detail-0').textContent(), /稳定解析/);
     for (const node of await page.locator('.process-detail').all()) assert(await node.isVisible(), 'No workflow description may be gated behind a click');
@@ -147,12 +151,19 @@ try {
     const figureCaptureStyle = '.site-header, .workspace-tabs, .ambient-music { visibility: hidden !important; }';
     await page.locator('#risk-phase-2 .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-model.png`, style: figureCaptureStyle });
     await page.locator('#ai-case-0 .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-ai.png`, style: figureCaptureStyle });
+    await page.locator('#ai-case-1 .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-ai-semantics.png`, style: figureCaptureStyle });
     await page.locator('#feature-research .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-fields.png`, style: figureCaptureStyle });
     if (viewport.width < 900) {
       const pan = page.locator('#risk-phase-2 .research-pan');
       await pan.evaluate((node) => { node.scrollLeft = node.scrollWidth; });
       assert(await pan.evaluate((node) => node.scrollLeft > 0), 'Mobile diagrams must pan inside their own container');
       await pan.evaluate((node) => { node.scrollLeft = 0; });
+      for (const caseId of ['ai-case-0', 'ai-case-1']) {
+        const aiPan = page.locator(`#${caseId} .research-pan`);
+        await aiPan.evaluate((node) => { node.scrollLeft = node.scrollWidth; });
+        assert(await aiPan.evaluate((node) => node.scrollLeft > 0), `${caseId}: mobile pan must expose the complete topology`);
+        await aiPan.evaluate((node) => { node.scrollLeft = 0; });
+      }
     }
     assert.match(await page.locator('#feature-research').innerText(), /钱包字段\s+尚未做/);
     await page.locator('#tab-ai').click();
