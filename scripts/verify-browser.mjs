@@ -63,6 +63,18 @@ try {
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
     await page.locator('.hero img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
     await page.waitForTimeout(150);
+    assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1, 'Animated name must retain one accessible heading');
+    assert.equal(await page.locator('.hero-name-letter').count(), 3);
+    assert.equal(await page.locator('.hero-proof a').count(), 3, 'Hero evidence links must exist without waiting or interacting');
+    assert.equal(await page.locator('.portrait-aperture').evaluate((node) => getComputedStyle(node).animationName), 'none', 'Reduced motion skips the opening');
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Hero overflow at ${viewport.width}`);
+    if (viewport.width === 1440) assert(await page.evaluate(() => {
+      const player = document.querySelector('.music-controls').getBoundingClientRect();
+      return [...document.querySelectorAll('.hero-proof a, .hero .scroll-cue')].every((node) => {
+        const target = node.getBoundingClientRect();
+        return target.right <= player.left || target.left >= player.right || target.bottom <= player.top || target.top >= player.bottom;
+      });
+    }), 'Music utility must not obscure first-screen evidence or scroll link');
     assert.equal(await page.evaluate(() => window.__audioContexts.length), 1, 'Autoplay should be attempted once');
     assert.equal(await page.evaluate(() => window.__audioContexts[0].state), 'closed', 'Release blocked autoplay audio resources before a gesture');
     assert.equal(await page.getByRole('button', { name: '开启音乐', exact: true }).getAttribute('aria-pressed'), 'false');
@@ -244,6 +256,21 @@ try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await context.newPage();
   await page.goto(siteUrl, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1500);
+  const opening = await page.locator('.hero').evaluate((node) => ({
+    animations: node.getAnimations({ subtree: true }).map((animation) => ({ duration: animation.effect.getTiming().duration, iterations: animation.effect.getTiming().iterations, state: animation.playState })),
+    nameTransforms: [...node.querySelectorAll('.hero-name-letter')].map((letter) => getComputedStyle(letter).transform),
+    copyOpacity: getComputedStyle(node.querySelector('.hero-identity')).opacity,
+    aperture: getComputedStyle(node.querySelector('.portrait-aperture')).clipPath,
+    bodyOverflow: getComputedStyle(document.body).overflow,
+  }));
+  assert(opening.animations.length >= 5, 'Opening choreography must be present with motion enabled');
+  assert(opening.animations.every((animation) => animation.iterations === 1 && animation.duration <= 1500 && animation.state === 'finished'), 'Opening must finish, not run continuously');
+  assert.equal(opening.copyOpacity, '1');
+  assert.match(opening.aperture, /^inset\(/);
+  assert(opening.aperture.match(/[\d.]+/g)?.every((value) => Number(value) === 0), 'Portrait aperture must be fully open after the finite entrance');
+  assert.notEqual(opening.bodyOverflow, 'hidden', 'Opening never locks scrolling');
+  assert(await page.getByRole('link', { name: /查看项目/ }).isVisible());
   for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
     await page.locator(`#${id}`).scrollIntoViewIfNeeded();
     await page.waitForTimeout(800);
@@ -255,10 +282,19 @@ try {
     }
   }
   await context.close();
+  const deepLink = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const deepLinkPage = await deepLink.newPage();
+  await deepLinkPage.goto(`${siteUrl.split('#')[0]}#contact`, { waitUntil: 'networkidle' });
+  assert.equal(await deepLinkPage.locator('.portrait-aperture').evaluate((node) => getComputedStyle(node).animationName), 'none', 'Direct links skip the opening');
+  assert(await deepLinkPage.getByRole('button', { name: '微信联系', exact: true }).isVisible());
+  await deepLink.close();
   // Without JavaScript the public content must stay readable, not reveal as blank.
   const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   const noJsPage = await noJs.newPage();
   await noJsPage.goto(siteUrl, { waitUntil: 'networkidle' });
+  await noJsPage.waitForTimeout(1500);
+  assert.equal(await noJsPage.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
+  assert.equal(await noJsPage.locator('.hero-proof a').count(), 3);
   assert.equal(await noJsPage.locator('#work [data-reveal]').first().evaluate((node) => getComputedStyle(node).opacity), '1');
   assert.equal(await noJsPage.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1');
   assert.equal(await noJsPage.locator('.phase-content').count(), 3);

@@ -10,6 +10,7 @@ import { CareerWorkspace } from './components/CareerWorkspace';
 import { ContributionMetrics, ProjectAIWorkflow, ProjectEvidence } from './components/EvidenceExplorer';
 import { AmbientMusic } from './components/AmbientMusic';
 import { brandContent } from '../content/brand-content';
+import { PortfolioHero } from './components/PortfolioHero';
 
 const navItems = [
   ['top', '首页'], ['work', '经历'], ['projects', '项目'],
@@ -130,23 +131,7 @@ export default function Home() {
         </nav>
       </header>
 
-      <section className="hero" aria-labelledby="hero-title">
-        <MaintainableImage className="hero-background" priority {...mediaContent.heroBackground} />
-        <div className="hero-copy">
-          <p className="eyebrow hero-enter enter-one">ALGORITHM · RISK DECISION · AI-NATIVE</p>
-          <h1 className="hero-enter enter-two" id="hero-title">沈鑫达</h1>
-          <p className="hero-role hero-enter enter-three">机器学习与风险决策实践者</p>
-          <div className="hero-identity hero-enter enter-four"><p>厦门大学 · 应用统计硕士</p><p>滴滴国际支付风控算法实习生</p></div>
-          <p className="hero-statement hero-enter enter-four">以应用统计为底座，以算法与机器学习为主线。支付风险与智能决策是我当前最深的业务实践；AI Agent 是执行杠杆，而非判断的替代品。</p>
-          <div className="actions hero-enter enter-four"><a className="button primary" href="#projects">查看项目 <span>↘</span></a><a className="button quiet" href="#contact">简历与联系</a></div>
-          <div className="hero-proof hero-enter enter-four" aria-label="核心经历"><span><b>滴滴</b> 国际支付风控算法实习</span><span><b>ZEEKR 极氪</b> 数据分析实习</span><span><b>挑战杯国家级特等奖</b> 国赛前3%</span></div>
-        </div>
-        <div className="portrait-wrap">
-          <MaintainableImage className="portrait-frame" priority {...mediaContent.profile} />
-          <div className="portrait-caption"><span>XIAMEN · CHINA</span><span>2026</span></div>
-        </div>
-        <a className="scroll-cue" href="#education"><span />MEET THE PERSON</a>
-      </section>
+      <PortfolioHero />
 
       <div className="identity-overview">
         <section className="chapter education-section" id="education" aria-labelledby="education-title">
