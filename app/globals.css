@@ -684,6 +684,47 @@ footer { padding-bottom: 100px; }
 .research-interpretation { margin: 16px 30px 0; padding: 18px 22px; border-left: 3px solid #ab5b2a; background: #f6efe0; display: flex; align-items: baseline; gap: 18px; }.research-interpretation > span { flex-shrink: 0; font-size: 10px; color: #95622f; letter-spacing: .04em; }.research-interpretation p { margin: 0; color: #604a2f; font-size: 14px; line-height: 1.8; }
 .research-terms { margin: 20px 30px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }.research-terms dt { font-size: 11px; font-weight: 650; color: #455b46; }.research-terms dd { margin: 6px 0 0; color: #818174; font-size: 11px; line-height: 1.8; }
 .didi-brand-visual .brand-reference-image { background: #f4eddf; }.didi-brand-visual .media-image { object-fit: contain; padding: 4px; }
+
+/* Evidence previews reuse approved figures; the full reading path stays intact. */
+.project-preview-section { max-width: 1180px; margin: 60px auto 0; min-width: 0; }
+.preview-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.preview-heading h2 { margin: 0; font-size: clamp(29px, 4vw, 47px); letter-spacing: -.05em; }
+.preview-heading p:not(.eyebrow), .preview-caption p { color: #777267; font-size: 13px; line-height: 1.8; }
+.preview-controls { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.preview-controls > span { font: 11px monospace; margin-right: 8px; }
+.preview-controls button { min-width: 44px; min-height: 44px; border: 1px solid #cfc7b7; background: transparent; color: #584f40; cursor: pointer; }
+.preview-controls button:disabled { opacity: .45; cursor: default; }
+.preview-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+.preview-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
+.research-preview { margin: 0; }
+.project-preview-section .research-preview .research-heading { padding: 20px 24px; display: block; }
+.research-preview .research-heading p, .research-preview .research-number { display: none; }
+.project-preview-section .research-preview .research-heading strong { font-size: 23px; }
+.research-preview .research-pan { padding: 10px 18px; overflow: hidden; }
+.research-preview .research-svg { min-width: 0; width: 100%; height: auto; max-height: 360px; }
+.preview-caption { display: flex; justify-content: space-between; gap: 24px; padding: 20px 0 8px; align-items: center; }
+.preview-caption strong { font-size: 16px; }.preview-caption p { margin: 7px 0; max-width: 650px; }
+.preview-caption a { font-size: 13px; min-height: 44px; display: inline-flex; align-items: center; flex-shrink: 0; color: var(--blue); }
+.preview-boundary { color: #817b70; font-size: 10px; margin-top: 12px; }
+.identity-overview { grid-template-columns: 1.45fr .8fr; }
+.journey-credentials { font-size: 11px; color: #827b6e; line-height: 1.8; margin-top: 20px; }
+.journey-zeekr.career-secondary { min-height: 0; padding: 26px 0 0; margin-top: 26px; border-top: 1px solid #b9ab9270; background: transparent; border-radius: 0; }
+.journey-zeekr-heading { display: grid; grid-template-columns: 1fr 130px; gap: 16px; align-items: start; }
+.journey-zeekr .company-logo-shell { margin-top: 14px; }.journey-zeekr .company-logo { width: 115px; }
+.identity-overview .journey-zeekr h3 { font-size: 21px; line-height: 1.5; margin: 12px 0 8px; }
+.journey-zeekr .zeekr-role, .journey-zeekr .company-description { margin: 5px 0; font-size: 11px; line-height: 1.8; }
+.journey-zeekr .company-brand-visual { margin: 12px 0 0; }.journey-zeekr .brand-reference-image { height: 85px; }.journey-zeekr figcaption { font-size: 8px; }
+.journey-automation { padding: 18px 0; }.journey-automation strong { font-size: 25px; letter-spacing: -.04em; }.journey-automation strong span { color: var(--blue); margin-inline: 10px; }.journey-automation p { font-size: 11px; line-height: 1.8; color: #797365; margin: 8px 0 0; }
+.journey-zeekr .experience-metrics { margin: 0 0 20px; }.journey-zeekr .experience-metrics strong { font-size: 23px; }.journey-zeekr .experience-metrics span { font-size: 10px; }
+.journey-zeekr .zeekr-work { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }.journey-zeekr .zeekr-work > div { padding: 0; border: 0; }.journey-zeekr .zeekr-work dt { font-size: 12px; }.journey-zeekr .zeekr-work dd { font-size: 11px; line-height: 1.85; margin: 5px 0 0; }
+.journey-zeekr .experience-takeaway { font-size: 10px; line-height: 1.85; margin-top: 18px; }
+.career-story.career-story-primary { grid-template-columns: 1fr; }.career-story-primary .career-content { max-width: 960px; }.career-story-primary .career-feature { min-height: 0; }
+.pay-product-visual { position: relative; }.pay-product-visual .brand-reference-image { height: 320px; background: #f8e3a0; }.pay-product-visual .media-image { padding: 0; object-position: right center; }
+.pay-product-label { position: absolute; top: 50%; left: 7%; transform: translateY(-50%); max-width: 47%; color: #352d1e; pointer-events: none; }.pay-product-label strong { display: block; font-size: clamp(38px, 6vw, 70px); letter-spacing: -.06em; }.pay-product-label span { font: 10px monospace; letter-spacing: .06em; }.pay-product-label p { font-size: 17px; margin-top: 20px; }
+.aigc-dual { grid-template-columns: 1fr; }.aigc-collections { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }.aigc-collections article { padding-top: 20px; border-top: 1px solid #b9ab9270; }.aigc-collections h3 { font-size: 21px; margin: 0; }.aigc-collections p { font-size: 13px; color: #777267; line-height: 1.85; }.aigc-collections small { color: #827b6e; font-size: 10px; }.aigc-dual .aigc-stats { justify-content: start; margin: 20px 0 12px; gap: 28px; }.aigc-dual .aigc-stats strong { font-size: 28px; }.aigc-production { font-size: 12px; line-height: 1.85; color: #696151; max-width: 860px; margin: 0; }
+@media (max-width: 1228px) { .project-preview-section { margin-inline: 24px; } }
+@media (max-width: 820px) { .identity-overview { grid-template-columns: 1.3fr .8fr; gap: 26px; }.preview-heading { align-items: start; flex-direction: column; }.pay-product-label p { font-size: 13px; } }
+@media (max-width: 640px) { .project-preview-section { margin: 38px 22px 0; }.preview-heading { gap: 14px; }.preview-heading p:not(.eyebrow) { font-size: 11px; }.research-preview .research-heading { padding: 16px 12px; }.research-preview .research-heading strong { font-size: 18px; }.research-preview .research-pan { padding: 8px 0; }.preview-caption { display: block; padding-top: 14px; }.preview-caption p { font-size: 11px; }.preview-caption strong { font-size: 14px; }.preview-boundary { line-height: 1.8; }.identity-overview { grid-template-columns: 1fr; }.journey-zeekr-heading { grid-template-columns: 1fr 86px; }.journey-zeekr .brand-reference-image { height: 64px; }.journey-zeekr .zeekr-work { grid-template-columns: 1fr; }.journey-automation strong { font-size: 23px; }.pay-product-visual .brand-reference-image { height: 230px; }.pay-product-visual .media-image { object-position: 130px center !important; }.pay-product-label { left: 5%; max-width: 52%; }.pay-product-label strong { font-size: 37px; }.pay-product-label span { font-size: 7px; }.pay-product-label p { max-width: 110px; font-size: 14px; line-height: 1.6; }.aigc-collections { grid-template-columns: 1fr; gap: 18px; } }
 .zeekr-brand-visual .media-image { object-fit: cover; }
 @media (max-width: 640px) { .research-figure .research-heading { padding: 24px 18px; grid-template-columns: 38px minmax(0, 1fr); gap: 14px; }.research-heading .research-number { font-size: 36px; }.research-heading .research-kicker { font-size: 8px; line-height: 1.6; }.research-heading p { font-size: 12px; }.research-readout { padding: 18px; grid-template-columns: 1fr; gap: 16px; }.research-readout dt { margin-bottom: 4px; }.research-readout dd { font-size: 13px; }.research-interpretation { margin-inline: 18px; padding: 15px; flex-direction: column; gap: 7px; }.research-interpretation p { font-size: 12px; }.research-terms { margin-inline: 18px; grid-template-columns: 1fr; gap: 14px; } }
 .hero { background: #eee9df; }.hero::before { background: linear-gradient(90deg, #faf8f2f5, #f4eee4d9 54%, #ede5d455); }

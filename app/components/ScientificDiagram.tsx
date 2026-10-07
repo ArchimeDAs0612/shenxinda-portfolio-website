@@ -80,13 +80,13 @@ const descriptions: Record<string, [string, string]> = {
   'ai-case-1': ['业务范围与语义审查', '人限定外卖范围和研究口径，执行层组织已有字段知识，未知语义保留待核验，钱包明确为未来分支。'],
 };
 
-export function ScientificDiagram({ kind }: { kind: string }) {
+export function ScientificDiagram({ kind, preview = false, idPrefix = '' }: { kind: string; preview?: boolean; idPrefix?: string }) {
   const [title, description] = descriptions[kind];
   const guide = readingGuide[kind as keyof typeof readingGuide];
-  const id = `research-${kind}`;
-  return <figure className="research-figure">
+  const id = `${idPrefix}research-${kind}`;
+  return <figure className={`research-figure${preview ? ' research-preview' : ''}`}>
     <figcaption className="research-heading"><span className="research-number">{guide.number}</span><div><span className="research-kicker">{guide.category}</span><strong>{guide.headline}</strong><p>{guide.summary}</p></div></figcaption>
-    <dl className="research-readout">{guide.lenses.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+    {!preview && <dl className="research-readout">{guide.lenses.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
     <div className="research-pan" tabIndex={0} role="region" aria-label={`${title}，可左右滚动`}>
       <svg className="research-svg" viewBox={kind.startsWith('ai-case-') ? '0 0 1040 580' : '0 0 1040 420'} role="img" aria-labelledby={`${id}-title ${id}-desc`}>
         <title id={`${id}-title`}>{title}</title><desc id={`${id}-desc`}>{description}</desc>
@@ -154,9 +154,9 @@ export function ScientificDiagram({ kind }: { kind: string }) {
         {kind === 'ai-case-1' && <AgentSemanticAtlas id={id} />}
       </svg>
     </div>
-    <div className="research-interpretation"><span>读图结论</span><p>{guide.takeaway}</p></div>
+    {!preview && <><div className="research-interpretation"><span>读图结论</span><p>{guide.takeaway}</p></div>
     <dl className="research-terms">{guide.terms.map(([term, explanation]) => <div key={term}><dt>{term}</dt><dd>{explanation}</dd></div>)}</dl>
     <p className="research-legend"><span className="legend-teal">研究 / 执行</span><span className="legend-orange">审查 / 责任 / 准入</span><span>虚线：待验证、待开展或反馈约束</span></p>
-    <p className="research-note">方法关系示意，非公司系统架构；不含原始业务数据。手机可左右滑动查看完整图，全部说明也在下方直接呈现。</p>
+    <p className="research-note">方法关系示意，非公司系统架构；不含原始业务数据。手机可左右滑动查看完整图，全部说明也在下方直接呈现。</p></>}
   </figure>;
 }

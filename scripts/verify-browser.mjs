@@ -84,8 +84,15 @@ try {
     for (const id of ['panel-work', 'panel-projects', 'panel-ai']) assert(await page.locator(`#${id}`).isVisible(), `${id} must be readable without a click`);
     assert.equal(await page.locator('.phase-content').count(), 3);
     assert.equal(await page.locator('.ai-case-readthrough').count(), 2);
-    assert.equal(await page.locator('svg.research-svg[role="img"]').count(), 6);
-    for (const figure of await page.locator('.research-figure').all()) {
+    assert.equal(await page.locator('.research-preview svg.research-svg[role="img"]').count(), 3);
+    assert(await page.locator('.research-preview .research-heading > div').first().evaluate((node) => node.clientWidth > 200), 'Preview heading must not inherit the full figure number-column layout');
+    assert.equal(await page.locator('.research-figure:not(.research-preview) svg.research-svg[role="img"]').count(), 6);
+    assert.equal(await page.getByRole('button', { name: '开启项目图轮播' }).isDisabled(), true, 'Reduced motion disables automatic previews');
+    await page.getByRole('button', { name: '下一张项目图' }).click();
+    await page.waitForFunction(() => document.querySelector('.preview-controls > span').textContent === '02 / 03');
+    assert.equal(await page.locator('.preview-controls > span').innerText(), '02 / 03');
+    await page.locator('.project-preview-section').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-project-preview.png` });
+    for (const figure of await page.locator('.research-figure:not(.research-preview)').all()) {
       assert(await figure.isVisible(), 'Research diagrams remain visible without clicking');
       assert.equal(await figure.locator('svg title').count(), 1);
       assert.equal(await figure.locator('svg desc').count(), 1);
@@ -94,7 +101,7 @@ try {
       assert(await figure.locator('.research-interpretation').isVisible(), 'Each figure needs a visible reading conclusion');
       assert.equal(await figure.locator('.research-terms > div').count(), 2);
     }
-    assert.match(await page.locator('.didi-brand-visual img').getAttribute('src'), /didi-xiaoju\.svg/);
+    assert.match(await page.locator('.didi-brand-visual img').getAttribute('src'), /99pay-app\.webp/);
     assert.match(await page.locator('.zeekr-brand-visual img').getAttribute('src'), /zeekr-9x-front\.webp/);
     assert.equal(await page.locator('#ai-case-0 [data-diagram-layout="experiment-feedback-loop"]').count(), 1);
     assert.equal(await page.locator('#ai-case-1 [data-diagram-layout="semantic-evidence-atlas"]').count(), 1);
@@ -107,8 +114,13 @@ try {
     assert.equal(palette.accent, '#8e5737');
     assert.equal(palette.background, 'rgb(251, 249, 244)');
     assert.match(await page.locator('#projects').textContent(), /PySpark GBT/);
-    assert.match(await page.locator('#exploration').innerText(), /约183万/);
-    assert.match(await page.locator('#exploration').innerText(), /2026-09-30/);
+    assert.match(await page.locator('#exploration').innerText(), /210万\+/);
+    assert.match(await page.locator('#exploration').innerText(), /全平台累计播放/);
+    assert.match(await page.locator('#exploration').innerText(), /2026-10-07/);
+    assert.match(await page.locator('#exploration').innerText(), /阿基米达的概率引擎/);
+    assert.match(await page.locator('#exploration').innerText(), /首集制作验收中/);
+    assert.doesNotMatch(await page.locator('#education').innerText(), /保研综合第一|代表荣誉/);
+    assert.match(await page.locator('#education').innerText(), /统计与数据科学学院/);
     assert.match(await page.locator('#education').innerText(), /GPA 3.93/);
     assert.match(await page.locator('.career-secondary').innerText(), /3000\+/);
     assert.match(await page.locator('.career-secondary').innerText(), /约 5 分钟/);
@@ -271,6 +283,11 @@ try {
   assert(opening.aperture.match(/[\d.]+/g)?.every((value) => Number(value) === 0), 'Portrait aperture must be fully open after the finite entrance');
   assert.notEqual(opening.bodyOverflow, 'hidden', 'Opening never locks scrolling');
   assert(await page.getByRole('link', { name: /查看项目/ }).isVisible());
+  await page.locator('.project-preview-section').scrollIntoViewIfNeeded();
+  await page.mouse.move(0, 0);
+  await page.waitForFunction(() => document.querySelector('.preview-controls > span').textContent === '02 / 03', { timeout: 12000 });
+  await page.getByRole('button', { name: '暂停项目图轮播' }).click();
+  assert.equal(await page.getByRole('button', { name: '开启项目图轮播' }).getAttribute('aria-pressed'), 'false');
   for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
     await page.locator(`#${id}`).scrollIntoViewIfNeeded();
     await page.waitForTimeout(800);

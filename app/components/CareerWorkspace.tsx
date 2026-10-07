@@ -2,7 +2,7 @@
 
 import { Children, type ReactNode, useEffect, useState } from 'react';
 
-const panels = [['work', '经历', 'Experience'], ['projects', '风控项目', 'Project Evidence'], ['ai', 'AI 协作', 'Agent in Practice']] as const;
+const panels = [['work', '实习履历', 'Experience'], ['projects', '风控项目', 'Project Evidence'], ['ai', 'AI 协作', 'Agent in Practice']] as const;
 
 /** Navigation shortcuts supplement continuous reading; no section is ever hidden. */
 export function CareerWorkspace({ children }: { children: ReactNode }) {

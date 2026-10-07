@@ -11,9 +11,11 @@ import { ContributionMetrics, ProjectAIWorkflow, ProjectEvidence } from './compo
 import { AmbientMusic } from './components/AmbientMusic';
 import { brandContent } from '../content/brand-content';
 import { PortfolioHero } from './components/PortfolioHero';
+import { ProjectPreview } from './components/ProjectPreview';
+import { ZeekrJourney } from './components/ZeekrJourney';
 
 const navItems = [
-  ['top', '首页'], ['work', '经历'], ['projects', '项目'],
+  ['top', '首页'], ['work', '实习履历'], ['projects', '项目'],
   ['ai', 'AI 实践'], ['about', '关于我'],
 ] as const;
 
@@ -132,14 +134,16 @@ export default function Home() {
       </header>
 
       <PortfolioHero />
+      <ProjectPreview />
 
       <div className="identity-overview">
         <section className="chapter education-section" id="education" aria-labelledby="education-title">
-          <p className="eyebrow">BACKGROUND / EDUCATION</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2>
-          <div className="education-grid"><article><span className="field-label">硕士 / FACT</span><h3>厦门大学</h3><p>应用统计硕士</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科 / FACT</span><h3>浙江工商大学</h3><p>经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3% · 保研综合第一</small></article></div>
+          <p className="eyebrow">EDUCATION & JOURNEY / 成长经历</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2>
+          <div className="education-grid"><article><span className="field-label">硕士 / FACT</span><h3>厦门大学</h3><p>应用统计硕士</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科 / FACT</span><h3>浙江工商大学</h3><p>统计与数据科学学院 · 经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3%</small></article></div>
           {careerContent.selectedCoursework.length > 0 && <div className="coursework"><span className="field-label">SELECTED COURSEWORK / 已修课程</span><ul>{careerContent.selectedCoursework.map((course) => <li key={course}>{course}</li>)}</ul></div>}
-          <div className="credential-line"><span className="field-label">代表荣誉 / FACT</span><p><strong>挑战杯国家级特等奖（国赛前3%）</strong><span>山海协作</span></p><p>正大杯国家一等奖 <span>数字经济 × 杭州数字文旅</span></p></div>
+          <p className="journey-credentials">本科阶段曾获挑战杯国家级特等奖（国赛前3%）、正大杯国家一等奖。</p>
           <p className="journey-caption">统计基础 → 业务数据分析 → 支付风险算法与决策</p>
+          <ZeekrJourney />
         </section>
         <section className="chapter about-section" id="about">
           <div className="about-visual">
@@ -156,18 +160,15 @@ export default function Home() {
       <CareerWorkspace>
       <section className="chapter work-section" id="work">
         <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">CURRENT / SELECTED EXPERIENCE</p><h2>从业务数据，<br />走向风险算法。</h2><p>经历不是岗位标签。这里展示我实际研究的问题、已经完成的分析与交付，以及形成的方法判断。</p></div>
-        <div className="career-story">
-          <article className="career-feature" data-reveal><div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>INTERNATIONAL PAYMENT RISK</span></div><div className="career-content"><div className="company-logo-shell didi-logo-shell"><img className="company-logo didi-logo" src="images/brands/didi.svg" alt="滴滴出行 Logo" /></div><p className="company-description">滴滴 · 移动出行平台 · 国际支付风险场景</p><figure className="company-brand-visual didi-brand-visual"><MaintainableImage className="brand-reference-image" src={brandContent.didi.src} alt={brandContent.didi.alt} label="DIDI XIAOJU" fallbackTitle="滴滴品牌形象" objectPosition="50% 50%" /><figcaption>{brandContent.didi.caption}<a href={brandContent.didi.source} target="_blank" rel="noreferrer">图片来源 ↗</a></figcaption></figure><h3>国际支付风控算法实习</h3><p>围绕短窗口误伤复盘，推进样本关系、策略条件解释与宽特征树模型实验；另一条线研究业务字段如何变成可信的风险输入。</p><ContributionMetrics /><ul className="experience-focus">{careerContent.didiFocus.map((focus) => <li key={focus}>{focus}</li>)}</ul><div className="career-tags"><span>Python / SQL</span><span>PySpark GBT</span><span>Feature Engineering</span><span>Risk Decision</span></div><a className="career-project-link" href="#projects">打开项目证据与流程图 ↘</a><p className="privacy-note">上述数量是已完成的实验与汇报贡献。项目仍为 WIP；不将离线指标或研究产物写成线上收益。</p></div></article>
-          <article className="career-secondary" data-reveal>
-            <div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>{careerContent.zeekr.period} / EXPERIENCE 02</span></div>
-            <div className="company-logo-shell zeekr-logo-shell"><img className="company-logo zeekr-logo" src="images/brands/zeekr.svg" alt="极氪 ZEEKR Logo" /></div>
-            <p className="company-description">{careerContent.zeekr.company}<br />{careerContent.zeekr.context}</p>
-            <figure className="company-brand-visual zeekr-brand-visual"><MaintainableImage className="brand-reference-image" src={brandContent.zeekr.src} alt={brandContent.zeekr.alt} label="ZEEKR 9X" fallbackTitle="极氪品牌产品形象" /><figcaption>{brandContent.zeekr.caption}<a href={brandContent.zeekr.source} target="_blank" rel="noreferrer">官网图片 ↗</a></figcaption></figure>
-            <h3>从业务数据，<br />走向决策支持。</h3>
-            <p className="zeekr-role">{careerContent.zeekr.role}</p>
-            <div className="experience-metrics">{careerContent.zeekr.metrics.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
-            <dl className="zeekr-work">{careerContent.zeekr.work.map(([title, description]) => <div key={title}><dt>{title}</dt><dd>{description}</dd></div>)}</dl>
-            <p className="experience-takeaway">这是一段数据分析经历，而非算法实习。指标体系、用户分群与工程化分析，成为后续风险研究的基础。</p>
+        <div className="career-story career-story-primary">
+          <article className="career-feature" data-reveal>
+            <div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>IBG / INTERNATIONAL PAYMENT RISK</span></div>
+            <div className="career-content">
+              <div className="company-logo-shell didi-logo-shell"><img className="company-logo didi-logo" src="images/brands/didi.svg" alt="滴滴出行 Logo" /></div>
+              <p className="company-description">滴滴国际事业群（IBG）· 国际支付风控</p>
+              <figure className="company-brand-visual didi-brand-visual"><div className="pay-product-visual"><MaintainableImage className="brand-reference-image" src={brandContent.didi.src} alt={brandContent.didi.alt} label="99PAY" fallbackTitle="99Pay 官方产品视觉" objectPosition="100% 50%" /><div className="pay-product-label"><strong>99Pay</strong><span>BRAZIL / DIGITAL PAYMENTS</span><p>数字支付，连接真实生活。</p></div></div><figcaption>{brandContent.didi.caption}<a href={brandContent.didi.source} target="_blank" rel="noreferrer">99Pay 官网 ↗</a></figcaption></figure>
+              <h3>国际支付风控算法实习</h3><p>围绕短窗口误伤复盘，推进样本关系、策略条件解释与宽特征树模型实验；另一条线研究业务字段如何变成可信的风险输入。</p><ContributionMetrics /><ul className="experience-focus">{careerContent.didiFocus.map((focus) => <li key={focus}>{focus}</li>)}</ul><div className="career-tags"><span>Python / SQL</span><span>PySpark GBT</span><span>Feature Engineering</span><span>Risk Decision</span></div><a className="career-project-link" href="#projects">打开项目证据与流程图 ↘</a><p className="privacy-note">上述数量是已完成的实验与汇报贡献。项目仍为 WIP；不将离线指标或研究产物写成线上收益。</p>
+            </div>
           </article>
         </div>
       </section>
@@ -185,7 +186,7 @@ export default function Home() {
       </CareerWorkspace>
 
       <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
-        <div className="aigc-compact" data-reveal><div><p className="eyebrow">SIDE EXPLORATION / AIGC</p><h2 id="exploration-title">《{careerContent.aigc.title}》</h2><p>生成式 AI 内容实验 · 创作、发布与反馈迭代</p></div><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>抖音累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><p className="metric-source">截至 {careerContent.aigc.dataAsOf} · 用户确认 · 非实时数据<br />体现跨领域 AI 实践，不作为算法效果证明。</p></div>
+        <div className="aigc-compact aigc-dual" data-reveal><div><p className="eyebrow">SIDE EXPLORATION / AI 创作</p><h2 id="exploration-title">把 AI 能力，带到工作之外。</h2></div><div className="aigc-collections"><article><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.description}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>{careerContent.aigc.metricScope}累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><small>截至 {careerContent.aigc.dataAsOf} · 用户确认 · 非实时数据</small></article><article><h3>《{careerContent.aigc.probabilityEngine.title}》</h3><p>{careerContent.aigc.probabilityEngine.description}</p><small>{careerContent.aigc.probabilityEngine.status}</small></article></div><p className="aigc-production">{careerContent.aigc.production}</p><p className="metric-source">跨领域实践：内容生产与交付流程，不以流量作为算法效果证明。</p></div>
       </section>
 
       <section className="contact-section" id="contact" data-reveal aria-labelledby="contact-title">

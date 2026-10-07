@@ -1,6 +1,6 @@
 /** 公开职业内容：只维护去敏摘要，不存放内部资料、字段或实验数值。 */
 export const careerContent = {
-  updatedAt: '2026-09-30',
+  updatedAt: '2026-10-07',
   zeekr: {
     company: '极氪智能科技有限公司',
     context: '吉利控股集团旗下智能电动品牌',
@@ -56,9 +56,13 @@ export const careerContent = {
   ],
   agentUses: 'SQL / Python · 数据分析 · Debug · 文档与项目整理 · 网页工程',
   aigc: {
-    title: '荒诞研究所',
+    title: 'AI荒诞研究所',
     english: 'AIGC Content Production System',
-    views: '约183万', likes: '约4.2万', dataAsOf: '2026-09-30',
+    views: '210万+', likes: '5万+', dataAsOf: '2026-10-07',
+    metricScope: '全平台',
+    description: '用 Seedance 创作社会观察与讽喻内容，借荒诞叙事表达哲思。',
+    probabilityEngine: { title: '阿基米达的概率引擎', description: '以可视化讲解统计与 AI 理论，探索生活中的统计应用技巧。', status: 'WIP · 首集制作验收中' },
+    production: '选题由我敲定；AI 协作生成视频、BGM、封面、标签与文案，形成发布包。内容与科学性由人审查，发布由本人决定。',
     question: '如何把生成式 AI 从一次性生成工具，变成可重复的内容生产能力？',
     process: [
       ['选题与拆解', '由我选择主题，把创意拆成有因果关系的分幕故事。'],

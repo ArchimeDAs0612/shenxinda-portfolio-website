@@ -1,10 +1,10 @@
 /** Brand reference imagery only, never evidence of personal project ownership. */
 export const brandContent = {
   didi: {
-    src: 'images/brands/didi-xiaoju.svg',
-    alt: '独立小桔子卡通矢量示意，非官方母版',
-    caption: '小桔子 · 独立矢量示意 / 非官方母版',
-    source: 'https://blog.logo123.com/10923',
+    src: 'images/brands/99pay-app.webp',
+    alt: '99Pay 官网公开的手机使用场景人物视觉',
+    caption: '99Pay · 巴西数字支付产品公开视觉，非本人项目产物',
+    source: 'https://99app.com/99pay/',
   },
   zeekr: {
     src: 'images/brands/zeekr-9x-front.webp',
