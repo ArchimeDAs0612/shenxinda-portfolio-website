@@ -11,7 +11,7 @@ export const mediaContent = {
     label: 'PORTRAIT / 01',
     fallbackTitle: '个人照片待补充',
     caption: '职业与生活气质融合的主照片',
-    objectPosition: 'center 22%',
+    objectPosition: 'center bottom',
   },
   life: {
     photos: [

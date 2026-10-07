@@ -12,10 +12,10 @@ import { AmbientMusic } from './components/AmbientMusic';
 import { brandContent } from '../content/brand-content';
 import { PortfolioHero } from './components/PortfolioHero';
 import { ProjectPreview } from './components/ProjectPreview';
-import { ZeekrJourney } from './components/ZeekrJourney';
+import { InternshipOverview } from './components/ZeekrJourney';
 
 const navItems = [
-  ['top', '首页'], ['work', '实习履历'], ['projects', '项目'],
+  ['top', '首页'], ['internships', '实习履历'], ['projects', '项目'],
   ['ai', 'AI 实践'], ['about', '关于我'],
 ] as const;
 
@@ -139,11 +139,10 @@ export default function Home() {
       <div className="identity-overview">
         <section className="chapter education-section" id="education" aria-labelledby="education-title">
           <p className="eyebrow">EDUCATION & JOURNEY / 成长经历</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2>
-          <div className="education-grid"><article><span className="field-label">硕士 / FACT</span><h3>厦门大学</h3><p>应用统计硕士</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科 / FACT</span><h3>浙江工商大学</h3><p>统计与数据科学学院 · 经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3%</small></article></div>
+          <div className="education-grid"><article><span className="field-label">硕士 / FACT</span><h3>厦门大学</h3><p>应用统计硕士 · 保研入学</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科 / FACT</span><h3>浙江工商大学</h3><p>统计与数据科学学院 · 经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3%</small></article></div>
           {careerContent.selectedCoursework.length > 0 && <div className="coursework"><span className="field-label">SELECTED COURSEWORK / 已修课程</span><ul>{careerContent.selectedCoursework.map((course) => <li key={course}>{course}</li>)}</ul></div>}
           <p className="journey-credentials">本科阶段曾获挑战杯国家级特等奖（国赛前3%）、正大杯国家一等奖。</p>
           <p className="journey-caption">统计基础 → 业务数据分析 → 支付风险算法与决策</p>
-          <ZeekrJourney />
         </section>
         <section className="chapter about-section" id="about">
           <div className="about-visual">
@@ -155,11 +154,12 @@ export default function Home() {
           </div>
           <div className="about-copy"><p className="eyebrow">XIAMEN → BEIJING / LIFE</p><h2>生活也在场。</h2><p>厦大校园、北漂实习、跑步与马拉松。专业之外的探索，是我的另一面。</p><a className="life-contact-link" href="#contact">交流工作，也交流新的想法 ↘</a></div>
         </section>
+        <section className="internships-section" id="internships" aria-labelledby="internships-title"><p className="eyebrow">SELECTED EXPERIENCE / 实习履历</p><h2 id="internships-title">两段经历，一条能力路径。</h2><InternshipOverview /></section>
       </div>
 
       <CareerWorkspace>
       <section className="chapter work-section" id="work">
-        <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">CURRENT / SELECTED EXPERIENCE</p><h2>从业务数据，<br />走向风险算法。</h2><p>经历不是岗位标签。这里展示我实际研究的问题、已经完成的分析与交付，以及形成的方法判断。</p></div>
+        <div className="chapter-intro work-intro" data-reveal><p className="eyebrow light">DIDI / PROJECT CONTEXT</p><h2>滴滴研究，<br />从问题到证据。</h2><p>两段实习已在上方概览。接下来只展开滴滴的风险研究：实际问题、实验与交付，以及形成的方法判断。</p></div>
         <div className="career-story career-story-primary">
           <article className="career-feature" data-reveal>
             <div className="career-meta"><span className="status fact">FACT · 实习经历</span><span>IBG / INTERNATIONAL PAYMENT RISK</span></div>

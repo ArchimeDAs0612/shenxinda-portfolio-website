@@ -1,6 +1,6 @@
 /** 公开职业内容：只维护去敏摘要，不存放内部资料、字段或实验数值。 */
 export const careerContent = {
-  updatedAt: '2026-10-07',
+  updatedAt: '2026-10-08',
   zeekr: {
     company: '极氪智能科技有限公司',
     context: '吉利控股集团旗下智能电动品牌',

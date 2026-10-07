@@ -122,6 +122,12 @@ try {
     assert.doesNotMatch(await page.locator('#education').innerText(), /保研综合第一|代表荣誉/);
     assert.match(await page.locator('#education').innerText(), /统计与数据科学学院/);
     assert.match(await page.locator('#education').innerText(), /GPA 3.93/);
+    assert.match(await page.locator('#education').innerText(), /保研入学/);
+    assert.equal(await page.locator('#internships .internship-summary').count(), 2);
+    assert.match(await page.locator('#internships .internship-didi').innerText(), /国际支付风控算法实习.*IBG.*3 组输入/s);
+    assert.match(await page.locator('#internships .internship-zeekr').innerText(), /数据分析实习.*约 3 小时.*约 5 分钟/s);
+    assert.equal(await page.locator('#work .internship-zeekr').count(), 0, 'Zeekr appears only in the balanced overview, not the detailed Didi chapter');
+    assert.equal(await page.locator('.hero .portrait-frame img').evaluate((node) => getComputedStyle(node).objectPosition), '50% 100%', 'Portrait framing must trim sky, not the lower body');
     assert.match(await page.locator('.career-secondary').innerText(), /3000\+/);
     assert.match(await page.locator('.career-secondary').innerText(), /约 5 分钟/);
     assert.match(await page.locator('#education').innerText(), /挑战杯国家级特等奖（国赛前3%）/);
@@ -129,8 +135,10 @@ try {
     assert.equal(await page.locator('link[rel="canonical"]').count(), 1);
     const anchors = await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')));
     for (const anchor of anchors) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, `Broken anchor: ${anchor}`);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-hero.png` });
-    for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
+    await page.locator('.hero .portrait-wrap').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-portrait.png` });
+    for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'internships', 'contact']) {
       await page.locator(`#${id}`).scrollIntoViewIfNeeded();
       await page.locator(`#${id}`).evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + scrollY - 84));
       await page.waitForTimeout(120);
@@ -146,10 +154,13 @@ try {
       }
       if (['work', 'projects', 'ai'].includes(id)) {
         assert.equal(await page.locator(`#tab-${id}`).getAttribute('aria-current'), 'location', 'Directory must follow scrolling');
-        assert(await page.locator(`.nav-links a[href="#${id}"]`).evaluate((node) => node.classList.contains('active')), 'Main navigation must follow scrolling');
+        const navigationTarget = id === 'work' ? 'internships' : id;
+        assert(await page.locator(`.nav-links a[href="#${navigationTarget}"]`).evaluate((node) => node.classList.contains('active')), 'Main navigation must follow the overview and detailed project reading path');
       }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id}: horizontal overflow at ${viewport.width}`);
-      if (['work', 'projects', 'education', 'exploration', 'contact'].includes(id)) await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-${id}.png` });
+      if (id === 'internships') assert(await page.locator('.nav-links a[href="#internships"]').evaluate((node) => node.classList.contains('active')), 'Internship navigation must lead to both experiences');
+      if (id === 'about') assert(await page.locator('#about .about-visual').evaluate((node) => node.getBoundingClientRect().height >= (innerWidth < 640 ? 370 : innerWidth <= 1000 ? 390 : 450)), 'Life carousel must retain the enlarged frame');
+      if (['work', 'projects', 'education', 'about', 'internships', 'exploration', 'contact'].includes(id)) await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-${id}.png` });
     }
     await page.locator('#tab-projects').click();
     assert.equal(await page.locator('#panel-projects').isVisible(), true);

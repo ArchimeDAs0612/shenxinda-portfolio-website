@@ -858,3 +858,24 @@ html:has(:target) .hero-editorial .hero-opening-trace i { animation: none; }
   .hero-editorial .hero-proof .proof-arrow { top: 10px; right: 0; font-size: 12px; }
   .hero-editorial .scroll-cue { display: none; }
 }
+
+/* Balanced first introductions; only the Didi research is expanded below. */
+.identity-overview { grid-template-columns: 1fr 1fr; gap: 52px; }
+.identity-overview .about-visual { min-height: 450px; }
+.internships-section { grid-column: 1 / -1; min-width: 0; scroll-margin-top: 105px; padding-top: 26px; border-top: 1px solid #b9ab9270; }
+.identity-overview .internships-section h2 { font-size: 32px; }
+.internship-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; margin-top: 26px; }
+.internship-summary, .internship-summary.career-secondary { min-height: 0; padding: 20px 0 0; margin: 0; background: transparent; border-radius: 0; border-top: 1px solid #b9ab9270; }
+.internship-summary-heading { display: flex; justify-content: space-between; align-items: start; gap: 18px; min-height: 160px; }
+.internship-summary .company-logo-shell { height: 32px; margin-top: 18px; }
+.internship-summary .company-logo { height: 32px; max-width: 125px; width: auto; }
+.identity-overview .internship-summary h3 { margin: 18px 0 8px; font-size: 22px; line-height: 1.4; }
+.internship-company { color: #797365; font-size: 11px; line-height: 1.8; margin: 0; }
+.internship-summary .company-brand-visual { width: 110px; flex-shrink: 0; margin: 26px 0 0; }.internship-summary .brand-reference-image { height: 75px; }.internship-summary figcaption { font-size: 8px; }
+.internship-summary-copy { font-size: 13px; line-height: 1.9; color: #625b4f; margin: 18px 0; }
+.internship-evidence { margin: 20px 0 14px; }.internship-evidence strong { font-size: 23px; letter-spacing: -.035em; display: block; }.internship-evidence span { display: block; font-size: 10px; color: #81796c; line-height: 1.8; margin-top: 8px; }
+.internship-detail-link, .internship-foundation { font-size: 11px; line-height: 1.8; margin: 0; min-height: 44px; display: flex; align-items: center; }.internship-detail-link { color: var(--blue); }.internship-foundation { color: #81796c; }
+/* Bottom-aligned source framing preserves the body and legs, trimming sky. */
+.hero-editorial .portrait-frame .media-image { object-position: center bottom !important; transform: scale(1.28); transform-origin: center bottom; }
+@media (max-width: 1000px) { .identity-overview { gap: 32px; }.identity-overview .about-visual { min-height: 390px; }.internship-overview { gap: 28px; }.internship-summary .company-brand-visual { width: 88px; }.internship-summary .brand-reference-image { height: 65px; }.identity-overview .education-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .identity-overview { grid-template-columns: 1fr; gap: 32px; }.identity-overview .about-visual { min-height: 370px; }.identity-overview .internships-section h2 { font-size: 28px; }.internship-overview { grid-template-columns: 1fr; gap: 28px; }.internship-summary-heading { min-height: 0; }.internship-summary .company-brand-visual { width: 90px; }.internship-evidence strong { font-size: 21px; }.hero-editorial .portrait-frame .media-image { transform: scale(1.1); } }

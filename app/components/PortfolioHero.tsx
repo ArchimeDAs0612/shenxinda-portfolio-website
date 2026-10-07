@@ -24,8 +24,8 @@ export function PortfolioHero() {
         <div className="portrait-caption"><span>XIAMEN · CHINA</span><span>SHEN XINDA / 2026</span></div>
       </div>
       <div className="hero-proof" aria-label="核心经历">
-        <a href="#work"><span className="proof-index" aria-hidden="true">01 / CURRENT</span><b>滴滴</b><span>国际支付风控算法实习</span><span className="proof-arrow" aria-hidden="true">↗</span></a>
-        <a href="#education"><span className="proof-index" aria-hidden="true">02 / EXPERIENCE</span><b>ZEEKR 极氪</b><span>数据分析实习</span><span className="proof-arrow" aria-hidden="true">↗</span></a>
+        <a href="#internships"><span className="proof-index" aria-hidden="true">01 / CURRENT</span><b>滴滴</b><span>国际支付风控算法实习</span><span className="proof-arrow" aria-hidden="true">↗</span></a>
+        <a href="#internships"><span className="proof-index" aria-hidden="true">02 / EXPERIENCE</span><b>ZEEKR 极氪</b><span>数据分析实习</span><span className="proof-arrow" aria-hidden="true">↗</span></a>
         <a href="#education"><span className="proof-index" aria-hidden="true">03 / EDUCATION</span><b>厦门大学</b><span>应用统计硕士</span><span className="proof-arrow" aria-hidden="true">↗</span></a>
       </div>
       <a className="scroll-cue" href="#education"><span />了解背景与真实项目 <b aria-hidden="true">↓</b></a>
