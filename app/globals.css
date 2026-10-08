@@ -873,6 +873,12 @@ html:has(:target) .hero-editorial .hero-opening-trace i { animation: none; }
 .internship-company { color: #797365; font-size: 11px; line-height: 1.8; margin: 0; }
 .internship-summary .company-brand-visual { width: 110px; flex-shrink: 0; margin: 26px 0 0; }.internship-summary .brand-reference-image { height: 75px; }.internship-summary figcaption { font-size: 8px; }
 .internship-summary-copy { font-size: 13px; line-height: 1.9; color: #625b4f; margin: 18px 0; }
+.internship-bullets { list-style: disc; margin: 18px 0 22px; padding-left: 20px; display: grid; gap: 18px; }
+.internship-bullets li { padding-left: 4px; color: #625b4f; min-width: 0; }
+.internship-bullets li::marker { color: var(--blue); }
+.internship-point-title { display: block; color: var(--ink); font-size: 15px; line-height: 1.5; }
+.internship-bullets p { margin: 5px 0 0; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+.internship-point-metric { display: block; margin-top: 6px; color: var(--blue); font-size: 16px; line-height: 1.6; font-weight: 650; overflow-wrap: anywhere; }
 .internship-evidence { margin: 20px 0 14px; }.internship-evidence strong { font-size: 23px; letter-spacing: -.035em; display: block; }.internship-evidence span { display: block; font-size: 10px; color: #81796c; line-height: 1.8; margin-top: 8px; }
 .internship-detail-link, .internship-foundation { font-size: 11px; line-height: 1.8; margin: 0; min-height: 44px; display: flex; align-items: center; }.internship-detail-link { color: var(--blue); }.internship-foundation { color: #81796c; }
 /* Bottom-aligned source framing preserves the body and legs, trimming sky. */
