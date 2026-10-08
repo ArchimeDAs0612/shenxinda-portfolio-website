@@ -124,12 +124,14 @@ try {
     assert.match(await page.locator('#education').innerText(), /GPA 3.93/);
     assert.match(await page.locator('#education').innerText(), /保研入学/);
     assert.equal(await page.locator('#internships .internship-summary').count(), 2);
-    assert.match(await page.locator('#internships .internship-didi').innerText(), /国际支付风控算法实习.*IBG.*3 组输入/s);
-    assert.match(await page.locator('#internships .internship-zeekr').innerText(), /数据分析实习.*约 3 小时.*约 5 分钟/s);
+    const didiOverview = await page.locator('#internships .internship-didi').innerText();
+    assert.match(didiOverview, /国际支付风控算法实习.*IBG.*风控 Pattern Agent 的搭建工作.*支付字段治理.*项目仍在推进/s);
+    assert.doesNotMatch(didiOverview, /3\s*组输入|5\s*折|5\s*种子/, 'Experiment configuration must not replace the project overview');
+    assert.match(await page.locator('#internships .internship-zeekr').innerText(), /数据分析实习.*经营监测指标体系.*潜客分层.*约3小时.*约5分钟/s);
     assert.equal(await page.locator('#work .internship-zeekr').count(), 0, 'Zeekr appears only in the balanced overview, not the detailed Didi chapter');
     assert.equal(await page.locator('.hero .portrait-frame img').evaluate((node) => getComputedStyle(node).objectPosition), '50% 100%', 'Portrait framing must trim sky, not the lower body');
     assert.match(await page.locator('.career-secondary').innerText(), /3000\+/);
-    assert.match(await page.locator('.career-secondary').innerText(), /约 5 分钟/);
+    assert.match(await page.locator('.career-secondary').innerText(), /约5分钟/);
     assert.match(await page.locator('#education').innerText(), /挑战杯国家级特等奖（国赛前3%）/);
     assert.equal(await page.locator('meta[property="og:image"]').count(), 1);
     assert.equal(await page.locator('link[rel="canonical"]').count(), 1);
