@@ -932,6 +932,8 @@ html:has(:target) .hero-editorial .hero-opening-trace i { animation: none; }
 .portal-ai-summary ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; align-content: center; }
 .portal-ai-summary li { border-bottom: 1px solid #d5cbbb; padding: 16px 0; font-size: 15px; }
 .portal-ai-summary li span { display: block; margin-bottom: 8px; font: 11px monospace; color: #9c7753; }
+.portal-ai-cases { border-top: 1px solid #d5cbbb; margin-top: 28px; min-width: 0; }
+.portal-ai-title { font-size: clamp(21px, 2.3vw, 28px); line-height: 1.5; margin: 28px 0 20px; color: #76563e; }
 .creation-art { height: 210px; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; margin-bottom: 24px; overflow: hidden; background: #e9e1d2; color: #463829; }
 .creation-art span { font: 10px monospace; letter-spacing: .12em; }
 .creation-art b { font-size: 38px; line-height: 1.15; letter-spacing: -.04em; }

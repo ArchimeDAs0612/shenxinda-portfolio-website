@@ -13,7 +13,7 @@ export function PortfolioHero() {
         <h1 id="hero-title" aria-label="沈鑫达"><span className="hero-name-mask" aria-hidden="true">{'沈鑫达'.split('').map((letter, index) => <span className="hero-name-letter" style={{ '--letter-index': index } as CSSProperties} key={letter}>{letter}</span>)}</span></h1>
         <p className="hero-name-en hero-intro-copy" aria-hidden="true">SHEN XINDA</p>
         <p className="hero-role hero-intro-copy">以应用统计为底座，探索风险决策、机器学习与 AI 创作。</p>
-        <div className="hero-identity hero-intro-copy"><p>厦门大学 · 应用统计硕士 · 2027 届</p><p>滴滴国际支付风控算法实习 · Risk / Decision Algorithm</p></div>
+        <div className="hero-identity hero-intro-copy"><p>厦门大学 · 应用统计硕士 · 2028年毕业 · 2027届校招</p><p>滴滴国际支付风控算法实习 · Risk / Decision Algorithm</p></div>
         <p className="hero-statement hero-intro-copy">这里记录我正在研究的问题、与 AI 一起完成的实践，以及工作之外的生活与表达。欢迎同行交流，也欢迎新的合作。</p>
         <div className="actions hero-intro-copy"><a className="button primary" href="#internships">职业与项目 <span aria-hidden="true">↗</span></a><a className="button quiet" href="#ai">AI 与创作</a><a className="button quiet" href="#contact">联系我</a></div>
       </div>

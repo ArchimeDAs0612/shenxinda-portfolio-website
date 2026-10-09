@@ -41,7 +41,9 @@ try {
     assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
     assert.equal(await page.locator('.hero .actions a').count(), 3);
     assert(await page.evaluate(() => document.querySelector('.hero-copy > .eyebrow').getBoundingClientRect().bottom <= document.querySelector('.hero h1').getBoundingClientRect().top), 'Hero label and name must not overlap');
-    assert.match(await page.locator('.hero').innerText(), /2027 届/);
+    assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
+    assert.match(await page.locator('#education').innerText(), /2028年毕业.*2027届校招/s);
+    assert.match(await page.locator('meta[name="description"]').getAttribute('content'), /2028年毕业.*2027届校招/);
     assert.equal(await page.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none');
     assert.equal(await page.evaluate(() => window.__audioContexts.length), 0, 'Music waits for visitor consent');
     if (viewport.width < 640) assert(await page.locator('.hero .actions').evaluate((n) => n.getBoundingClientRect().bottom <= innerHeight - 30), 'Mobile first-screen CTAs');
@@ -55,7 +57,9 @@ try {
     assert.match(await page.locator('.portal-project').last().innerText(), /钱包字段尚未做/);
     assert.equal(await page.locator('#research-details').getAttribute('open'), null);
     assert.equal(await page.locator('#risk-pattern').isVisible(), false);
-    assert.equal(await page.locator('#ai .portal-details').getAttribute('open'), null);
+    assert.equal(await page.locator('#ai details').count(), 0, 'Core AI collaboration is never gated by a disclosure');
+    assert.equal(await page.locator('#ai .ai-case-readthrough').count(), 2);
+    for (const item of await page.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible(), 'Both AI projects are visible without clicking');
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
     assert(!/PDF|简历下载|RESUME/.test(await page.locator('main').innerText()));
     assert.match(await page.title(), /统计.*风险决策.*AI 创作/);
@@ -76,11 +80,10 @@ try {
     assert.match(await page.locator('#field-governance-detail-0').innerText(), /稳定解析/);
     if (viewport.width < 900) { const pan = page.locator('#risk-phase-2 .research-pan'); await pan.evaluate((n) => { n.scrollLeft = n.scrollWidth; }); assert(await pan.evaluate((n) => n.scrollLeft > 0)); }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
-    await page.locator('#research-details > summary').click(); await page.locator('#ai .portal-details > summary').click();
+    await page.locator('#research-details > summary').click();
     assert.equal(await page.locator('#ai .research-svg[role="img"]').count(), 2);
     for (const kind of ['experiment-feedback-loop', 'semantic-evidence-atlas']) assert.equal(await page.locator(`[data-diagram-layout="${kind}"]`).count(), 1);
     for (const f of await page.locator('#ai .research-figure').all()) { assert.equal(await f.locator('svg title').count(), 1); assert.equal(await f.locator('svg desc').count(), 1); }
-    await page.locator('#ai .portal-details > summary').click();
     await page.getByRole('button', { name: '下一张生活照片' }).click(); assert.match(await page.locator('.carousel-controls').innerText(), /02/);
     await page.getByRole('button', { name: '复制邮箱', exact: true }).click(); await page.getByRole('status').filter({ hasText: '已复制' }).waitFor(); assert.equal(await page.evaluate(() => navigator.clipboard.readText()), '19357506009@163.com');
     assert.equal(await page.getByRole('link', { name: /发送邮件/ }).getAttribute('href'), 'mailto:19357506009@163.com');
@@ -100,7 +103,7 @@ try {
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
   const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${siteUrl.split('#')[0]}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
-  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.locator('.portal-project').count(), 2); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await n.locator('#research-details > summary').click(); assert(await n.locator('#risk-pattern').isVisible()); await noJs.close();
+  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.locator('.portal-project').count(), 2); assert.equal(await n.locator('#ai details').count(), 0); for (const item of await n.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible()); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await n.locator('#research-details > summary').click(); assert(await n.locator('#risk-pattern').isVisible()); await noJs.close();
 } finally { await browser.close(); }
 const permissive = await chromium.launch({ ...launch, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
 try { const p = await permissive.newPage(); await p.addInitScript(() => { window.__created = 0; const N = window.AudioContext; window.AudioContext = class extends N { constructor(...a) { super(...a); window.__created++; } }; }); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(500); assert.equal(await p.evaluate(() => window.__created), 0, 'Default off even when autoplay allowed'); } finally { await permissive.close(); }

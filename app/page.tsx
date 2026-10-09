@@ -142,7 +142,7 @@ export default function Home() {
       <section className="chapter workflow-section" id="ai">
         <div className="portal-section-heading"><p className="eyebrow">AI / PRACTICE & CREATION</p><h2>让 AI 扩展执行，也扩展表达。</h2><p className="portal-lead">在研究与开发里，我定义问题、组织 Context、委派 Coding Agent，并审查和验证交付；在创作里，把生成式 AI 组织成完整发布流程。</p></div>
         <div className="portal-ai-summary"><div><span className="field-label">AI-NATIVE PRACTITIONER / AGENT OPERATOR</span><h3>任务交给 Agent，判断留给人。</h3><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
-        <details className="portal-details"><summary>看两个项目中的具体 AI 协作</summary><ProjectAIWorkflow /></details>
+        <div className="portal-ai-cases"><h3 className="portal-ai-title">两个项目中的具体 AI 协作</h3><ProjectAIWorkflow /></div>
       </section>
 
       <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
@@ -152,7 +152,7 @@ export default function Home() {
       <div className="identity-overview">
         <section className="chapter education-section" id="education" aria-labelledby="education-title">
           <p className="eyebrow">EDUCATION & JOURNEY / 成长经历</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2>
-          <div className="education-grid"><article><span className="field-label">2027 届 / 硕士</span><h3>厦门大学</h3><p>应用统计硕士 · 保研入学</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科</span><h3>浙江工商大学</h3><p>统计与数据科学学院 · 经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3%</small></article></div>
+          <div className="education-grid"><article><span className="field-label">2028年毕业 / 硕士</span><h3>厦门大学</h3><p>应用统计硕士 · 保研入学</p><small>统计学与数据科学系 · 2027届校招</small></article><article><span className="field-label">本科</span><h3>浙江工商大学</h3><p>统计与数据科学学院 · 经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3%</small></article></div>
           {careerContent.selectedCoursework.length > 0 && <div className="coursework"><span className="field-label">SELECTED COURSEWORK / 已修课程</span><ul>{careerContent.selectedCoursework.map((course) => <li key={course}>{course}</li>)}</ul></div>}
           <p className="journey-credentials">本科阶段曾获挑战杯国家级特等奖（国赛前3%）、正大杯国家一等奖。</p>
           <p className="journey-caption">统计基础 → 业务数据分析 → 支付风险算法与决策</p>
