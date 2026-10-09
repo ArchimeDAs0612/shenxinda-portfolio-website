@@ -885,3 +885,93 @@ html:has(:target) .hero-editorial .hero-opening-trace i { animation: none; }
 .hero-editorial .portrait-frame .media-image { object-position: center bottom !important; transform: scale(1.28); transform-origin: center bottom; }
 @media (max-width: 1000px) { .identity-overview { gap: 32px; }.identity-overview .about-visual { min-height: 390px; }.internship-overview { gap: 28px; }.internship-summary .company-brand-visual { width: 88px; }.internship-summary .brand-reference-image { height: 65px; }.identity-overview .education-grid { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .identity-overview { grid-template-columns: 1fr; gap: 32px; }.identity-overview .about-visual { min-height: 370px; }.identity-overview .internships-section h2 { font-size: 28px; }.internship-overview { grid-template-columns: 1fr; gap: 28px; }.internship-summary-heading { min-height: 0; }.internship-summary .company-brand-visual { width: 90px; }.internship-evidence strong { font-size: 21px; }.hero-editorial .portrait-frame .media-image { transform: scale(1.1); } }
+
+/* Personal portal: concise first reading, technical depth on demand. */
+.hero.hero-portal { min-height: 0; padding-top: 142px; padding-bottom: 70px; gap: 28px 60px; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); }
+.hero-portal h1 { font-size: clamp(64px, 6.5vw, 92px); }
+.hero-portal .hero-name-en { margin-bottom: 20px; }
+.hero-portal .hero-role { font-size: clamp(23px, 2.2vw, 31px); line-height: 1.5; max-width: 580px; }
+.hero-portal .hero-identity { font-size: 13px; margin-top: 18px; line-height: 1.7; }
+.hero-portal .hero-statement { font-size: 15px; max-width: 540px; margin-top: 15px; }
+.hero-portal .actions { gap: 14px; flex-wrap: wrap; margin-top: 22px; }
+.hero-portal .button { font-size: 14px; padding: 12px 18px; gap: 14px; }
+.hero-portal .button.quiet { margin-left: 0; padding-inline: 10px; }
+.hero-portal .portrait-wrap { max-width: 350px; justify-self: end; width: 100%; }
+.hero-portal .portrait-frame { aspect-ratio: .85; max-height: 400px; }
+.hero-portal .hero-proof { margin-top: 8px; }
+.hero-portal .hero-proof a { padding-top: 15px; }
+.portal-career, .projects-section, .workflow-section, .exploration-section { max-width: 1180px; margin-inline: auto; padding: 64px 0; min-width: 0; }
+.portal-career h2, .portal-section-heading h2, .aigc-dual h2 { font-size: clamp(30px, 3.6vw, 46px); letter-spacing: -.055em; line-height: 1.3; margin: 14px 0; }
+.portal-lead { color: #6f675b; font-size: 16px; line-height: 1.85; max-width: 760px; margin: 18px 0 30px; }
+.portal-career .internship-summary h3 { font-size: 25px; margin: 18px 0 10px; line-height: 1.4; }
+.portal-career .internship-company { font-size: 13px; }
+.portal-career .internship-summary-heading { min-height: 180px; }
+.portal-career .internship-bullets p { font-size: 15px; }
+.portal-career .internship-foundation { font-size: 13px; }
+.portal-career .internship-detail-link { font-size: 14px; }
+.portal-career .didi-brand-visual .media-image { padding: 0; object-fit: cover; }
+.anchor-alias { display: block; scroll-margin-top: 105px; }
+.portal-project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 42px; }
+.portal-project { padding: 28px 0; border-top: 1px solid #c9bfaf; min-width: 0; }
+.portal-project-meta { display: flex; align-items: center; justify-content: space-between; font: 11px monospace; color: #7b6e5b; }
+.portal-project h3 { font-size: 25px; line-height: 1.45; letter-spacing: -.04em; margin: 20px 0 14px; }
+.portal-project p { font-size: 15px; line-height: 1.85; color: #655e53; }
+.portal-project .project-question { color: #363129; }
+.project-work { margin: 22px 0; }
+.project-work p { margin: 8px 0; }
+.project-progress { padding: 16px 18px; background: #f0ebe1; border-left: 2px solid #a17d55; }
+.project-progress strong { display: block; margin-bottom: 5px; color: #675034; font-size: 12px; }
+.portal-details { border-block: 1px solid #d5cbbb; margin: 22px 0 0; min-width: 0; }
+.portal-details > summary { cursor: pointer; min-height: 60px; padding: 18px 8px; color: #76563e; font-size: 15px; font-weight: 550; }
+.portal-details > summary:focus-visible { outline: 2px solid #8e5737; outline-offset: 3px; }
+.portal-details[open] { padding-bottom: 24px; }
+.portal-details .case-heading h3 { font-size: 32px; }
+.portal-ai-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; padding-block: 24px; border-top: 1px solid #c9bfaf; }
+.portal-ai-summary h3 { font-size: 25px; margin: 16px 0; letter-spacing: -.035em; }
+.portal-ai-summary p { color: #756c5d; font-size: 15px; line-height: 1.85; }
+.portal-ai-summary ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; align-content: center; }
+.portal-ai-summary li { border-bottom: 1px solid #d5cbbb; padding: 16px 0; font-size: 15px; }
+.portal-ai-summary li span { display: block; margin-bottom: 8px; font: 11px monospace; color: #9c7753; }
+.creation-art { height: 210px; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; margin-bottom: 24px; overflow: hidden; background: #e9e1d2; color: #463829; }
+.creation-art span { font: 10px monospace; letter-spacing: .12em; }
+.creation-art b { font-size: 38px; line-height: 1.15; letter-spacing: -.04em; }
+.creation-art i { font-size: 12px; font-style: normal; }
+.creation-probability { background: #e1e7db; color: #344538; }
+.aigc-collections p { font-size: 15px; }
+.aigc-collections small { font-size: 12px; line-height: 1.8; }
+.aigc-production { font-size: 15px; }
+.portal-social-link { display: inline-flex; min-height: 48px; align-items: center; color: #8e5737; font-size: 15px; border-bottom: 1px solid #b59c7e; justify-self: start; }
+.identity-overview { margin-block: 24px; }
+.contact-section .contact-intro > p:not(.eyebrow) { max-width: 470px; }
+@media (max-width: 1228px) { .portal-career, .projects-section, .workflow-section, .exploration-section { margin-inline: 24px; } }
+@media (max-width: 900px) { .hero.hero-portal { gap: 26px; }.hero-portal .portrait-wrap { max-width: 260px; }.portal-career .internship-summary-heading { min-height: 210px; } }
+@media (max-width: 640px) {
+  .hero.hero-portal { display: flex; flex-direction: column; padding: 112px 22px 34px; gap: 28px; }
+  .hero-portal .hero-copy { display: block; width: 100%; }
+  .hero-portal .hero-opening-trace { display: none; }
+  .hero-portal h1 { font-size: 58px; }
+  .hero.hero-portal .hero-copy > .eyebrow { font-size: 9px; margin: 0 0 12px; }
+  .hero-portal .hero-name-en { margin: 4px 0 18px; font-size: 10px; }
+  .hero-portal .hero-role { font-size: 22px; line-height: 1.55; }
+  .hero-portal .hero-identity { margin-top: 16px; font-size: 12px; }
+  .hero-portal .hero-statement { margin-top: 12px; font-size: 14px; line-height: 1.8; }
+  .hero-portal .actions { display: flex; gap: 10px; margin-top: 20px; }
+  .hero-portal .button { min-height: 44px; padding: 10px 12px; font-size: 13px; gap: 5px; }
+  .hero-portal .button.quiet { padding-inline: 4px; }
+  .hero-portal .portrait-wrap { align-self: center; width: 100%; max-width: 310px; padding-inline: 10px; }
+  .hero-portal .portrait-frame { aspect-ratio: 1; max-height: 310px; }
+  .hero-portal .hero-proof { width: 100%; display: grid; grid-template-columns: 1fr; margin: 0; }
+  .hero-portal .hero-proof a { display: flex; flex-direction: row; align-items: center; padding: 12px 0; gap: 12px; min-height: 44px; border-left: 0; border-bottom: 1px solid #cfc1ad70; }
+  .hero-portal .hero-proof .proof-index, .hero-portal .hero-proof .proof-arrow { display: none; }
+  .hero-portal .hero-proof b { font-size: 13px; }
+  .hero-portal .hero-proof a > span { font-size: 12px; }
+  .hero-portal .scroll-cue { display: none; }
+  .portal-career, .projects-section, .workflow-section, .exploration-section { margin-inline: 22px; padding-block: 42px; }
+  .portal-career .internship-summary h3, .portal-project h3 { font-size: 23px; }
+  .portal-career .internship-summary-heading { min-height: 0; }
+  .portal-project-grid, .portal-ai-summary { grid-template-columns: 1fr; gap: 24px; }
+  .portal-lead { font-size: 15px; margin-bottom: 24px; }
+  .portal-details > summary { font-size: 14px; }
+  .portal-details .case-heading h3 { font-size: 25px; }
+  .creation-art { height: 195px; }
+}

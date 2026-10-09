@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
-const url = new URL(process.argv[2] || 'https://archimedas0612.github.io/shenxinda-portfolio-website/');
+const url = new URL(process.argv[2] || 'https://archimedas0612.github.io/');
 const get = async (target) => {
   const response = await fetch(target, { signal: AbortSignal.timeout(20000) });
   assert.equal(response.status, 200, `Unavailable: ${target}`);
@@ -18,7 +18,7 @@ const styles = [...html.matchAll(/href="([^"<>]+\.css)"/g)].map((match) => match
 assert(styles.length > 0, 'Stylesheet missing');
 const site = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
 const images = [...new Set([...site.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
-const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', '404.html'];
+const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/portal-share.png', '404.html'];
 await Promise.all(assets.map(async (asset) => {
   const response = await get(new URL(asset, url));
   if (images.includes(asset)) assert.match(response.headers.get('content-type'), /^image\//);

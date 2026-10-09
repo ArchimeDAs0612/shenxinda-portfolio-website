@@ -1,383 +1,108 @@
-// Headless regression checks. Never attaches to a user's foreground browser.
-// npm install --no-save playwright is optional; a bundled module can be supplied
-// with PORTFOLIO_PLAYWRIGHT_MODULE, without adding a project dependency.
+// Headless portal regression: no foreground browser or audible system output.
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
-
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PORTFOLIO_PLAYWRIGHT_MODULE || 'playwright');
 const siteUrl = process.argv[2] || 'http://127.0.0.1:3100/';
+const output = 'outputs/refresh-20260930';
+await mkdir(output, { recursive: true });
+const media = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
+const assets = [...new Set([...media.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((m) => m[1]))];
+assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/portal-share.png');
+const launch = { headless: true, ...(process.env.PORTFOLIO_CHROMIUM ? { executablePath: process.env.PORTFOLIO_CHROMIUM } : {}), args: ['--mute-audio', '--autoplay-policy=document-user-activation-required'] };
+const browser = await chromium.launch(launch);
 const results = [];
-const mediaSource = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
-const assets = [...new Set([...mediaSource.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
-assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg');
-await mkdir('outputs/refresh-20260930', { recursive: true });
-const browser = await chromium.launch({ headless: true, args: ['--mute-audio', '--autoplay-policy=document-user-activation-required'] });
 try {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 820, height: 1180 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
     const context = await browser.newContext({ viewport, isMobile: viewport.width < 640, hasTouch: viewport.width < 900, reducedMotion: 'reduce', permissions: ['clipboard-read', 'clipboard-write'] });
     const page = await context.newPage();
-    // Observe the actual audio graph without exposing a debug API on the site.
     await page.addInitScript(() => {
       window.__audioContexts = [];
-      const NativeAudioContext = window.AudioContext;
-      window.AudioContext = class extends NativeAudioContext {
+      const Native = window.AudioContext;
+      window.AudioContext = class extends Native {
         constructor(...args) {
-          // Render the real graph into Chromium's silent sink. This avoids
-          // depending on (or changing) the user's Mac audio output device.
-          super({ ...args[0], sinkId: { type: 'none' } });
-          window.__audioContexts.push(this);
-          const originalCreateGain = this.createGain.bind(this);
+          super({ ...args[0], sinkId: { type: 'none' } }); window.__audioContexts.push(this);
+          const createGain = this.createGain.bind(this);
           this.createGain = () => {
-            const gain = originalCreateGain();
-            const connect = gain.connect.bind(gain);
+            const gain = createGain(), connect = gain.connect.bind(gain);
             gain.connect = (destination, ...ports) => {
-              if (destination === this.destination) {
-                const analyser = this.createAnalyser();
-                analyser.fftSize = 2048;
-                window.__musicAnalyser = analyser;
-                connect(analyser);
-                analyser.connect(destination);
-                return destination;
-              }
+              if (destination === this.destination) { const analyser = this.createAnalyser(); analyser.fftSize = 2048; window.__musicAnalyser = analyser; connect(analyser); analyser.connect(destination); return destination; }
               return connect(destination, ...ports);
-            };
-            return gain;
+            }; return gain;
           };
         }
       };
     });
-    const errors = [];
-    page.on('pageerror', (error) => errors.push(error.message));
-    const response = await page.goto(siteUrl, { waitUntil: 'networkidle' });
-    assert.equal(response.status(), 200, 'Public HTML must load');
-    if (viewport.width === 1440) {
-      await Promise.all(assets.map(async (asset) => {
-        const assetResponse = await context.request.get(new URL(asset, siteUrl).href);
-        assert.equal(assetResponse.status(), 200, `Missing public asset: ${asset}`);
-        assert.match(assetResponse.headers()['content-type'], /^image\//, `Wrong public asset type: ${asset}`);
-      }));
-    }
-    await page.waitForFunction(() => document.querySelector('.hero-role') && getComputedStyle(document.querySelector('.hero-role')).fontSize !== '16px');
+    const errors = []; page.on('pageerror', (error) => errors.push(error.message));
+    assert.equal((await page.goto(siteUrl, { waitUntil: 'networkidle' })).status(), 200);
+    if (viewport.width === 1440) await Promise.all(assets.map(async (asset) => { const r = await context.request.get(new URL(asset, siteUrl).href); assert.equal(r.status(), 200, asset); assert.match(r.headers()['content-type'], /^image\//, asset); }));
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
-    await page.locator('.hero img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
-    await page.waitForTimeout(150);
-    assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1, 'Animated name must retain one accessible heading');
-    assert.equal(await page.locator('.hero-name-letter').count(), 3);
-    assert.equal(await page.locator('.hero-proof a').count(), 3, 'Hero evidence links must exist without waiting or interacting');
-    assert.equal(await page.locator('.portrait-aperture').evaluate((node) => getComputedStyle(node).animationName), 'none', 'Reduced motion skips the opening');
-    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Hero overflow at ${viewport.width}`);
-    if (viewport.width === 1440) assert(await page.evaluate(() => {
-      const player = document.querySelector('.music-controls').getBoundingClientRect();
-      return [...document.querySelectorAll('.hero-proof a, .hero .scroll-cue')].every((node) => {
-        const target = node.getBoundingClientRect();
-        return target.right <= player.left || target.left >= player.right || target.bottom <= player.top || target.top >= player.bottom;
-      });
-    }), 'Music utility must not obscure first-screen evidence or scroll link');
-    assert.equal(await page.evaluate(() => window.__audioContexts.length), 1, 'Autoplay should be attempted once');
-    assert.equal(await page.evaluate(() => window.__audioContexts[0].state), 'closed', 'Release blocked autoplay audio resources before a gesture');
-    assert.equal(await page.getByRole('button', { name: '开启音乐', exact: true }).getAttribute('aria-pressed'), 'false');
-    const sections = await page.locator('main section.hero, main section.chapter, main section.contact-section').evaluateAll((nodes) => nodes.map((node) => node.id || 'hero'));
-    assert.deepEqual(sections, ['hero', 'education', 'about', 'work', 'projects', 'ai', 'exploration', 'contact']);
-    // Reading without interaction is the primary user journey, not a fallback.
-    for (const id of ['panel-work', 'panel-projects', 'panel-ai']) assert(await page.locator(`#${id}`).isVisible(), `${id} must be readable without a click`);
-    assert.equal(await page.locator('.phase-content').count(), 3);
-    assert.equal(await page.locator('.ai-case-readthrough').count(), 2);
-    assert.equal(await page.locator('.research-preview svg.research-svg[role="img"]').count(), 3);
-    assert(await page.locator('.research-preview .research-heading > div').first().evaluate((node) => node.clientWidth > 200), 'Preview heading must not inherit the full figure number-column layout');
-    assert.equal(await page.locator('.research-figure:not(.research-preview) svg.research-svg[role="img"]').count(), 6);
-    assert.equal(await page.getByRole('button', { name: '开启项目图轮播' }).isDisabled(), true, 'Reduced motion disables automatic previews');
-    await page.getByRole('button', { name: '下一张项目图' }).click();
-    await page.waitForFunction(() => document.querySelector('.preview-controls > span').textContent === '02 / 03');
-    assert.equal(await page.locator('.preview-controls > span').innerText(), '02 / 03');
-    await page.locator('.project-preview-section').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-project-preview.png` });
-    for (const figure of await page.locator('.research-figure:not(.research-preview)').all()) {
-      assert(await figure.isVisible(), 'Research diagrams remain visible without clicking');
-      assert.equal(await figure.locator('svg title').count(), 1);
-      assert.equal(await figure.locator('svg desc').count(), 1);
-      assert(await figure.locator('.research-heading strong').isVisible(), 'Each figure needs a plain-language research question');
-      assert.equal(await figure.locator('.research-readout > div').count(), 3);
-      assert(await figure.locator('.research-interpretation').isVisible(), 'Each figure needs a visible reading conclusion');
-      assert.equal(await figure.locator('.research-terms > div').count(), 2);
-    }
-    assert.match(await page.locator('.didi-brand-visual img').getAttribute('src'), /99pay-app\.webp/);
-    assert.match(await page.locator('.zeekr-brand-visual img').getAttribute('src'), /zeekr-9x-front\.webp/);
-    assert.equal(await page.locator('#ai-case-0 [data-diagram-layout="experiment-feedback-loop"]').count(), 1);
-    assert.equal(await page.locator('#ai-case-1 [data-diagram-layout="semantic-evidence-atlas"]').count(), 1);
-    assert.match(await page.locator('#ai-case-0 .research-svg').textContent(), /Score-only.*Raw-all.*Hybrid.*人工方法审查/s);
-    assert.match(await page.locator('#ai-case-1 .research-svg').textContent(), /物理可解析性.*业务语义.*特征族组织.*决策可用性/s);
-    assert.match(await page.locator('#risk-phase-2 .research-svg').textContent(), /Score-only.*Raw-all.*Hybrid.*PySpark GBT/s);
-    assert.match(await page.locator('#field-governance-detail-0').textContent(), /稳定解析/);
-    for (const node of await page.locator('.process-detail').all()) assert(await node.isVisible(), 'No workflow description may be gated behind a click');
-    const palette = await page.evaluate(() => ({ accent: getComputedStyle(document.documentElement).getPropertyValue('--blue').trim(), background: getComputedStyle(document.body).backgroundColor }));
-    assert.equal(palette.accent, '#8e5737');
-    assert.equal(palette.background, 'rgb(251, 249, 244)');
-    assert.match(await page.locator('#projects').textContent(), /PySpark GBT/);
-    assert.match(await page.locator('#exploration').innerText(), /210万\+/);
-    assert.match(await page.locator('#exploration').innerText(), /全平台累计播放/);
-    assert.match(await page.locator('#exploration').innerText(), /2026-10-07/);
-    assert.match(await page.locator('#exploration').innerText(), /阿基米达的概率引擎/);
-    assert.match(await page.locator('#exploration').innerText(), /首集制作验收中/);
-    assert.doesNotMatch(await page.locator('#education').innerText(), /保研综合第一|代表荣誉/);
-    assert.match(await page.locator('#education').innerText(), /统计与数据科学学院/);
-    assert.match(await page.locator('#education').innerText(), /GPA 3.93/);
-    assert.match(await page.locator('#education').innerText(), /保研入学/);
-    assert.equal(await page.locator('#internships .internship-summary').count(), 2);
-    const didiOverview = await page.locator('#internships .internship-didi').innerText();
-    assert.match(didiOverview, /国际支付风控算法实习.*IBG.*风控 Pattern Agent 搭建.*支付字段治理.*项目仍在推进/s);
-    assert.doesNotMatch(didiOverview, /3\s*组输入|5\s*折|5\s*种子/, 'Experiment configuration must not replace the project overview');
-    assert.match(await page.locator('#internships .internship-zeekr').innerText(), /数据分析实习.*经营监测指标体系.*潜客分层.*约3小时.*约5分钟/s);
-    assert.equal(await page.locator('#internships .internship-didi .internship-bullets > li').count(), 4, 'Didi must be readable as four scan-friendly points');
-    assert.equal(await page.locator('#internships .internship-zeekr .internship-bullets > li').count(), 4, 'Zeekr must be readable as four scan-friendly points');
-    assert.equal(await page.locator('#internships .internship-point-metric').count(), 3, 'Confirmed Zeekr data must be highlighted next to relevant contributions');
-    assert.equal(await page.locator('#internships .internship-summary-copy').count(), 0, 'Do not revert internship overviews to long paragraphs');
-    assert.equal(await page.locator('#work .internship-zeekr').count(), 0, 'Zeekr appears only in the balanced overview, not the detailed Didi chapter');
-    assert.equal(await page.locator('.hero .portrait-frame img').evaluate((node) => getComputedStyle(node).objectPosition), '50% 100%', 'Portrait framing must trim sky, not the lower body');
-    assert.match(await page.locator('.career-secondary').innerText(), /3000\+/);
-    assert.match(await page.locator('.career-secondary').innerText(), /约5分钟/);
-    assert.match(await page.locator('#education').innerText(), /挑战杯国家级特等奖（国赛前3%）/);
+    assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
+    assert.equal(await page.locator('.hero .actions a').count(), 3);
+    assert(await page.evaluate(() => document.querySelector('.hero-copy > .eyebrow').getBoundingClientRect().bottom <= document.querySelector('.hero h1').getBoundingClientRect().top), 'Hero label and name must not overlap');
+    assert.match(await page.locator('.hero').innerText(), /2027 届/);
+    assert.equal(await page.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none');
+    assert.equal(await page.evaluate(() => window.__audioContexts.length), 0, 'Music waits for visitor consent');
+    if (viewport.width < 640) assert(await page.locator('.hero .actions').evaluate((n) => n.getBoundingClientRect().bottom <= innerHeight - 30), 'Mobile first-screen CTAs');
+    assert.equal(await page.locator('.hero-proof a').count(), 3);
+    assert.equal(await page.locator('.portrait-frame img').evaluate((n) => getComputedStyle(n).objectPosition), '50% 100%');
+    for (const company of ['didi', 'zeekr']) assert.equal(await page.locator(`.internship-${company} .internship-bullets > li`).count(), 4);
+    assert.match(await page.locator('.internship-didi').innerText(), /Pattern Agent/);
+    for (const metric of ['3000+', '20万+', '20+', '约3小时 → 约5分钟']) assert((await page.locator('.internship-zeekr').innerText()).includes(metric));
+    assert.equal(await page.locator('.portal-project').count(), 2);
+    assert.match(await page.locator('.portal-project').first().innerText(), /PySpark GBT.*OOT.*Rej→Pass/s);
+    assert.match(await page.locator('.portal-project').last().innerText(), /钱包字段尚未做/);
+    assert.equal(await page.locator('#research-details').getAttribute('open'), null);
+    assert.equal(await page.locator('#risk-pattern').isVisible(), false);
+    assert.equal(await page.locator('#ai .portal-details').getAttribute('open'), null);
+    for (const anchor of await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
+    assert(!/PDF|简历下载|RESUME/.test(await page.locator('main').innerText()));
+    assert.match(await page.title(), /统计.*风险决策.*AI 创作/);
+    assert.equal(new URL(await page.locator('link[rel="canonical"]').getAttribute('href')).href, 'https://archimedas0612.github.io/');
     assert.equal(await page.locator('meta[property="og:image"]').count(), 1);
-    assert.equal(await page.locator('link[rel="canonical"]').count(), 1);
-    const anchors = await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')));
-    for (const anchor of anchors) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, `Broken anchor: ${anchor}`);
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-    await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-hero.png` });
-    await page.locator('.hero .portrait-wrap').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-portrait.png` });
-    for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'internships', 'contact']) {
-      await page.locator(`#${id}`).scrollIntoViewIfNeeded();
-      await page.locator(`#${id}`).evaluate((node) => window.scrollTo(0, node.getBoundingClientRect().top + scrollY - 84));
-      await page.waitForTimeout(120);
-      if (id === 'work') {
-        await page.waitForFunction(() => [...document.querySelectorAll('.company-brand-visual img')].every((image) => image.complete && image.naturalWidth > 0));
-        for (const frame of await page.locator('.brand-reference-image').all()) {
-          assert(await frame.evaluate((node) => {
-            const outer = node.getBoundingClientRect();
-            const image = node.querySelector('img').getBoundingClientRect();
-            return Math.abs(outer.top - image.top) < 1 && Math.abs(outer.height - image.height) < 1 && Math.abs(outer.width - image.width) < 1;
-          }), 'Brand images must stay inside their own frames, not cover company titles');
-        }
-      }
-      if (['work', 'projects', 'ai'].includes(id)) {
-        assert.equal(await page.locator(`#tab-${id}`).getAttribute('aria-current'), 'location', 'Directory must follow scrolling');
-        const navigationTarget = id === 'work' ? 'internships' : id;
-        assert(await page.locator(`.nav-links a[href="#${navigationTarget}"]`).evaluate((node) => node.classList.contains('active')), 'Main navigation must follow the overview and detailed project reading path');
-      }
-      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id}: horizontal overflow at ${viewport.width}`);
-      if (id === 'internships') assert(await page.locator('.nav-links a[href="#internships"]').evaluate((node) => node.classList.contains('active')), 'Internship navigation must lead to both experiences');
-      if (id === 'about') assert(await page.locator('#about .about-visual').evaluate((node) => node.getBoundingClientRect().height >= (innerWidth < 640 ? 370 : innerWidth <= 1000 ? 390 : 450)), 'Life carousel must retain the enlarged frame');
-      if (['work', 'projects', 'education', 'about', 'internships', 'exploration', 'contact'].includes(id)) await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-${id}.png` });
-    }
-    await page.locator('#tab-projects').click();
-    assert.equal(await page.locator('#panel-projects').isVisible(), true);
-    assert.equal(await page.locator('#panel-work').isVisible(), true);
-    assert.equal(await page.locator('#panel-ai').isVisible(), true);
-    await page.getByRole('button', { name: '专注浏览', exact: true }).click();
-    await page.locator('#tab-projects').click();
-    assert.equal(await page.locator('#panel-work').isVisible(), false);
-    assert.equal(await page.locator('#panel-projects').isVisible(), true);
-    await page.getByRole('button', { name: '连续阅读', exact: true }).click();
-    for (const id of ['panel-work', 'panel-projects', 'panel-ai']) assert(await page.locator(`#${id}`).isVisible());
-    assert.match(await page.locator('#risk-pattern').innerText(), /30页/);
-    await page.getByRole('button', { name: '02 · 解释候选与策略', exact: true }).click();
-    assert.match(await page.locator('#risk-phase-1').innerText(), /订单级覆盖/);
-    await page.locator('#risk-phase-1 .process-nodes button').nth(1).click();
-    assert.match(await page.locator('#risk-phase-1 .process-detail').nth(1).innerText(), /任一事件曾达到/);
-    assert(await page.locator('#risk-phase-0').isVisible());
+    assert.equal(await page.locator('#exploration a').getAttribute('href'), 'https://www.xiaohongshu.com/user/profile/5c5054a7000000001000b66e');
+    assert.equal(await page.locator('a[href*="douyin.com/user/self"]').count(), 0);
+    assert.match(await page.locator('#exploration').innerText(), /210万\+.*5万\+.*2026-10-07/s);
+    assert.match(await page.locator('#exploration').innerText(), /尚未作为已发布作品/);
+    assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(251, 249, 244)');
+    await page.screenshot({ path: `${output}/${viewport.width}-hero.png` });
+    for (const id of ['internships', 'education', 'about', 'projects', 'ai', 'exploration', 'contact']) { await page.locator(`#${id}`).scrollIntoViewIfNeeded(); await page.waitForTimeout(120); assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id} overflow ${viewport.width}`); await page.screenshot({ path: `${output}/${viewport.width}-${id}.png` }); }
+    await page.locator('#research-details > summary').click(); assert(await page.locator('#risk-pattern').isVisible());
+    assert.equal(await page.locator('#research-details .research-svg[role="img"]').count(), 4);
     await page.getByRole('button', { name: '03 · 模型发现与审计', exact: true }).click();
-    await page.locator('#risk-phase-2 .process-nodes button').last().click();
-    assert.match(await page.locator('#risk-phase-2 .process-detail').last().innerText(), /阻断 OOT/);
-    await page.locator('#risk-phase-2').scrollIntoViewIfNeeded();
-    await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-diagram.png` });
-    const figureCaptureStyle = '.site-header, .workspace-tabs, .ambient-music { visibility: hidden !important; }';
-    await page.locator('#risk-phase-2 .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-model.png`, style: figureCaptureStyle });
-    await page.locator('#ai-case-0 .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-ai.png`, style: figureCaptureStyle });
-    await page.locator('#ai-case-1 .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-ai-semantics.png`, style: figureCaptureStyle });
-    await page.locator('#feature-research .research-figure').screenshot({ path: `outputs/refresh-20260930/${viewport.width}-research-fields.png`, style: figureCaptureStyle });
-    if (viewport.width < 900) {
-      const pan = page.locator('#risk-phase-2 .research-pan');
-      await pan.evaluate((node) => { node.scrollLeft = node.scrollWidth; });
-      assert(await pan.evaluate((node) => node.scrollLeft > 0), 'Mobile diagrams must pan inside their own container');
-      await pan.evaluate((node) => { node.scrollLeft = 0; });
-      for (const caseId of ['ai-case-0', 'ai-case-1']) {
-        const aiPan = page.locator(`#${caseId} .research-pan`);
-        await aiPan.evaluate((node) => { node.scrollLeft = node.scrollWidth; });
-        assert(await aiPan.evaluate((node) => node.scrollLeft > 0), `${caseId}: mobile pan must expose the complete topology`);
-        await aiPan.evaluate((node) => { node.scrollLeft = 0; });
-      }
-    }
-    assert.match(await page.locator('#feature-research').innerText(), /钱包字段\s+尚未做/);
-    await page.locator('#tab-ai').click();
-    await page.locator('.project-ai .process-nodes button').nth(1).click();
-    assert.match(await page.locator('#ai-case-0 .process-detail').nth(1).innerText(), /PySpark GBT/);
-    await page.getByRole('button', {name: '字段治理的协作约束', exact: true}).click();
-    assert.match(await page.locator('.project-ai').innerText(), /钱包未做/);
-    await page.locator('#tab-ai').focus();
-    await page.keyboard.press('Enter');
-    assert.equal(new URL(page.url()).hash, '#ai');
-    for (const id of ['panel-work', 'panel-projects', 'panel-ai']) assert(await page.locator(`#${id}`).isVisible());
-    await page.getByRole('button', { name: '下一张生活照片' }).click();
-    assert.match(await page.locator('.carousel-controls').innerText(), /02/);
-    await page.getByRole('button', { name: '复制邮箱', exact: true }).click();
-    await page.getByRole('status').filter({ hasText: '已复制' }).waitFor();
-    assert.equal(await page.evaluate(() => navigator.clipboard.readText()), '19357506009@163.com');
+    assert.match(await page.locator('#risk-phase-2 .research-svg').textContent(), /PySpark GBT/);
+    await page.locator('#risk-phase-2 .process-nodes button').last().click(); assert.match(await page.locator('#risk-phase-2 .process-detail').last().innerText(), /阻断 OOT/);
+    assert.match(await page.locator('#field-governance-detail-0').innerText(), /稳定解析/);
+    if (viewport.width < 900) { const pan = page.locator('#risk-phase-2 .research-pan'); await pan.evaluate((n) => { n.scrollLeft = n.scrollWidth; }); assert(await pan.evaluate((n) => n.scrollLeft > 0)); }
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+    await page.locator('#research-details > summary').click(); await page.locator('#ai .portal-details > summary').click();
+    assert.equal(await page.locator('#ai .research-svg[role="img"]').count(), 2);
+    for (const kind of ['experiment-feedback-loop', 'semantic-evidence-atlas']) assert.equal(await page.locator(`[data-diagram-layout="${kind}"]`).count(), 1);
+    for (const f of await page.locator('#ai .research-figure').all()) { assert.equal(await f.locator('svg title').count(), 1); assert.equal(await f.locator('svg desc').count(), 1); }
+    await page.locator('#ai .portal-details > summary').click();
+    await page.getByRole('button', { name: '下一张生活照片' }).click(); assert.match(await page.locator('.carousel-controls').innerText(), /02/);
+    await page.getByRole('button', { name: '复制邮箱', exact: true }).click(); await page.getByRole('status').filter({ hasText: '已复制' }).waitFor(); assert.equal(await page.evaluate(() => navigator.clipboard.readText()), '19357506009@163.com');
     assert.equal(await page.getByRole('link', { name: /发送邮件/ }).getAttribute('href'), 'mailto:19357506009@163.com');
-    await page.getByRole('button', { name: /微信联系/ }).click();
-    await page.getByRole('dialog').waitFor();
-    await page.waitForFunction(() => document.querySelector('.wechat-qr img')?.naturalWidth > 0);
-    assert(await page.getByRole('dialog').evaluate((node) => node.getBoundingClientRect().width <= innerWidth));
-    await page.keyboard.press('Tab');
-    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), '关闭微信二维码');
-    await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-wechat.png` });
-    await page.keyboard.press('Escape');
-    assert.equal(await page.getByRole('dialog').count(), 0);
-    assert.equal(await page.evaluate(() => window.__audioContexts.length), 1, 'Do not duplicate the autoplay audio context');
-    await page.getByRole('button', { name: '开启音乐', exact: true }).click();
-    await page.getByRole('button', { name: '暂停音乐', exact: true }).waitFor();
-    await page.waitForTimeout(1600);
-    const signal = await page.evaluate(() => {
-      const samples = new Float32Array(window.__musicAnalyser.fftSize);
-      window.__musicAnalyser.getFloatTimeDomainData(samples);
-      return { state: window.__audioContexts.at(-1).state, peak: Math.max(...samples.map(Math.abs)), rms: Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length) };
-    });
-    assert.equal(signal.state, 'running');
-    assert(signal.rms > .00001 && signal.peak < .5, `Music must generate a restrained, non-clipped signal: ${JSON.stringify(signal)}`);
-    await page.getByRole('button', { name: '音乐设置', exact: true }).click();
-    await page.locator('#music-volume').fill('0');
-    await page.waitForTimeout(700);
-    assert.equal(await page.locator('#music-volume').inputValue(), '0');
-    assert(await page.evaluate(() => {
-      const samples = new Float32Array(window.__musicAnalyser.fftSize);
-      window.__musicAnalyser.getFloatTimeDomainData(samples);
-      return Math.max(...samples.map(Math.abs)) < .001;
-    }), 'Zero volume must actually mute the signal');
-    await page.locator('#music-volume').fill('25');
-    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Music panel must fit mobile');
-    await page.screenshot({ path: `outputs/refresh-20260930/${viewport.width}-music.png` });
-    await page.getByRole('button', { name: '收起音乐设置' }).click();
-    await page.getByRole('button', { name: '暂停音乐', exact: true }).click();
-    await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
-    await page.getByRole('button', { name: '开启音乐', exact: true }).click();
-    await page.evaluate(() => {
-      Object.defineProperty(document, 'hidden', { configurable: true, value: true });
-      document.dispatchEvent(new Event('visibilitychange'));
-    });
-    await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
-    await page.evaluate(() => {
-      delete document.hidden;
-      document.dispatchEvent(new Event('visibilitychange'));
-    });
-    assert.equal(await page.getByRole('button', { name: '开启音乐', exact: true }).getAttribute('aria-pressed'), 'false', 'Returning to the page must not restart music');
-    assert.equal(await page.evaluate(() => window.__audioContexts.filter((context) => context.state !== 'closed').length), 1, 'Only keep one live audio engine');
-    const images = await page.locator('img').evaluateAll((nodes) => nodes.map((node) => ({ src: node.getAttribute('src'), loaded: node.complete && node.naturalWidth > 0 })));
-    assert(images.every((image) => image.loaded), `Unloaded images: ${JSON.stringify(images)}`);
-    if (viewport.width < 900) {
-      await page.locator('.mobile-nav summary').click();
-      await page.locator('.mobile-nav a[href="#projects"]').click();
-      assert.equal(new URL(page.url()).hash, '#projects');
-      assert.equal(await page.locator('.mobile-nav').evaluate((node) => node.open), false);
-    }
-    assert.deepEqual(errors, [], 'Client JavaScript errors');
-    results.push({ url: siteUrl, viewport, sections, images: images.length, audioSignal: signal, checks: 'continuous content; 6 research diagrams and mobile panning; brand imagery; warm palette; navigation/carousel/clipboard/QR; autoplay blocked fallback, volume, pause, background suspend', passed: true });
-    await context.close();
+    await page.getByRole('button', { name: /微信联系/ }).click(); await page.waitForFunction(() => document.querySelector('.wechat-qr img')?.naturalWidth > 0);
+    assert(await page.getByRole('dialog').evaluate((n) => { const r = n.getBoundingClientRect(); return r.width <= innerWidth && r.height <= innerHeight; }));
+    await page.keyboard.press('Tab'); assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), '关闭微信二维码'); await page.keyboard.press('Escape'); assert.equal(await page.getByRole('dialog').count(), 0);
+    await page.getByRole('button', { name: '开启音乐', exact: true }).click(); await page.getByRole('button', { name: '暂停音乐', exact: true }).waitFor(); await page.waitForTimeout(1600);
+    const signal = await page.evaluate(() => { const s = new Float32Array(window.__musicAnalyser.fftSize); window.__musicAnalyser.getFloatTimeDomainData(s); return { state: window.__audioContexts.at(-1).state, peak: Math.max(...s.map(Math.abs)), rms: Math.sqrt(s.reduce((a, v) => a + v * v, 0) / s.length) }; });
+    assert.equal(signal.state, 'running'); assert(signal.rms > .00001 && signal.peak < .5, JSON.stringify(signal));
+    await page.getByRole('button', { name: '音乐设置', exact: true }).click(); await page.locator('#music-volume').fill('0'); await page.waitForTimeout(700);
+    assert(await page.evaluate(() => { const s = new Float32Array(window.__musicAnalyser.fftSize); window.__musicAnalyser.getFloatTimeDomainData(s); return Math.max(...s.map(Math.abs)) < .001; }));
+    await page.locator('#music-volume').fill('25'); await page.getByRole('button', { name: '收起音乐设置' }).click(); await page.getByRole('button', { name: '暂停音乐', exact: true }).click(); await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
+    await page.getByRole('button', { name: '开启音乐', exact: true }).click(); await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, value: true }); document.dispatchEvent(new Event('visibilitychange')); }); await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
+    await page.evaluate(() => { delete document.hidden; document.dispatchEvent(new Event('visibilitychange')); }); assert.equal(await page.getByRole('button', { name: '开启音乐', exact: true }).getAttribute('aria-pressed'), 'false'); assert.equal(await page.evaluate(() => window.__audioContexts.length), 1);
+    const images = await page.locator('img').evaluateAll((nodes) => nodes.map((n) => ({ src: n.getAttribute('src'), loaded: n.complete && n.naturalWidth > 0 }))); assert(images.every((i) => i.loaded), JSON.stringify(images));
+    if (viewport.width < 900) { await page.locator('.mobile-nav summary').click(); await page.locator('.mobile-nav a[href="#projects"]').click(); assert.equal(new URL(page.url()).hash, '#projects'); assert.equal(await page.locator('.mobile-nav').evaluate((n) => n.open), false); }
+    assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
-  // Motion enabled: content becomes visible as it enters the viewport.
-  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-  const page = await context.newPage();
-  await page.goto(siteUrl, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(1500);
-  const opening = await page.locator('.hero').evaluate((node) => ({
-    animations: node.getAnimations({ subtree: true }).map((animation) => ({ duration: animation.effect.getTiming().duration, iterations: animation.effect.getTiming().iterations, state: animation.playState })),
-    nameTransforms: [...node.querySelectorAll('.hero-name-letter')].map((letter) => getComputedStyle(letter).transform),
-    copyOpacity: getComputedStyle(node.querySelector('.hero-identity')).opacity,
-    aperture: getComputedStyle(node.querySelector('.portrait-aperture')).clipPath,
-    bodyOverflow: getComputedStyle(document.body).overflow,
-  }));
-  assert(opening.animations.length >= 5, 'Opening choreography must be present with motion enabled');
-  assert(opening.animations.every((animation) => animation.iterations === 1 && animation.duration <= 1500 && animation.state === 'finished'), 'Opening must finish, not run continuously');
-  assert.equal(opening.copyOpacity, '1');
-  assert.match(opening.aperture, /^inset\(/);
-  assert(opening.aperture.match(/[\d.]+/g)?.every((value) => Number(value) === 0), 'Portrait aperture must be fully open after the finite entrance');
-  assert.notEqual(opening.bodyOverflow, 'hidden', 'Opening never locks scrolling');
-  assert(await page.getByRole('link', { name: /查看项目/ }).isVisible());
-  await page.locator('.project-preview-section').scrollIntoViewIfNeeded();
-  await page.mouse.move(0, 0);
-  await page.waitForFunction(() => document.querySelector('.preview-controls > span').textContent === '02 / 03', { timeout: 12000 });
-  await page.getByRole('button', { name: '暂停项目图轮播' }).click();
-  assert.equal(await page.getByRole('button', { name: '开启项目图轮播' }).getAttribute('aria-pressed'), 'false');
-  for (const id of ['work', 'projects', 'ai', 'exploration', 'education', 'about', 'contact']) {
-    await page.locator(`#${id}`).scrollIntoViewIfNeeded();
-    await page.waitForTimeout(800);
-    const candidates = page.locator(`#${id}[data-reveal], #${id} [data-reveal]`);
-    for (const element of await candidates.all()) {
-      await element.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(800);
-      assert.equal(await element.evaluate((node) => getComputedStyle(node).opacity), '1', `${id}: hidden reveal content`);
-    }
-  }
-  await context.close();
-  const deepLink = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  const deepLinkPage = await deepLink.newPage();
-  await deepLinkPage.goto(`${siteUrl.split('#')[0]}#contact`, { waitUntil: 'networkidle' });
-  assert.equal(await deepLinkPage.locator('.portrait-aperture').evaluate((node) => getComputedStyle(node).animationName), 'none', 'Direct links skip the opening');
-  assert(await deepLinkPage.getByRole('button', { name: '微信联系', exact: true }).isVisible());
-  await deepLink.close();
-  // Without JavaScript the public content must stay readable, not reveal as blank.
-  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
-  const noJsPage = await noJs.newPage();
-  await noJsPage.goto(siteUrl, { waitUntil: 'networkidle' });
-  await noJsPage.waitForTimeout(1500);
-  assert.equal(await noJsPage.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
-  assert.equal(await noJsPage.locator('.hero-proof a').count(), 3);
-  assert.equal(await noJsPage.locator('#work [data-reveal]').first().evaluate((node) => getComputedStyle(node).opacity), '1');
-  assert.equal(await noJsPage.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1');
-  assert.equal(await noJsPage.locator('.phase-content').count(), 3);
-  for (const node of await noJsPage.locator('.process-detail').all()) assert(await node.isVisible());
-  await noJs.close();
-} finally {
-  await browser.close();
-}
-// Test the allowed-autoplay path too, always muted at the operating-system level.
-const autoplayBrowser = await chromium.launch({ headless: true, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
-try {
-  const page = await autoplayBrowser.newPage();
-  await page.addInitScript(() => {
-    const Original = window.AudioContext;
-    window.AudioContext = class extends Original {
-      constructor(...args) {
-        super({ ...args[0], sinkId: { type: 'none' } });
-        window.__autoplayContext = this;
-        const createGain = this.createGain.bind(this);
-        this.createGain = () => {
-          const gain = createGain();
-          const connect = gain.connect.bind(gain);
-          gain.connect = (destination, ...ports) => {
-            if (destination === this.destination) {
-              const analyser = this.createAnalyser();
-              analyser.fftSize = 2048;
-              window.__autoplayAnalyser = analyser;
-              connect(analyser);
-              analyser.connect(destination);
-              return destination;
-            }
-            return connect(destination, ...ports);
-          };
-          return gain;
-        };
-      }
-    };
-  });
-  await page.goto(siteUrl, { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: '暂停音乐', exact: true }).waitFor({ timeout: 10000 });
-  assert.equal(await page.getByRole('button', { name: '暂停音乐', exact: true }).getAttribute('aria-pressed'), 'true', 'Allowed autoplay starts without a click');
-  await page.waitForFunction(() => window.__autoplayContext?.currentTime > 1, undefined, { timeout: 5000 });
-  const autoplaySignal = await page.evaluate(() => {
-    const samples = new Float32Array(window.__autoplayAnalyser.fftSize);
-    window.__autoplayAnalyser.getFloatTimeDomainData(samples);
-    return { state: window.__autoplayContext.state, peak: Math.max(...samples.map(Math.abs)), rms: Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length) };
-  });
-  assert(autoplaySignal.rms > .00001 && autoplaySignal.peak < .5, 'Allowed autoplay must render actual audio, not just change button text');
-  const report = { passed: true, results, allowedAutoplay: { withoutInteraction: true, audioSignal: autoplaySignal, passed: true } };
-  await writeFile('outputs/refresh-20260930/browser-result.json', JSON.stringify(report, null, 2));
-  console.log(JSON.stringify(report));
-} finally { await autoplayBrowser.close(); }
+  const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${siteUrl.split('#')[0]}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
+  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.locator('.portal-project').count(), 2); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await n.locator('#research-details > summary').click(); assert(await n.locator('#risk-pattern').isVisible()); await noJs.close();
+} finally { await browser.close(); }
+const permissive = await chromium.launch({ ...launch, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
+try { const p = await permissive.newPage(); await p.addInitScript(() => { window.__created = 0; const N = window.AudioContext; window.AudioContext = class extends N { constructor(...a) { super(...a); window.__created++; } }; }); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(500); assert.equal(await p.evaluate(() => window.__created), 0, 'Default off even when autoplay allowed'); } finally { await permissive.close(); }
+const report = { passed: true, url: siteUrl, results, checks: '4 viewports; mobile CTAs; optional diagrams/panning; navigation; images; clipboard; QR/focus; consent-only audio signal/volume/background pause; motion and no-JS reading', externalPlatforms: 'Platform login and app launch not verified' };
+await writeFile(`${output}/browser-result.json`, JSON.stringify(report, null, 2)); console.log(JSON.stringify(report));

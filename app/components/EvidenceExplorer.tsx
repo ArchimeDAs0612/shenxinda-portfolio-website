@@ -27,7 +27,7 @@ export function ProjectEvidence() {
   const [phase, setPhase] = useState(0);
   return <div className="project-evidence-library">
     <article id="risk-pattern" className="risk-case">
-      <div className="case-heading"><span className="status wip">WIP · 项目持续推进</span><p className="field-label">PAYMENT RISK · ALGORITHM · DECISION</p><h3>支付风控误伤识别<br />与风险 Pattern 分析</h3><p>从样本关系、策略解释走到宽特征模型实验。可量化的是已经完成的研究与交付，不是尚未验证的线上收益。</p></div>
+      <div className="case-heading"><span className="status wip">WIP · 项目持续推进</span><p className="field-label">PAYMENT RISK · ALGORITHM · DECISION</p><h3>支付风险 Pattern 研究<br />与潜在误伤分析</h3><p>从样本关系、策略解释走到宽特征模型实验。可量化的是已经完成的研究与交付，不是尚未验证的线上收益。</p></div>
       <ContributionMetrics />
       <div className="phase-selector" aria-label="快速定位风险研究阶段">{riskPhases.map((item, index) => <button type="button" key={item.title} aria-pressed={phase === index} onClick={() => { setPhase(index); document.getElementById(`risk-phase-${index}`)?.scrollIntoView({block: 'start'}); }}>{item.title}</button>)}</div>
       {riskPhases.map((current, index) => <div className="phase-content" id={`risk-phase-${index}`} key={current.title}><p className="phase-label">{current.title}</p><span className="field-label">{current.english}</span><h4 className="phase-question">{current.question}</h4><ProcessMap nodes={current.nodes} label={`risk-phase-${index}`} />

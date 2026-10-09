@@ -1,6 +1,6 @@
 /** 公开职业内容：只维护去敏摘要，不存放内部资料、字段或实验数值。 */
 export const careerContent = {
-  updatedAt: '2026-10-08',
+  updatedAt: '2026-10-09',
   internshipOverview: {
     didi: {
       bullets: [
@@ -9,7 +9,7 @@ export const careerContent = {
         { title: '支付字段治理', text: '为 Agent 与风险研究提供具有明确业务语义的特征输入。' },
         { title: '实验验证与人工审查', text: '完善研究流程和审查机制，由人判断候选 Pattern 与实验结论的有效性。' },
       ],
-      progress: '当前重点是完善研究流程、实验验证与人工审查机制；项目仍在推进，不将候选 Pattern 或实验结果表述为已上线策略及业务收益。',
+      progress: '研究工作流与原型进行中；正式 Pattern 与跨时间验证待完成。',
     },
     zeekr: {
       bullets: [
@@ -44,11 +44,11 @@ export const careerContent = {
   projects: [
     {
       id: 'risk-pattern', number: '01', status: 'WIP',
-      title: '支付风控误伤识别与风险 Pattern 分析',
+      title: '支付风险 Pattern 研究与潜在误伤分析',
       english: 'Payment Risk Pattern Discovery & Decision Analysis',
-      problem: '风控不仅要识别风险，也要理解误伤：观测到的差异，是否足以支持更好的决策？',
-      work: '围绕短窗口支付风险场景，开展样本关系与可比性分析、特征研究、候选 Pattern 探索和树模型实验。',
-      evidence: '已推进到可复跑的模型实验与方法审计；业务有效性与跨时间泛化仍待验证。',
+      problem: '研究支付受阻与后续通过的观察关系，寻找值得进一步核验的风险与潜在误伤线索。',
+      work: '参与搭建风控 Pattern Agent 的研究工作流与原型，连接样本比较、策略复盘、特征研究及 PySpark GBT 实验，由人工审查候选线索与方法。',
+      evidence: '已完成阶段实验与方法审查；正式 Pattern 与 OOT 验证进行中。Rej→Pass 是观察线索，不是已证实的误拒；离线区分效果不代表风险识别能力或业务收益。',
       tags: ['Python / SQL', 'PySpark GBT', 'Feature Engineering', 'Evaluation'],
       details: [
         ['Context / 角色', '在国际支付风控实习中参与分析与验证，以公开摘要解释方法，不披露内部样本、规则或业务指标。'],

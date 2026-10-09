@@ -32,7 +32,7 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/portfolio-browser" --no-package-lock playwright@1.58.2
           "$RUNNER_TEMP/portfolio-browser/node_modules/.bin/playwright" install --with-deps chromium
       - name: Desktop and mobile public interaction tests
-        run: PORTFOLIO_PLAYWRIGHT_MODULE="$RUNNER_TEMP/portfolio-browser/node_modules/playwright" node scripts/verify-browser.mjs https://archimedas0612.github.io/shenxinda-portfolio-website/
+        run: PORTFOLIO_PLAYWRIGHT_MODULE="$RUNNER_TEMP/portfolio-browser/node_modules/playwright" node scripts/verify-browser.mjs https://archimedas0612.github.io/
       - name: Save audit evidence
         if: always()
         uses: actions/upload-artifact@v4

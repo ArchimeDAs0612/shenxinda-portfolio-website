@@ -46,5 +46,5 @@ export const contactContent = {
   xiaohongshuName: '达米鸡A-RandomThought',
   xiaohongshuId: '552811303',
   xiaohongshuDescription: '北漂成长、算法 / AI Coding探索与个人生活记录。',
-  xiaohongshuUrl: '',
+  xiaohongshuUrl: 'https://www.xiaohongshu.com/user/profile/5c5054a7000000001000b66e',
 } as const;
