@@ -1,19 +1,15 @@
-name: Publish portfolio to GitHub Pages
-
+name: Publish legacy-entry migration page
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: true
-
 jobs:
   deploy:
     environment:
@@ -30,35 +26,40 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run verify:source
-      - run: npm run build:pages
-      - name: Place base-path assets at the GitHub Pages artifact root
-        run: cp -R dist/client/shenxinda-portfolio-website/_next dist/client/_next
-      - name: Render static homepage from the production build
+      - name: Require the new portal before switching this legacy entry
         run: |
-          GITHUB_PAGES=true npm start &
-          SERVER_PID=$!
-          for attempt in {1..30}; do
-            if curl --fail --silent http://127.0.0.1:3000/shenxinda-portfolio-website/ --output dist/client/index.html; then
-              break
-            fi
-            sleep 1
-          done
-          kill $SERVER_PID
-          test -s dist/client/index.html
+          curl --fail --silent https://archimedas0612.github.io/ --output /tmp/portal.html
+          grep --quiet '个人品牌门户' /tmp/portal.html
+          grep --quiet 'portal-project' /tmp/portal.html
+      - name: Prepare migration page and retain public image paths
+        run: |
+          mkdir -p dist/client
+          cp -R public/. dist/client/
+          cp hosting/legacy-entry.html dist/client/index.html
           touch dist/client/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/client
-      - name: Deploy to GitHub Pages
+      - name: Wait for artifact metadata visibility
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for attempt in {1..12}; do
+            COUNT=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts" --jq '[.artifacts[] | select(.name == "github-pages")]|length')
+            if [ "$COUNT" -gt 0 ]; then break; fi
+            sleep 5
+          done
+          test "$COUNT" -gt 0
+      - name: Deploy legacy migration
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Verify public page and stylesheet
+      - name: Verify the public migration page
         run: |
-          SITE_URL="https://archimedas0612.github.io/shenxinda-portfolio-website/"
-          curl --fail --retry 6 --retry-delay 5 "$SITE_URL" --output /tmp/portfolio-page.html
-          grep --quiet "沈鑫达" /tmp/portfolio-page.html
-          CSS_PATH=$(grep -o 'href="[^"]*\.css"' /tmp/portfolio-page.html | head -1 | cut -d'"' -f2)
-          test -n "$CSS_PATH"
-          curl --fail --retry 6 --retry-delay 5 "https://archimedas0612.github.io$CSS_PATH" --output /tmp/portfolio-style.css
-          test -s /tmp/portfolio-style.css
+          for attempt in {1..12}; do
+            curl --fail --silent "https://archimedas0612.github.io/shenxinda-portfolio-website/?check=$GITHUB_RUN_ID" --output /tmp/legacy.html
+            if grep --quiet '个人门户已迁移' /tmp/legacy.html; then break; fi
+            sleep 5
+          done
+          grep --quiet '个人门户已迁移' /tmp/legacy.html
+          grep --quiet 'url=https://archimedas0612.github.io/' /tmp/legacy.html
