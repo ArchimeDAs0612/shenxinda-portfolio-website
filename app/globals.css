@@ -934,6 +934,23 @@ html:has(:target) .hero-editorial .hero-opening-trace i { animation: none; }
 .portal-ai-summary li span { display: block; margin-bottom: 8px; font: 11px monospace; color: #9c7753; }
 .portal-ai-cases { border-top: 1px solid #d5cbbb; margin-top: 28px; min-width: 0; }
 .portal-ai-title { font-size: clamp(21px, 2.3vw, 28px); line-height: 1.5; margin: 28px 0 20px; color: #76563e; }
+.creation-paths { display: flex; flex-wrap: wrap; gap: 12px 28px; padding: 20px 0 0; border-top: 1px solid #d5cbbb; }
+.creation-paths a { min-height: 44px; display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #76563e; }
+.creation-paths a span { transition: transform .2s ease; }
+.creation-paths a:hover span { transform: translate(2px, -2px); }
+.exploration-section .portal-social-link { color: #fffaf1; background: #35312b; border: 0; padding: 14px 20px; border-radius: 5px; font-weight: 600; }
+.nav-links { gap: clamp(16px, 2.2vw, 30px); }
+.nav-links a { min-height: 44px; display: inline-flex; align-items: center; }
+.nav-links a::after { bottom: 2px; }
+.contact-topics { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 24px 0; color: #685b49; font-size: 13px; }
+.contact-topics span { border-bottom: 1px solid #b6a58e; padding-bottom: 6px; }
+.portal-share { border-top: 1px solid #b6a58e70; padding-top: 22px; margin-top: 30px; }
+.portal-share > p { font-size: 14px; color: #625746; margin: 0 0 14px; line-height: 1.8; }
+.portal-share > div { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.portal-share button { min-height: 44px; padding: 10px 16px; background: transparent; border: 1px solid #a79176; border-radius: 5px; color: #514536; font: inherit; font-size: 14px; cursor: pointer; }
+.portal-share button span { margin-left: 12px; }
+.portal-share [role="status"] { color: #514536; font-size: 12px; }
+.portal-share > a { display: block; font-size: 12px; line-height: 1.8; color: #685b49; margin-top: 14px; overflow-wrap: anywhere; }
 .creation-art { height: 210px; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; margin-bottom: 24px; overflow: hidden; background: #e9e1d2; color: #463829; }
 .creation-art span { font: 10px monospace; letter-spacing: .12em; }
 .creation-art b { font-size: 38px; line-height: 1.15; letter-spacing: -.04em; }

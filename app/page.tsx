@@ -11,10 +11,12 @@ import { ProjectAIWorkflow } from './components/EvidenceExplorer';
 import { AmbientMusic } from './components/AmbientMusic';
 import { PortfolioHero } from './components/PortfolioHero';
 import { InternshipOverview } from './components/ZeekrJourney';
+import { PortalShare } from './components/PortalShare';
+import { portalContent } from '../content/portal-content';
 
 const navItems = [
   ['top', '首页'], ['internships', '职业'], ['projects', '项目'],
-  ['ai', 'AI 与创作'], ['about', '关于我'],
+  ['exploration', '创作'], ['ai', 'AI 协作'], ['about', '关于我'],
 ] as const;
 
 export default function Home() {
@@ -124,9 +126,9 @@ export default function Home() {
         <nav className="nav" aria-label="主导航">
           <a className="brand" href="#top"><strong>沈鑫达</strong><span>SHEN XINDA</span></a>
           <div className="nav-links">
-            {navItems.map(([id, label]) => <a className={active === id ? 'active' : ''} href={`#${id}`} key={id}>{label}</a>)}
+            {navItems.map(([id, label]) => <a className={active === id ? 'active' : ''} aria-current={active === id ? 'location' : undefined} href={`#${id}`} key={id}>{label}</a>)}
           </div>
-          <details className="mobile-nav"><summary>导航</summary><div>{[...navItems, ['exploration', 'AI 创作'], ['education', '教育背景']].map(([id, label]) => <a href={`#${id}`} key={id} onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}>{label}</a>)}</div></details>
+          <details className="mobile-nav"><summary>导航</summary><div>{[...navItems, ['education', '教育背景']].map(([id, label]) => <a href={`#${id}`} key={id} onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}>{label}</a>)}</div></details>
           <a className="contact-button" href="#contact">联系我</a>
         </nav>
       </header>
@@ -139,14 +141,14 @@ export default function Home() {
         <PublicProjects />
       </section>
 
+      <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
+        <div className="aigc-compact aigc-dual"><div><p className="eyebrow">CREATIVE EXPLORATION / 创作栏目</p><h2 id="exploration-title">另一种表达，另一种实验。</h2></div><div className="aigc-collections"><article><div className="creation-art creation-absurd" role="img" aria-label="荒诞研究所栏目视觉，非作品截图"><span>AI / SOCIAL OBSERVATION</span><b>荒诞<br />研究所</b><i>想象，与现实对话。</i></div><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.description}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>{careerContent.aigc.metricScope}累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><small>截至 {careerContent.aigc.dataAsOf} · 非实时数据</small></article><article><div className="creation-art creation-probability" role="img" aria-label="概率引擎栏目视觉，非作品截图"><span>STATISTICS / EVERYDAY LIFE</span><b>概率<br />引擎</b><i>让抽象的理论，走进生活。</i></div><h3>《{careerContent.aigc.probabilityEngine.title}》</h3><p>{careerContent.aigc.probabilityEngine.description}</p><small>{careerContent.aigc.probabilityEngine.status} · 尚未作为已发布作品展示</small></article></div><p className="aigc-production">{careerContent.aigc.production}</p><a className="portal-social-link" href={contactContent.xiaohongshuUrl} target="_blank" rel="noreferrer">到我的小红书主页，看看内容与生活 ↗</a><p className="metric-source">栏目视觉示意，非作品截图。前往小红书主页继续了解我。</p><div className="creation-paths" aria-label="继续认识我"><a href="#ai">AI 如何参与我的研究 <span aria-hidden="true">↗</span></a><a href="#about">认识工作之外的我 <span aria-hidden="true">↗</span></a><a href="#contact">交流与合作 <span aria-hidden="true">↗</span></a></div></div>
+      </section>
+
       <section className="chapter workflow-section" id="ai">
         <div className="portal-section-heading"><p className="eyebrow">AI / PRACTICE & CREATION</p><h2>让 AI 扩展执行，也扩展表达。</h2><p className="portal-lead">在研究与开发里，我定义问题、组织 Context、委派 Coding Agent，并审查和验证交付；在创作里，把生成式 AI 组织成完整发布流程。</p></div>
         <div className="portal-ai-summary"><div><span className="field-label">AI-NATIVE PRACTITIONER / AGENT OPERATOR</span><h3>任务交给 Agent，判断留给人。</h3><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
         <div className="portal-ai-cases"><h3 className="portal-ai-title">两个项目中的具体 AI 协作</h3><ProjectAIWorkflow /></div>
-      </section>
-
-      <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
-        <div className="aigc-compact aigc-dual"><div><p className="eyebrow">CREATIVE EXPLORATION / 创作栏目</p><h2 id="exploration-title">另一种表达，另一种实验。</h2></div><div className="aigc-collections"><article><div className="creation-art creation-absurd" role="img" aria-label="荒诞研究所栏目视觉，非作品截图"><span>AI / SOCIAL OBSERVATION</span><b>荒诞<br />研究所</b><i>想象，与现实对话。</i></div><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.description}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>{careerContent.aigc.metricScope}累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><small>截至 {careerContent.aigc.dataAsOf} · 非实时数据</small></article><article><div className="creation-art creation-probability" role="img" aria-label="概率引擎栏目视觉，非作品截图"><span>STATISTICS / EVERYDAY LIFE</span><b>概率<br />引擎</b><i>让抽象的理论，走进生活。</i></div><h3>《{careerContent.aigc.probabilityEngine.title}》</h3><p>{careerContent.aigc.probabilityEngine.description}</p><small>{careerContent.aigc.probabilityEngine.status} · 尚未作为已发布作品展示</small></article></div><p className="aigc-production">{careerContent.aigc.production}</p><a className="portal-social-link" href={contactContent.xiaohongshuUrl} target="_blank" rel="noreferrer">到我的小红书主页，看看内容与生活 ↗</a><p className="metric-source">以上为栏目视觉，不是作品截图。作品合集直链待补充。</p></div>
       </section>
 
       <div className="identity-overview">
@@ -174,6 +176,8 @@ export default function Home() {
           <p className="eyebrow light">CONTACT / 联系我</p>
           <h2 id="contact-title">保持判断，<br />持续进化。</h2>
           <p>欢迎交流风险决策、机器学习与 AI 实践，也欢迎职业机会、同行交流与内容合作。</p>
+          <div className="contact-topics" aria-label="交流方向"><span>职业与同行交流</span><span>AI 实践交流</span><span>内容与创作合作</span></div>
+          <PortalShare />
         </div>
 
         <div className="contact-list">
@@ -211,7 +215,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer><div><strong>沈鑫达 / Shen Xinda</strong><p>Statistics · Risk Decision · AI Creation</p><p>内容更新：{careerContent.updatedAt} · 个人门户，非公司官方信息</p></div><a href="#top">返回顶部 ↑</a></footer>
+      <footer><div><strong>沈鑫达 / Shen Xinda</strong><p>Statistics · Risk Decision · AI Creation</p><p>页面更新：{portalContent.updatedAt} · 个人门户，非公司官方信息</p></div><a href="#top">返回顶部 ↑</a></footer>
 
       <AmbientMusic />
 

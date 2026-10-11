@@ -40,6 +40,11 @@ try {
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
     assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
     assert.equal(await page.locator('.hero .actions a').count(), 3);
+    assert.equal(await page.locator('.hero .actions a').nth(1).getAttribute('href'), '#exploration', 'Social visitors reach creation directly');
+    assert(await page.evaluate(() => document.querySelector('#exploration').compareDocumentPosition(document.querySelector('#ai')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Creation precedes the long AI case studies');
+    assert.equal(await page.locator('.nav-links a[href="#exploration"]').count(), 1);
+    assert.equal(await page.locator('.mobile-nav a[href="#exploration"]').count(), 1);
+    assert.equal(await page.locator('.creation-paths a').count(), 3);
     assert(await page.evaluate(() => document.querySelector('.hero-copy > .eyebrow').getBoundingClientRect().bottom <= document.querySelector('.hero h1').getBoundingClientRect().top), 'Hero label and name must not overlap');
     assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
     assert.match(await page.locator('#education').innerText(), /2028年毕业.*2027届校招/s);
@@ -65,12 +70,24 @@ try {
     assert.match(await page.title(), /统计.*风险决策.*AI 创作/);
     assert.equal(new URL(await page.locator('link[rel="canonical"]').getAttribute('href')).href, 'https://archimedas0612.github.io/');
     assert.equal(await page.locator('meta[property="og:image"]').count(), 1);
-    assert.equal(await page.locator('#exploration a').getAttribute('href'), 'https://www.xiaohongshu.com/user/profile/5c5054a7000000001000b66e');
+    assert.equal(await page.locator('#exploration .portal-social-link').count(), 1);
+    assert.equal(await page.locator('#exploration .portal-social-link').getAttribute('href'), 'https://www.xiaohongshu.com/user/profile/5c5054a7000000001000b66e');
     assert.equal(await page.locator('a[href*="douyin.com/user/self"]').count(), 0);
     assert.match(await page.locator('#exploration').innerText(), /210万\+.*5万\+.*2026-10-07/s);
     assert.match(await page.locator('#exploration').innerText(), /尚未作为已发布作品/);
     assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(251, 249, 244)');
     await page.screenshot({ path: `${output}/${viewport.width}-hero.png` });
+    await page.locator('.hero .actions a').nth(1).click();
+    assert.equal(new URL(page.url()).hash, '#exploration');
+    await page.waitForFunction(() => { const top = document.querySelector('#exploration').getBoundingClientRect().top; return top >= 0 && top < innerHeight / 2; });
+    await page.getByRole('button', { name: '复制主页链接' }).click();
+    assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'https://archimedas0612.github.io/');
+    assert.equal(await page.locator('.portal-share [role="status"]').innerText(), '主页链接已复制');
+    await page.evaluate(() => { Object.defineProperty(navigator.clipboard, 'writeText', { configurable: true, value: () => Promise.reject(new Error('Clipboard disabled')) }); });
+    await page.getByRole('button', { name: '复制主页链接' }).click();
+    await page.waitForFunction(() => document.querySelector('.portal-share [role="status"]').textContent === '请长按下方网址复制');
+    assert.equal(await page.locator('.portal-share > a').getAttribute('href'), 'https://archimedas0612.github.io/');
+    await page.evaluate(() => { delete navigator.clipboard.writeText; });
     for (const id of ['internships', 'education', 'about', 'projects', 'ai', 'exploration', 'contact']) { await page.locator(`#${id}`).scrollIntoViewIfNeeded(); await page.waitForTimeout(120); assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id} overflow ${viewport.width}`); await page.screenshot({ path: `${output}/${viewport.width}-${id}.png` }); }
     await page.locator('#research-details > summary').click(); assert(await page.locator('#risk-pattern').isVisible());
     assert.equal(await page.locator('#research-details .research-svg[role="img"]').count(), 4);
