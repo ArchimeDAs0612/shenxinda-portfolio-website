@@ -122,8 +122,10 @@ try {
     const images = await page.locator('img').evaluateAll((nodes) => nodes.map((n) => ({ src: n.getAttribute('src'), loaded: n.complete && n.naturalWidth > 0 }))); assert(images.every((i) => i.loaded), JSON.stringify(images));
     if (viewport.width < 900) { await page.locator('.mobile-nav summary').click(); await page.locator('.mobile-nav a[href="#projects"]').click(); assert.equal(new URL(page.url()).hash, '#projects'); assert.equal(await page.locator('.mobile-nav').evaluate((n) => n.open), false); }
     for (const [source, expected] of [['xhs', '从小红书来的朋友'], ['douyin', '从抖音来的朋友']]) {
-      await page.goto(new URL(`from/${source}/`, siteUrl).href, { waitUntil: 'domcontentloaded' });
-      await page.waitForURL(new RegExp(`\\?from=${source}#exploration$`));
+      // The static /from/* files are checked in source and after publication.
+      // Vinext's app server intentionally does not expose public files as routes,
+      // so this browser regression exercises their final destination directly.
+      await page.goto(new URL(`?from=${source}#exploration`, siteUrl).href, { waitUntil: 'networkidle' });
       await page.locator('.social-source-welcome').waitFor();
       assert.match(await page.locator('.social-source-welcome').innerText(), new RegExp(expected));
       assert.equal(new URL(page.url()).hash, '#exploration');
