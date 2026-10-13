@@ -36,6 +36,9 @@ try {
     });
     const errors = []; page.on('pageerror', (error) => errors.push(error.message));
     assert.equal((await page.goto(siteUrl, { waitUntil: 'networkidle' })).status(), 200);
+    const analytics = page.locator('script[src="https://static.cloudflareinsights.com/beacon.min.js"]');
+    await analytics.waitFor({ state: 'attached' });
+    assert.equal(await analytics.getAttribute('data-cf-beacon'), '{"token":"86fa2109d1784ac79a8f4b6cbea5d608"}');
     if (viewport.width === 1440) await Promise.all(assets.map(async (asset) => { const r = await context.request.get(new URL(asset, siteUrl).href); assert.equal(r.status(), 200, asset); assert.match(r.headers()['content-type'], /^image\//, asset); }));
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
     assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);

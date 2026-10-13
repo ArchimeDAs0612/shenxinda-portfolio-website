@@ -14,6 +14,8 @@ const html = await htmlResponse.text();
 assert.match(html, /沈鑫达/);
 assert.match(html, /property="og:image"/);
 assert.match(html, /rel="canonical"/);
+assert.match(html, /static\.cloudflareinsights\.com\/beacon\.min\.js/);
+assert.match(html, /data-cf-beacon/);
 assert.equal(new URL(html.match(/rel="canonical"[^>]*href="([^"]+)"|href="([^"]+)"[^>]*rel="canonical"/)?.slice(1).find(Boolean)).href, 'https://archimedas0612.github.io/');
 const styles = [...html.matchAll(/href="([^"<>]+\.css)"/g)].map((match) => match[1]);
 assert(styles.length > 0, 'Stylesheet missing');

@@ -20,6 +20,8 @@ for (const relativePath of [...requiredDirectories, ...requiredFiles]) {
 }
 
 const pageSource = readFileSync(pagePath, 'utf8') + readFileSync(join(projectRoot, 'app/components/PortfolioHero.tsx'), 'utf8');
+const portalSource = readFileSync(join(projectRoot, 'content/portal-content.ts'), 'utf8');
+const layoutSource = readFileSync(join(projectRoot, 'app/layout.tsx'), 'utf8');
 const contentSource = readFileSync(contentPath, 'utf8') + readFileSync(join(projectRoot, 'content/brand-content.ts'), 'utf8');
 const ids = new Set([...pageSource.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
 const literalAnchors = [...pageSource.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]);
@@ -47,6 +49,8 @@ for (const imagePath of imagePaths) {
 }
 
 for (const warning of warnings) console.warn(`提示：${warning}`);
+if (!/analyticsToken:\s*['"][a-z0-9]{32}['"]/.test(portalSource)) errors.push('Cloudflare Analytics site tag 缺失或格式不正确');
+if (!/static\.cloudflareinsights\.com\/beacon\.min\.js/.test(layoutSource) || !/data-cf-beacon/.test(layoutSource)) errors.push('Cloudflare Analytics 信标未接入根布局');
 if (errors.length) {
   for (const error of errors) console.error(`错误：${error}`);
   process.exit(1);
