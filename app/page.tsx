@@ -10,6 +10,7 @@ import { PublicProjects } from './components/PublicProjects';
 import { ProjectAIWorkflow } from './components/EvidenceExplorer';
 import { AmbientMusic } from './components/AmbientMusic';
 import { PortfolioHero } from './components/PortfolioHero';
+import { MobileOpening } from './components/MobileOpening';
 import { InternshipOverview } from './components/ZeekrJourney';
 import { PortalShare } from './components/PortalShare';
 import { portalContent } from '../content/portal-content';
@@ -122,6 +123,7 @@ export default function Home() {
 
   return (
     <main id="top">
+      <MobileOpening />
       <header className={`site-header ${compact ? 'is-compact' : ''}`}>
         <nav className="nav" aria-label="主导航">
           <a className="brand" href="#top"><strong>沈鑫达</strong><span>SHEN XINDA</span></a>

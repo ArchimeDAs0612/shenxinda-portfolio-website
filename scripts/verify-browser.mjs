@@ -138,8 +138,41 @@ try {
   }
   const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${siteUrl.split('#')[0]}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
   const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.locator('.portal-project').count(), 2); assert.equal(await n.locator('#ai details').count(), 0); for (const item of await n.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible()); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await n.locator('#research-details > summary').click(); assert(await n.locator('#risk-pattern').isVisible()); await noJs.close();
+  const phone = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  await phone.addInitScript(() => {
+    window.__mobileOpeningCount = 0;
+    const show = HTMLDialogElement.prototype.showModal;
+    HTMLDialogElement.prototype.showModal = function (...args) {
+      if (this.classList.contains('mobile-opening')) window.__mobileOpeningCount++;
+      return show.apply(this, args);
+    };
+  });
+  const arrival = await phone.newPage();
+  await arrival.goto(siteUrl,{waitUntil:'commit'});
+  await arrival.locator('.mobile-opening[open]').waitFor();
+  assert.equal(await arrival.locator('.mobile-opening button').evaluate(n => n === document.activeElement),true);
+  await arrival.locator('.mobile-opening button').click();
+  await arrival.locator('.mobile-opening[open]').waitFor({state:'hidden'});
+  assert.equal(await arrival.evaluate(() => scrollY),0);
+  await arrival.reload({waitUntil:'networkidle'});
+  assert.equal(await arrival.evaluate(() => window.__mobileOpeningCount),0,'Opening plays only once per tab');
+  await phone.clearCookies();
+  await arrival.evaluate(() => sessionStorage.removeItem('portfolio-opening-shown'));
+  await arrival.reload({waitUntil:'commit'});
+  await arrival.locator('.mobile-opening[open]').waitFor();
+  await arrival.locator('.mobile-opening[open]').waitFor({state:'hidden'});
+  assert.equal(await arrival.evaluate(() => scrollY),0,'Automatic opening leaves the homepage at the top');
+  if (!['127.0.0.1','localhost'].includes(new URL(siteUrl).hostname)) {
+    for (const source of ['xhs','douyin']) {
+      await arrival.evaluate(() => sessionStorage.removeItem('portfolio-opening-shown'));
+      await arrival.goto(new URL(`from/${source}/`,siteUrl).href,{waitUntil:'commit'});
+      await arrival.waitForURL(new RegExp(`\\?from=${source}$`),{waitUntil:'networkidle'});
+      assert.equal(await arrival.evaluate(() => window.__mobileOpeningCount),0,'Social entry does not play a second mobile opening');
+    }
+  }
+  await phone.close();
 } finally { await browser.close(); }
 const permissive = await chromium.launch({ ...launch, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
 try { const p = await permissive.newPage(); await p.addInitScript(() => { window.__created = 0; const N = window.AudioContext; window.AudioContext = class extends N { constructor(...a) { super(...a); window.__created++; } }; }); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(500); assert.equal(await p.evaluate(() => window.__created), 0, 'Default off even when autoplay allowed'); } finally { await permissive.close(); }
-const report = { passed: true, url: siteUrl, results, checks: '4 viewports; mobile CTAs; optional diagrams/panning; navigation; images; clipboard; QR/focus; consent-only audio signal/volume/background pause; motion and no-JS reading', externalPlatforms: 'Platform login and app launch not verified' };
+const report = { passed: true, url: siteUrl, results, checks: '4 viewports; mobile CTAs; mobile opening/skip/automatic close/session replay; optional diagrams/panning; navigation; images; clipboard; QR/focus; consent-only audio signal/volume/background pause; motion and no-JS reading', externalPlatforms: 'Platform login and app launch not verified' };
 await writeFile(`${output}/browser-result.json`, JSON.stringify(report, null, 2)); console.log(JSON.stringify(report));
