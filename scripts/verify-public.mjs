@@ -21,7 +21,7 @@ const styles = [...html.matchAll(/href="([^"<>]+\.css)"/g)].map((match) => match
 assert(styles.length > 0, 'Stylesheet missing');
 const site = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
 const images = [...new Set([...site.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
-const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/portal-share.png', '404.html'];
+const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/portal-share.png', '404.html', 'from/intro.css', 'from/intro.js'];
 await Promise.all(assets.map(async (asset) => {
   const response = await get(new URL(asset, url));
   if (images.includes(asset)) assert.match(response.headers.get('content-type'), /^image\//);
@@ -30,11 +30,12 @@ await Promise.all(assets.map(async (asset) => {
 const missing = await fetch(new URL('portal-page-not-found', url), { signal: AbortSignal.timeout(20000) });
 assert.equal(missing.status, 404, 'Unknown route must return an actual 404');
 assert.match(await missing.text(), /返回个人门户/);
-for (const [source, target] of [['xhs', '/?from=xhs#exploration'], ['douyin', '/?from=douyin#exploration']]) {
+for (const [source, target] of [['xhs', '/?from=xhs'], ['douyin', '/?from=douyin']]) {
   const entry = await get(new URL(`from/${source}/`, url));
   const entryHtml = await entry.text();
   assert.match(entryHtml, new RegExp(target.replace(/[?]/g, '\\?')));
   assert.match(entryHtml, /static\.cloudflareinsights\.com\/beacon\.min\.js/);
+  assert(!entryHtml.includes('#exploration'), 'Entry starts at the homepage');
 }
 const career = await readFile('content/career-content.ts', 'utf8');
 const evidence = await readFile('content/project-evidence.ts', 'utf8');

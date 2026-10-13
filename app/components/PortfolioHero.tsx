@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { MaintainableImage } from './MaintainableImage';
 import { mediaContent } from '../../content/site-content';
+import { SocialSourceWelcome } from './SocialSourceWelcome';
 
 /** A finite CSS opening, not a loading gate. All evidence and links exist immediately. */
 export function PortfolioHero() {
@@ -14,7 +15,7 @@ export function PortfolioHero() {
         <p className="hero-name-en hero-intro-copy" aria-hidden="true">SHEN XINDA</p>
         <p className="hero-role hero-intro-copy">以应用统计为底座，探索风险决策、机器学习与 AI 创作。</p>
         <div className="hero-identity hero-intro-copy"><p>厦门大学 · 应用统计硕士 · 2028年毕业 · 2027届校招</p><p>滴滴国际支付风控算法实习 · Risk / Decision Algorithm</p></div>
-        <p className="hero-statement hero-intro-copy">做风险研究，也用 AI 创作与表达。这里有我的实习与项目、创作栏目和生活记录。无论从哪个平台来，欢迎认识我。</p>
+        <SocialSourceWelcome />
         <div className="actions hero-intro-copy"><a className="button primary" href="#internships">职业与项目 <span aria-hidden="true">↗</span></a><a className="button quiet" href="#exploration">看 AI 创作与生活</a><a className="button quiet" href="#contact">联系我</a></div>
       </div>
       <div className="portrait-wrap">

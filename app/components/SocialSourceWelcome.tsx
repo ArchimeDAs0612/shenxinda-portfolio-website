@@ -15,7 +15,7 @@ const sourceCopy: Record<Source, { label: string; message: string }> = {
   },
 };
 
-/** A small, path-backed acknowledgement for social visitors; absent for normal visits. */
+/** Source-aware copy occupies the existing hero introduction, without extra layout. */
 export function SocialSourceWelcome() {
   const [source, setSource] = useState<Source | null>(null);
 
@@ -26,12 +26,9 @@ export function SocialSourceWelcome() {
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  if (!source) return null;
-  const copy = sourceCopy[source];
   return (
-    <p className="social-source-welcome" role="status">
-      <span>{copy.label}</span>
-      {copy.message}
+    <p className={`hero-statement hero-intro-copy${source ? ' social-source-welcome' : ''}`}>
+      {source ? sourceCopy[source].message : '做风险研究，也用 AI 创作与表达。这里有我的实习与项目、创作栏目和生活记录。无论从哪个平台来，欢迎认识我。'}
     </p>
   );
 }

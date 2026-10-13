@@ -125,10 +125,14 @@ try {
       // The static /from/* files are checked in source and after publication.
       // Vinext's app server intentionally does not expose public files as routes,
       // so this browser regression exercises their final destination directly.
-      await page.goto(new URL(`?from=${source}#exploration`, siteUrl).href, { waitUntil: 'networkidle' });
+      const publicHost = !['127.0.0.1', 'localhost'].includes(new URL(siteUrl).hostname);
+      await page.goto(new URL(publicHost ? `from/${source}/` : `?from=${source}`, siteUrl).href, { waitUntil: 'domcontentloaded' });
+      await page.waitForURL(new RegExp(`\\?from=${source}$`));
       await page.locator('.social-source-welcome').waitFor();
       assert.match(await page.locator('.social-source-welcome').innerText(), new RegExp(expected));
-      assert.equal(new URL(page.url()).hash, '#exploration');
+      assert.equal(new URL(page.url()).hash, '');
+      assert(await page.evaluate(() => scrollY < 10), 'Social arrivals start at the homepage top');
+      assert(await page.locator('.hero .actions').isVisible());
     }
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
