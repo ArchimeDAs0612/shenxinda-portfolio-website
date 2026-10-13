@@ -30,11 +30,18 @@ await Promise.all(assets.map(async (asset) => {
 const missing = await fetch(new URL('portal-page-not-found', url), { signal: AbortSignal.timeout(20000) });
 assert.equal(missing.status, 404, 'Unknown route must return an actual 404');
 assert.match(await missing.text(), /返回个人门户/);
+for (const [source, target] of [['xhs', '/?from=xhs#exploration'], ['douyin', '/?from=douyin#exploration']]) {
+  const entry = await get(new URL(`from/${source}/`, url));
+  const entryHtml = await entry.text();
+  assert.match(entryHtml, new RegExp(target.replace(/[?]/g, '\\?')));
+  assert.match(entryHtml, /static\.cloudflareinsights\.com\/beacon\.min\.js/);
+}
 const career = await readFile('content/career-content.ts', 'utf8');
 const evidence = await readFile('content/project-evidence.ts', 'utf8');
 const report = {
   checkedAt: new Date().toISOString(), publicUrl: url.href, passed: true,
   assetsChecked: assets.length,
+  socialEntriesChecked: 2,
   // Fingerprints establish which approved public content was checked, not a new fact source.
   approvedContentHash: createHash('sha256').update(career).update(evidence).digest('hex'),
   mediaConfigHash: createHash('sha256').update(site).digest('hex'),

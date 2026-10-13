@@ -47,7 +47,8 @@ try {
     assert(await page.evaluate(() => document.querySelector('#exploration').compareDocumentPosition(document.querySelector('#ai')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Creation precedes the long AI case studies');
     assert.equal(await page.locator('.nav-links a[href="#exploration"]').count(), 1);
     assert.equal(await page.locator('.mobile-nav a[href="#exploration"]').count(), 1);
-    assert.equal(await page.locator('.creation-paths a').count(), 3);
+    assert.equal(await page.locator('.creation-paths a').count(), 4);
+    assert.equal(await page.locator('.social-source-welcome').count(), 0, 'Normal visits do not get a source greeting');
     assert(await page.evaluate(() => document.querySelector('.hero-copy > .eyebrow').getBoundingClientRect().bottom <= document.querySelector('.hero h1').getBoundingClientRect().top), 'Hero label and name must not overlap');
     assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
     assert.match(await page.locator('#education').innerText(), /2028年毕业.*2027届校招/s);
@@ -120,6 +121,13 @@ try {
     await page.evaluate(() => { delete document.hidden; document.dispatchEvent(new Event('visibilitychange')); }); assert.equal(await page.getByRole('button', { name: '开启音乐', exact: true }).getAttribute('aria-pressed'), 'false'); assert.equal(await page.evaluate(() => window.__audioContexts.length), 1);
     const images = await page.locator('img').evaluateAll((nodes) => nodes.map((n) => ({ src: n.getAttribute('src'), loaded: n.complete && n.naturalWidth > 0 }))); assert(images.every((i) => i.loaded), JSON.stringify(images));
     if (viewport.width < 900) { await page.locator('.mobile-nav summary').click(); await page.locator('.mobile-nav a[href="#projects"]').click(); assert.equal(new URL(page.url()).hash, '#projects'); assert.equal(await page.locator('.mobile-nav').evaluate((n) => n.open), false); }
+    for (const [source, expected] of [['xhs', '从小红书来的朋友'], ['douyin', '从抖音来的朋友']]) {
+      await page.goto(new URL(`from/${source}/`, siteUrl).href, { waitUntil: 'domcontentloaded' });
+      await page.waitForURL(new RegExp(`\\?from=${source}#exploration$`));
+      await page.locator('.social-source-welcome').waitFor();
+      assert.match(await page.locator('.social-source-welcome').innerText(), new RegExp(expected));
+      assert.equal(new URL(page.url()).hash, '#exploration');
+    }
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
   const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${siteUrl.split('#')[0]}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();

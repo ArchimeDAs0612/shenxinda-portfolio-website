@@ -10,7 +10,7 @@ const requiredDirectories = [
   'public/images/projects',
   'public/images/contact',
 ];
-const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'content/career-content.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg'];
+const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'content/career-content.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg', 'public/from/xhs/index.html', 'public/from/douyin/index.html'];
 const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg']);
 const errors = [];
 const warnings = [];
@@ -51,6 +51,13 @@ for (const imagePath of imagePaths) {
 for (const warning of warnings) console.warn(`提示：${warning}`);
 if (!/analyticsToken:\s*['"][a-z0-9]{32}['"]/.test(portalSource)) errors.push('Cloudflare Analytics site tag 缺失或格式不正确');
 if (!/static\.cloudflareinsights\.com\/beacon\.min\.js/.test(layoutSource) || !/data-cf-beacon/.test(layoutSource)) errors.push('Cloudflare Analytics 信标未接入根布局');
+for (const [source, target] of [['xhs', '/?from=xhs#exploration'], ['douyin', '/?from=douyin#exploration']]) {
+  const entryPath = join(projectRoot, `public/from/${source}/index.html`);
+  if (!existsSync(entryPath)) continue;
+  const entrySource = readFileSync(entryPath, 'utf8');
+  if (!entrySource.includes(target)) errors.push(`社媒入口跳转不正确：${source}`);
+  if (!entrySource.includes(portalSource.match(/analyticsToken:\s*['"]([^'"]+)/)?.[1] ?? '')) errors.push(`社媒入口未接入统计：${source}`);
+}
 if (errors.length) {
   for (const error of errors) console.error(`错误：${error}`);
   process.exit(1);
