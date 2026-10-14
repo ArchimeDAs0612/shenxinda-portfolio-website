@@ -60,7 +60,7 @@ try {
     assert.equal(await page.locator('.hero-proof a').count(), 0);
     assert.equal(await page.locator('.portrait-frame img').evaluate((n) => getComputedStyle(n).objectPosition), '50% 100%');
     assert.equal(await page.locator('#internships').count(), 0);
-    await page.goto(new URL('career/', siteUrl).href, { waitUntil: 'networkidle' });
+    await page.goto(new URL('?view=career', siteUrl).href, { waitUntil: 'networkidle' });
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
     assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
     assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
@@ -81,7 +81,7 @@ try {
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
     assert(!/PDF|简历下载|RESUME/.test(await page.locator('main').innerText()));
     assert.match(await page.title(), /统计.*风险决策.*AI 创作/);
-    assert.equal(new URL(await page.locator('link[rel="canonical"]').getAttribute('href')).href, 'https://archimedas0612.github.io/career/');
+    assert.equal(new URL(await page.locator('link[rel="canonical"]').getAttribute('href')).href, 'https://archimedas0612.github.io/');
     assert.equal(await page.locator('meta[property="og:image"]').count(), 1);
     assert.equal(await page.locator('#exploration .portal-social-link').count(), 1);
     assert.equal(await page.locator('#exploration .portal-social-link').getAttribute('href'), 'https://www.xiaohongshu.com/user/profile/5c5054a7000000001000b66e');
@@ -145,8 +145,8 @@ try {
     }
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
-  const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(new URL('career/', siteUrl).href, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${new URL('career/', siteUrl).href}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
-  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(new URL('career/', siteUrl).href, { waitUntil: 'networkidle' }); assert.equal(await n.locator('.portal-project').count(), 2); assert.equal(await n.locator('#ai details').count(), 0); for (const item of await n.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible()); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await n.locator('#research-details > summary').click(); assert(await n.locator('#risk-pattern').isVisible()); await noJs.close();
+  const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(new URL('?view=career', siteUrl).href, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${new URL('?view=career', siteUrl).href}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
+  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1); assert.equal(await n.locator('#internships').count(), 0); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await noJs.close();
   const phone = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   await phone.addInitScript(() => {
     window.__mobileOpeningCount = 0;

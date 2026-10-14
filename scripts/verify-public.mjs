@@ -23,6 +23,7 @@ const careerResponse = await get(careerUrl);
 const careerHtml = await careerResponse.text();
 assert.match(careerHtml, /沈鑫达/);
 assert.match(careerHtml, /noindex/);
+assert.match(careerHtml, /\?view=career/);
 const styles = [...html.matchAll(/href="([^"<>]+\.css)"/g)].map((match) => match[1]);
 assert(styles.length > 0, 'Stylesheet missing');
 const site = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');

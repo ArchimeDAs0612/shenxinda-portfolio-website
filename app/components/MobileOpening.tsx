@@ -13,7 +13,7 @@ export function MobileOpening() {
     const dialog = dialogRef.current;
     const mobile = window.matchMedia('(max-width: 639px)');
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!dialog?.showModal || !mobile.matches || reduced.matches || window.location.hash) return;
+    if (!dialog?.showModal || !mobile.matches || reduced.matches || window.location.hash || new URLSearchParams(window.location.search).get('view') === 'career') return;
     try { if (window.sessionStorage.getItem(openingKey)) return; } catch { /* Private modes can disable storage. */ }
 
     let finishTimer: number | undefined;

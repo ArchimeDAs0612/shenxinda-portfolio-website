@@ -249,5 +249,11 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
 }
 
 export default function Home() {
-  return <PortfolioPage view="public" />;
+  const [view] = useState<PortalView>(() => (
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('view') === 'career'
+      ? 'career'
+      : 'public'
+  ));
+
+  return <PortfolioPage view={view} />;
 }

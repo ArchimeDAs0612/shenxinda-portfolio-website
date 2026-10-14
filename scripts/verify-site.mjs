@@ -3,7 +3,6 @@ import { extname, join } from 'node:path';
 
 const projectRoot = process.cwd();
 const pagePath = join(projectRoot, 'app/page.tsx');
-const careerPagePath = join(projectRoot, 'app/career/page.tsx');
 const contentPath = join(projectRoot, 'content/site-content.ts');
 const requiredDirectories = [
   'public/images/profile',
@@ -11,7 +10,7 @@ const requiredDirectories = [
   'public/images/projects',
   'public/images/contact',
 ];
-const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'app/career/page.tsx', 'content/career-content.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg', 'public/from/xhs/index.html', 'public/from/douyin/index.html'];
+const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'public/career/index.html', 'content/career-content.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg', 'public/from/xhs/index.html', 'public/from/douyin/index.html'];
 const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg']);
 const errors = [];
 const warnings = [];
@@ -20,7 +19,7 @@ for (const relativePath of [...requiredDirectories, ...requiredFiles]) {
   if (!existsSync(join(projectRoot, relativePath))) errors.push(`缺少：${relativePath}`);
 }
 
-const pageSource = readFileSync(pagePath, 'utf8') + readFileSync(careerPagePath, 'utf8') + readFileSync(join(projectRoot, 'app/components/PortfolioHero.tsx'), 'utf8');
+const pageSource = readFileSync(pagePath, 'utf8') + readFileSync(join(projectRoot, 'app/components/PortfolioHero.tsx'), 'utf8');
 const portalSource = readFileSync(join(projectRoot, 'content/portal-content.ts'), 'utf8');
 const layoutSource = readFileSync(join(projectRoot, 'app/layout.tsx'), 'utf8');
 const contentSource = readFileSync(contentPath, 'utf8') + readFileSync(join(projectRoot, 'content/brand-content.ts'), 'utf8');
@@ -52,7 +51,7 @@ for (const imagePath of imagePaths) {
 for (const warning of warnings) console.warn(`提示：${warning}`);
 if (!/analyticsToken:\s*['"][a-z0-9]{32}['"]/.test(portalSource)) errors.push('Cloudflare Analytics site tag 缺失或格式不正确');
 if (!/careerUrl:\s*['"]https:\/\/archimedas0612\.github\.io\/career\//.test(portalSource)) errors.push('职业页入口缺失或不是唯一职业页地址');
-if (!/robots:\s*\{ index: false, follow: false \}/.test(readFileSync(careerPagePath, 'utf8'))) errors.push('职业页必须禁止搜索引擎索引');
+if (!/name="robots" content="noindex, nofollow"/.test(readFileSync(join(projectRoot, 'public/career/index.html'), 'utf8'))) errors.push('职业入口必须禁止搜索引擎索引');
 if (!/static\.cloudflareinsights\.com\/beacon\.min\.js/.test(layoutSource) || !/data-cf-beacon/.test(layoutSource)) errors.push('Cloudflare Analytics 信标未接入根布局');
 for (const [source, target] of [['xhs', '/?from=xhs'], ['douyin', '/?from=douyin']]) {
   const entryPath = join(projectRoot, `public/from/${source}/index.html`);
