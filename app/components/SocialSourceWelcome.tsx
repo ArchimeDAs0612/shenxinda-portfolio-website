@@ -16,7 +16,7 @@ const sourceCopy: Record<Source, { label: string; message: string }> = {
 };
 
 /** Source-aware copy occupies the existing hero introduction, without extra layout. */
-export function SocialSourceWelcome() {
+export function SocialSourceWelcome({ career = false }: { career?: boolean }) {
   const [source, setSource] = useState<Source | null>(null);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function SocialSourceWelcome() {
 
   return (
     <p className={`hero-statement hero-intro-copy${source ? ' social-source-welcome' : ''}`}>
-      {source ? sourceCopy[source].message : '做风险研究，也用 AI 创作与表达。这里有我的实习与项目、创作栏目和生活记录。无论从哪个平台来，欢迎认识我。'}
+      {source ? sourceCopy[source].message : career ? '做风险研究，也用 AI 创作与表达。这里有我的实习与项目、创作栏目和生活记录。' : '用统计理解世界，也用 AI 创作与表达。这里有我的创作、思考与生活记录。'}
     </p>
   );
 }

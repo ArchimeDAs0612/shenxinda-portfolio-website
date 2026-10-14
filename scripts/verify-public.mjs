@@ -11,17 +11,23 @@ const get = async (target) => {
 };
 const htmlResponse = await get(url);
 const html = await htmlResponse.text();
-assert.match(html, /沈鑫达/);
+assert.match(html, /阿基米达/);
+assert.doesNotMatch(html, /沈鑫达/, 'Public homepage must not disclose the career-view name');
 assert.match(html, /property="og:image"/);
 assert.match(html, /rel="canonical"/);
 assert.match(html, /static\.cloudflareinsights\.com\/beacon\.min\.js/);
 assert.match(html, /data-cf-beacon/);
 assert.equal(new URL(html.match(/rel="canonical"[^>]*href="([^"]+)"|href="([^"]+)"[^>]*rel="canonical"/)?.slice(1).find(Boolean)).href, 'https://archimedas0612.github.io/');
+const careerUrl = new URL('career/', url);
+const careerResponse = await get(careerUrl);
+const careerHtml = await careerResponse.text();
+assert.match(careerHtml, /沈鑫达/);
+assert.match(careerHtml, /noindex/);
 const styles = [...html.matchAll(/href="([^"<>]+\.css)"/g)].map((match) => match[1]);
 assert(styles.length > 0, 'Stylesheet missing');
 const site = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
 const images = [...new Set([...site.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
-const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/portal-share.png', '404.html', 'from/intro.css', 'from/intro.js'];
+const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/profile/bdf5afa6a8fc8fc136fd282f6c467fcd.jpg', '404.html', 'from/intro.css', 'from/intro.js'];
 await Promise.all(assets.map(async (asset) => {
   const response = await get(new URL(asset, url));
   if (images.includes(asset)) assert.match(response.headers.get('content-type'), /^image\//);
@@ -29,7 +35,7 @@ await Promise.all(assets.map(async (asset) => {
 }));
 const missing = await fetch(new URL('portal-page-not-found', url), { signal: AbortSignal.timeout(20000) });
 assert.equal(missing.status, 404, 'Unknown route must return an actual 404');
-assert.match(await missing.text(), /返回个人门户/);
+assert.match(await missing.text(), /返回个人主页/);
 for (const [source, target] of [['xhs', '/?from=xhs'], ['douyin', '/?from=douyin']]) {
   const entry = await get(new URL(`from/${source}/`, url));
   const entryHtml = await entry.text();
@@ -40,7 +46,7 @@ for (const [source, target] of [['xhs', '/?from=xhs'], ['douyin', '/?from=douyin
 const career = await readFile('content/career-content.ts', 'utf8');
 const evidence = await readFile('content/project-evidence.ts', 'utf8');
 const report = {
-  checkedAt: new Date().toISOString(), publicUrl: url.href, passed: true,
+  checkedAt: new Date().toISOString(), publicUrl: url.href, careerUrl: careerUrl.href, passed: true,
   assetsChecked: assets.length,
   socialEntriesChecked: 2,
   // Fingerprints establish which approved public content was checked, not a new fact source.

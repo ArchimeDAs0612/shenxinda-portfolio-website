@@ -47,10 +47,10 @@ export function MobileOpening() {
   return (
     <dialog className="mobile-opening" ref={dialogRef} aria-labelledby="mobile-opening-name" aria-describedby="mobile-opening-welcome">
       <div className="mobile-opening-frame">
-        <div className="mobile-opening-header"><span>SHEN XINDA<br />PERSONAL PORTAL</span><button ref={skipRef} type="button" onClick={() => dialogRef.current?.close()}>跳过开场 <span aria-hidden="true">↗</span></button></div>
+        <div className="mobile-opening-header"><span>ARCHIMEDAS<br />PERSONAL PORTAL</span><button ref={skipRef} type="button" onClick={() => dialogRef.current?.close()}>跳过开场 <span aria-hidden="true">↗</span></button></div>
         <div className="mobile-opening-content">
           <p className="mobile-opening-index">A PERSONAL PERSPECTIVE / 01</p>
-          <p className="mobile-opening-name" id="mobile-opening-name">沈鑫达</p>
+          <p className="mobile-opening-name" id="mobile-opening-name">阿基米达</p>
           <p className="mobile-opening-domains">STATISTICS · DECISION · CREATION</p>
           <svg className="mobile-opening-signal" viewBox="0 0 360 150" aria-hidden="true"><path className="opening-rail" d="M0 75H360"/><path className="opening-gold" d="M0 125C80 125 100 20 180 75S280 125 360 25"/><path className="opening-sage" d="M0 25C80 25 100 130 180 75S280 25 360 125"/><path className="opening-paper" d="M0 75C80 75 120 25 180 75S280 75 360 75"/><circle cx="180" cy="75" r="3"/></svg>
           <p className="mobile-opening-welcome" id="mobile-opening-welcome">从一个想法，认识一个人。<span>欢迎来到我的主页。</span></p>

@@ -9,7 +9,7 @@ const output = 'outputs/refresh-20260930';
 await mkdir(output, { recursive: true });
 const media = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
 const assets = [...new Set([...media.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((m) => m[1]))];
-assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/portal-share.png');
+assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/profile/bdf5afa6a8fc8fc136fd282f6c467fcd.jpg');
 const launch = { headless: true, ...(process.env.PORTFOLIO_CHROMIUM ? { executablePath: process.env.PORTFOLIO_CHROMIUM } : {}), args: ['--mute-audio', '--autoplay-policy=document-user-activation-required'] };
 const browser = await chromium.launch(launch);
 const results = [];
@@ -41,23 +41,32 @@ try {
     assert.equal(await analytics.getAttribute('data-cf-beacon'), '{"token":"86fa2109d1784ac79a8f4b6cbea5d608"}');
     if (viewport.width === 1440) await Promise.all(assets.map(async (asset) => { const r = await context.request.get(new URL(asset, siteUrl).href); assert.equal(r.status(), 200, asset); assert.match(r.headers()['content-type'], /^image\//, asset); }));
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
-    assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
+    assert.equal(await page.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1);
+    assert.equal(await page.getByText('沈鑫达', { exact: true }).count(), 0, 'Public view does not visibly disclose the career name');
     assert.equal(await page.locator('.hero .actions a').count(), 3);
-    assert.equal(await page.locator('.hero .actions a').nth(1).getAttribute('href'), '#exploration', 'Social visitors reach creation directly');
-    assert(await page.evaluate(() => document.querySelector('#exploration').compareDocumentPosition(document.querySelector('#ai')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Creation precedes the long AI case studies');
+    assert.equal(await page.locator('.hero .actions a').first().getAttribute('href'), '#exploration', 'Social visitors reach creation directly');
+    assert(await page.evaluate(() => document.querySelector('#exploration').compareDocumentPosition(document.querySelector('#ai')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Creation precedes AI practice');
     assert.equal(await page.locator('.nav-links a[href="#exploration"]').count(), 1);
     assert.equal(await page.locator('.mobile-nav a[href="#exploration"]').count(), 1);
-    assert.equal(await page.locator('.creation-paths a').count(), 4);
+    assert.equal(await page.locator('.nav-links a[href="#internships"]').count(), 0);
+    assert.equal(await page.locator('.creation-paths a').count(), 3);
     assert.equal(await page.locator('.social-source-welcome').count(), 0, 'Normal visits do not get a source greeting');
     assert(await page.evaluate(() => document.querySelector('.hero-copy > .eyebrow').getBoundingClientRect().bottom <= document.querySelector('.hero h1').getBoundingClientRect().top), 'Hero label and name must not overlap');
-    assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
-    assert.match(await page.locator('#education').innerText(), /2028年毕业.*2027届校招/s);
-    assert.match(await page.locator('meta[name="description"]').getAttribute('content'), /2028年毕业.*2027届校招/);
+    assert.doesNotMatch(await page.locator('.hero').innerText(), /2028年毕业|滴滴国际支付风控/);
+    assert.doesNotMatch(await page.locator('meta[name="description"]').getAttribute('content'), /沈鑫达|滴滴国际支付风控/);
     assert.equal(await page.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none');
     assert.equal(await page.evaluate(() => window.__audioContexts.length), 0, 'Music waits for visitor consent');
     if (viewport.width < 640) assert(await page.locator('.hero .actions').evaluate((n) => n.getBoundingClientRect().bottom <= innerHeight - 30), 'Mobile first-screen CTAs');
-    assert.equal(await page.locator('.hero-proof a').count(), 3);
+    assert.equal(await page.locator('.hero-proof a').count(), 0);
     assert.equal(await page.locator('.portrait-frame img').evaluate((n) => getComputedStyle(n).objectPosition), '50% 100%');
+    assert.equal(await page.locator('#internships').count(), 0);
+    await page.goto(new URL('career/', siteUrl).href, { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
+    assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
+    assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
+    assert.match(await page.locator('#education').innerText(), /2028年毕业.*2027届校招/s);
+    assert.match(await page.locator('meta[name="description"]').getAttribute('content'), /2028年毕业.*2027届校招/);
+    assert.equal(await page.locator('.hero-proof a').count(), 3);
     for (const company of ['didi', 'zeekr']) assert.equal(await page.locator(`.internship-${company} .internship-bullets > li`).count(), 4);
     assert.match(await page.locator('.internship-didi').innerText(), /Pattern Agent/);
     for (const metric of ['3000+', '20万+', '20+', '约3小时 → 约5分钟']) assert((await page.locator('.internship-zeekr').innerText()).includes(metric));
@@ -72,7 +81,7 @@ try {
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
     assert(!/PDF|简历下载|RESUME/.test(await page.locator('main').innerText()));
     assert.match(await page.title(), /统计.*风险决策.*AI 创作/);
-    assert.equal(new URL(await page.locator('link[rel="canonical"]').getAttribute('href')).href, 'https://archimedas0612.github.io/');
+    assert.equal(new URL(await page.locator('link[rel="canonical"]').getAttribute('href')).href, 'https://archimedas0612.github.io/career/');
     assert.equal(await page.locator('meta[property="og:image"]').count(), 1);
     assert.equal(await page.locator('#exploration .portal-social-link').count(), 1);
     assert.equal(await page.locator('#exploration .portal-social-link').getAttribute('href'), 'https://www.xiaohongshu.com/user/profile/5c5054a7000000001000b66e');
@@ -84,13 +93,13 @@ try {
     await page.locator('.hero .actions a').nth(1).click();
     assert.equal(new URL(page.url()).hash, '#exploration');
     await page.waitForFunction(() => { const top = document.querySelector('#exploration').getBoundingClientRect().top; return top >= 0 && top < innerHeight / 2; });
-    await page.getByRole('button', { name: '复制主页链接' }).click();
-    assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'https://archimedas0612.github.io/');
+    await page.getByRole('button', { name: '复制职业页链接' }).click();
+    assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'https://archimedas0612.github.io/career/');
     assert.equal(await page.locator('.portal-share [role="status"]').innerText(), '主页链接已复制');
     await page.evaluate(() => { Object.defineProperty(navigator.clipboard, 'writeText', { configurable: true, value: () => Promise.reject(new Error('Clipboard disabled')) }); });
-    await page.getByRole('button', { name: '复制主页链接' }).click();
+    await page.getByRole('button', { name: '复制职业页链接' }).click();
     await page.waitForFunction(() => document.querySelector('.portal-share [role="status"]').textContent === '请长按下方网址复制');
-    assert.equal(await page.locator('.portal-share > a').getAttribute('href'), 'https://archimedas0612.github.io/');
+    assert.equal(await page.locator('.portal-share > a').getAttribute('href'), 'https://archimedas0612.github.io/career/');
     await page.evaluate(() => { delete navigator.clipboard.writeText; });
     for (const id of ['internships', 'education', 'about', 'projects', 'ai', 'exploration', 'contact']) { await page.locator(`#${id}`).scrollIntoViewIfNeeded(); await page.waitForTimeout(120); assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id} overflow ${viewport.width}`); await page.screenshot({ path: `${output}/${viewport.width}-${id}.png` }); }
     await page.locator('#research-details > summary').click(); assert(await page.locator('#risk-pattern').isVisible());
@@ -136,8 +145,8 @@ try {
     }
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
-  const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${siteUrl.split('#')[0]}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
-  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.locator('.portal-project').count(), 2); assert.equal(await n.locator('#ai details').count(), 0); for (const item of await n.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible()); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await n.locator('#research-details > summary').click(); assert(await n.locator('#risk-pattern').isVisible()); await noJs.close();
+  const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(new URL('career/', siteUrl).href, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${new URL('career/', siteUrl).href}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
+  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(new URL('career/', siteUrl).href, { waitUntil: 'networkidle' }); assert.equal(await n.locator('.portal-project').count(), 2); assert.equal(await n.locator('#ai details').count(), 0); for (const item of await n.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible()); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await n.locator('#research-details > summary').click(); assert(await n.locator('#risk-pattern').isVisible()); await noJs.close();
   const phone = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   await phone.addInitScript(() => {
     window.__mobileOpeningCount = 0;

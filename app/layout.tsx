@@ -21,11 +21,11 @@ export const metadata: Metadata = {
   alternates: { canonical: portalContent.url },
   icons: { icon: new URL('favicon.svg', portalContent.url).href },
   openGraph: {
-    type: 'website', locale: 'zh_CN', siteName: '沈鑫达 · 个人品牌门户',
+    type: 'website', locale: 'zh_CN', siteName: '阿基米达 · 个人主页',
     title: portalContent.title,
     description: portalContent.description,
     url: portalContent.url,
-    images: [{ url: new URL(portalContent.shareImage, portalContent.url).href, width: 1200, height: 630, alt: '沈鑫达：统计、风险决策与 AI 创作' }],
+    images: [{ url: new URL(portalContent.shareImage, portalContent.url).href, width: 1200, height: 630, alt: '阿基米达：统计、AI 创作与个人表达' }],
   },
 };
 
