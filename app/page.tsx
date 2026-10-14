@@ -23,7 +23,8 @@ const careerNavItems = [
 ] as const;
 
 const publicNavItems = [
-  ['top', '首页'], ['exploration', '创作'], ['ai', 'AI 实践'], ['about', '关于我'],
+  ['top', '首页'], ['internships', '职业'], ['projects', '项目'],
+  ['exploration', '创作'], ['ai', 'AI 实践'], ['about', '关于我'],
 ] as const;
 
 export type PortalView = 'public' | 'career';
@@ -147,19 +148,19 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
           <div className="nav-links">
             {navItems.map(([id, label]) => <a className={active === id ? 'active' : ''} aria-current={active === id ? 'location' : undefined} href={`#${id}`} key={id}>{label}</a>)}
           </div>
-          <details className="mobile-nav"><summary>导航</summary><div>{[...navItems, ...(career ? [['education', '教育背景'] as const] : [])].map(([id, label]) => <a href={`#${id}`} key={id} onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}>{label}</a>)}</div></details>
+          <details className="mobile-nav"><summary>导航</summary><div>{[...navItems, ['education', '教育背景'] as const].map(([id, label]) => <a href={`#${id}`} key={id} onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}>{label}</a>)}</div></details>
           <a className="contact-button" href="#contact">联系我</a>
         </nav>
       </header>
 
       <PortfolioHero view={view} />
       {promoContent.published && <PersonalFilm />}
-      {career && <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><p className="eyebrow">CAREER / 职业与项目</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p><InternshipOverview /></section>}
+      <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><p className="eyebrow">CAREER / 职业与项目</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p><InternshipOverview /></section>
 
-      {career && <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
+      <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
         <div className="portal-section-heading"><p className="eyebrow">SELECTED PROJECTS / 正在研究</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">先看问题、工作与进展；如果想深入，再展开研究方法。</p></div>
         <PublicProjects />
-      </section>}
+      </section>
 
       <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
         <div className="aigc-compact aigc-dual"><div><p className="eyebrow">CREATIVE EXPLORATION / 创作栏目</p><h2 id="exploration-title">另一种表达，另一种实验。</h2></div><div className="aigc-collections"><article><div className="creation-art creation-absurd" role="img" aria-label="荒诞研究所栏目视觉，非作品截图"><span>AI / SOCIAL OBSERVATION</span><b>荒诞<br />研究所</b><i>想象，与现实对话。</i></div><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.description}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>{careerContent.aigc.metricScope}累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><small>截至 {careerContent.aigc.dataAsOf} · 非实时数据</small></article><article><div className="creation-art creation-probability" role="img" aria-label="概率引擎栏目视觉，非作品截图"><span>STATISTICS / EVERYDAY LIFE</span><b>概率<br />引擎</b><i>让抽象的理论，走进生活。</i></div><h3>《{careerContent.aigc.probabilityEngine.title}》</h3><p>{careerContent.aigc.probabilityEngine.description}</p><small>{careerContent.aigc.probabilityEngine.status} · 尚未作为已发布作品展示</small></article></div><p className="aigc-production">{careerContent.aigc.production}</p><a className="portal-social-link" href={contactContent.xiaohongshuUrl} target="_blank" rel="noreferrer">到我的小红书主页，看看内容与生活 ↗</a><p className="metric-source">栏目视觉示意，非作品截图。前往小红书主页继续了解我。</p><div className="creation-paths" aria-label="继续认识我"><a href="#ai">{career ? 'AI 如何参与我的研究' : 'AI 如何参与我的创作与实践'} <span aria-hidden="true">↗</span></a>{career && <a href="#projects">回看职业项目 <span aria-hidden="true">↗</span></a>}<a href="#about">认识工作之外的我 <span aria-hidden="true">↗</span></a><a href="#contact">交流与合作 <span aria-hidden="true">↗</span></a></div></div>
@@ -171,14 +172,14 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
         <div className="portal-ai-cases"><h3 className="portal-ai-title">两个项目中的具体 AI 协作</h3><ProjectAIWorkflow /></div>
       </section>
 
-      <div className={`identity-overview ${career ? '' : 'identity-public'}`}>
-        {career && <section className="chapter education-section" id="education" aria-labelledby="education-title">
+      <div className="identity-overview">
+        <section className="chapter education-section" id="education" aria-labelledby="education-title">
           <p className="eyebrow">EDUCATION & JOURNEY / 成长经历</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2>
           <div className="education-grid"><article><span className="field-label">2028年毕业 / 硕士</span><h3>厦门大学</h3><p>应用统计硕士 · 保研入学</p><small>统计学与数据科学系 · 2027届校招</small></article><article><span className="field-label">本科</span><h3>浙江工商大学</h3><p>统计与数据科学学院 · 经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3%</small></article></div>
           {careerContent.selectedCoursework.length > 0 && <div className="coursework"><span className="field-label">SELECTED COURSEWORK / 已修课程</span><ul>{careerContent.selectedCoursework.map((course) => <li key={course}>{course}</li>)}</ul></div>}
           <p className="journey-credentials">本科阶段曾获挑战杯国家级特等奖（国赛前3%）、正大杯国家一等奖。</p>
           <p className="journey-caption">统计基础 → 业务数据分析 → 支付风险算法与决策</p>
-        </section>}
+        </section>
         <section className="chapter about-section" id="about">
           <div className="about-visual">
             <div className="life-carousel" aria-roledescription="carousel" aria-label="生活照片">

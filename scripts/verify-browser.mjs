@@ -45,22 +45,38 @@ try {
     assert.equal(await page.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1);
     assert.equal(await page.getByText('沈鑫达', { exact: true }).count(), 0, 'Public view does not visibly disclose the career name');
     assert.equal(await page.locator('.hero .actions a').count(), 3);
-    assert.equal(await page.locator('.hero .actions a').first().getAttribute('href'), '#exploration', 'Social visitors reach creation directly');
+    assert.equal(await page.locator('.hero .actions a').first().getAttribute('href'), '#internships', 'All visitors can discover career and projects');
     assert(await page.evaluate(() => document.querySelector('#exploration').compareDocumentPosition(document.querySelector('#ai')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Creation precedes AI practice');
     assert.equal(await page.locator('.nav-links a[href="#exploration"]').count(), 1);
     assert.equal(await page.locator('.mobile-nav a[href="#exploration"]').count(), 1);
-    assert.equal(await page.locator('.nav-links a[href="#internships"]').count(), 0);
+    assert.equal(await page.locator('.nav-links a[href="#internships"]').count(), 1);
     assert.equal(await page.locator('.creation-paths a').count(), 3);
     assert.equal(await page.locator('.social-source-welcome').count(), 0, 'Normal visits do not get a source greeting');
     assert(await page.evaluate(() => document.querySelector('.hero-copy > .eyebrow').getBoundingClientRect().bottom <= document.querySelector('.hero h1').getBoundingClientRect().top), 'Hero label and name must not overlap');
-    assert.doesNotMatch(await page.locator('.hero').innerText(), /2028年毕业|滴滴国际支付风控/);
+    assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
     assert.doesNotMatch(await page.locator('meta[name="description"]').getAttribute('content'), /沈鑫达|滴滴国际支付风控/);
     assert.equal(await page.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none');
     assert.equal(await page.evaluate(() => window.__audioContexts.length), 0, 'Music waits for visitor consent');
     if (viewport.width < 640) assert(await page.locator('.hero .actions').evaluate((n) => n.getBoundingClientRect().bottom <= innerHeight - 30), 'Mobile first-screen CTAs');
-    assert.equal(await page.locator('.hero-proof a').count(), 0);
+    assert.equal(await page.locator('.hero-proof a').count(), 3);
     assert.equal(await page.locator('.portrait-frame img').evaluate((n) => getComputedStyle(n).objectPosition), '50% 100%');
-    assert.equal(await page.locator('#internships').count(), 0);
+    // Public identity is an alias, not a gate that removes approved career content.
+    for (const id of ['internships', 'projects', 'education']) assert.equal(await page.locator(`#${id}`).isVisible(), true, `Public ${id} must remain visible`);
+    for (const company of ['didi', 'zeekr']) {
+      assert.equal(await page.locator(`.internship-${company} .internship-bullets > li`).count(), 4);
+      await page.locator(`.internship-${company}`).scrollIntoViewIfNeeded();
+      await page.waitForFunction((name) => [...document.querySelectorAll(`.internship-${name} img`)].every(img => img.complete && img.naturalWidth > 0), company);
+      assert.equal(await page.locator(`.internship-${company} .company-logo`).isVisible(), true);
+      assert.equal(await page.locator(`.internship-${company} .brand-reference-image img`).isVisible(), true);
+    }
+    assert.match(await page.locator('#education').innerText(), /厦门大学.*浙江工商大学/s);
+    assert.equal(await page.locator('.portal-project').count(), 2);
+    await page.locator('#internships').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${output}/${viewport.width}-public-internships.png` });
+    await page.locator('#education').scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => { const image = document.querySelector('.life-current img'); return image?.complete && image.naturalWidth > 0; });
+    await page.screenshot({ path: `${output}/${viewport.width}-public-education.png` });
+    await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: `${output}/${viewport.width}-public-hero.png` });
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll(nodes => nodes.map(a => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
     if (filmPublished) {
@@ -176,7 +192,7 @@ try {
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
   const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(new URL('?view=career', siteUrl).href, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${new URL('?view=career', siteUrl).href}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
-  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1); assert.equal(await n.locator('#internships').count(), 0); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await noJs.close();
+  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1); for (const id of ['internships', 'projects', 'education']) assert.equal(await n.locator(`#${id}`).isVisible(), true, `No-JS ${id} remains readable`); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await noJs.close();
   const phone = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   await phone.addInitScript(() => {
     window.__mobileOpeningCount = 0;
@@ -213,5 +229,5 @@ try {
 } finally { await browser.close(); }
 const permissive = await chromium.launch({ ...launch, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
 try { const p = await permissive.newPage(); await p.addInitScript(() => { window.__created = 0; const N = window.AudioContext; window.AudioContext = class extends N { constructor(...a) { super(...a); window.__created++; } }; }); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(500); assert.equal(await p.evaluate(() => window.__created), 0, 'Default off even when autoplay allowed'); } finally { await permissive.close(); }
-const report = { passed: true, url: siteUrl, results, checks: '4 viewports; public/career views; mobile CTAs; mobile opening/skip/session replay; film consent/playback/duration/collapse; BGM mutual exclusion; optional diagrams/panning; navigation; images; clipboard; QR/focus; audio signal/volume/background pause; reduced motion and public no-JS reading', externalPlatforms: 'Physical devices, platform login and in-app browsers not verified' };
+const report = { passed: true, url: siteUrl, results, checks: '4 viewports; public/career views; restored public internships/projects/education and brand imagery; mobile CTAs; mobile opening/skip/session replay; optional diagrams/panning; navigation; images; clipboard; QR/focus; audio signal/volume/background pause; reduced motion and public no-JS reading', filmChecks: filmPublished ? 'Consent/playback/duration/collapse and BGM mutual exclusion passed' : 'Film absence passed; playback and mutual exclusion skipped because the film is unpublished', externalPlatforms: 'Physical devices, platform login and in-app browsers not verified' };
 await writeFile(`${output}/browser-result.json`, JSON.stringify(report, null, 2)); console.log(JSON.stringify(report));

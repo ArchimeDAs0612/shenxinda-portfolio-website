@@ -13,6 +13,8 @@ const htmlResponse = await get(url);
 const html = await htmlResponse.text();
 assert.match(html, /阿基米达/);
 assert.doesNotMatch(html, /沈鑫达/, 'Public homepage must not disclose the career-view name');
+for (const id of ['internships', 'projects', 'education']) assert(html.includes(`id="${id}"`), `Public homepage must retain ${id}`);
+for (const asset of ['images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/brands/99pay-app.webp', 'images/brands/zeekr-9x-front.webp']) assert(html.includes(asset), `Public homepage must display ${asset}`);
 assert.match(html, /property="og:image"/);
 assert.match(html, /rel="canonical"/);
 assert.match(html, /static\.cloudflareinsights\.com\/beacon\.min\.js/);
