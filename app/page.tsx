@@ -15,6 +15,7 @@ import { InternshipOverview } from './components/ZeekrJourney';
 import { PortalShare } from './components/PortalShare';
 import { portalContent } from '../content/portal-content';
 import { PersonalFilm } from './components/PersonalFilm';
+import { promoContent } from '../content/promo-content';
 
 const careerNavItems = [
   ['top', '首页'], ['internships', '职业'], ['projects', '项目'],
@@ -152,7 +153,7 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
       </header>
 
       <PortfolioHero view={view} />
-      <PersonalFilm />
+      {promoContent.published && <PersonalFilm />}
       {career && <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><p className="eyebrow">CAREER / 职业与项目</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p><InternshipOverview /></section>}
 
       {career && <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">

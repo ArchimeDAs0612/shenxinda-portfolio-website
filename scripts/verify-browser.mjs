@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PORTFOLIO_PLAYWRIGHT_MODULE || 'playwright');
 const siteUrl = process.argv[2] || 'http://127.0.0.1:3100/';
+const filmPublished = /published:\s*true/.test(await readFile('content/promo-content.ts', 'utf8'));
 const output = 'outputs/refresh-20260930';
 await mkdir(output, { recursive: true });
 const media = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
@@ -62,6 +63,7 @@ try {
     assert.equal(await page.locator('#internships').count(), 0);
     await page.screenshot({ path: `${output}/${viewport.width}-public-hero.png` });
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll(nodes => nodes.map(a => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
+    if (filmPublished) {
     assert(await page.evaluate(() => document.querySelector('.hero').compareDocumentPosition(document.querySelector('#film')) & Node.DOCUMENT_POSITION_FOLLOWING));
     assert(await page.evaluate(() => document.querySelector('#film').compareDocumentPosition(document.querySelector('#exploration')) & Node.DOCUMENT_POSITION_FOLLOWING));
     assert.equal(await page.locator('#film video').evaluate(v => v.paused && !v.autoplay && v.preload === 'none'), true, 'Film waits for explicit play');
@@ -75,6 +77,9 @@ try {
     await page.screenshot({ path: `${output}/${viewport.width}-film-playing.png` });
     await page.getByRole('button', { name: '收起短片' }).click();
     assert.equal(await page.locator('#film video').evaluate(v => v.paused), true);
+    } else {
+      assert.equal(await page.locator('#film').count(), 0, 'Unapproved film must not appear on the website');
+    }
     const careerEntry = ['127.0.0.1', 'localhost'].includes(new URL(siteUrl).hostname) ? '?view=career' : 'career/';
     await page.goto(new URL(careerEntry, siteUrl).href, { waitUntil: 'networkidle' });
     await page.waitForURL(/\?view=career$/);
@@ -140,7 +145,7 @@ try {
     await page.getByRole('button', { name: '开启音乐', exact: true }).click(); await page.getByRole('button', { name: '暂停音乐', exact: true }).waitFor(); await page.waitForTimeout(1600);
     const signal = await page.evaluate(() => { const s = new Float32Array(window.__musicAnalyser.fftSize); window.__musicAnalyser.getFloatTimeDomainData(s); return { state: window.__audioContexts.at(-1).state, peak: Math.max(...s.map(Math.abs)), rms: Math.sqrt(s.reduce((a, v) => a + v * v, 0) / s.length) }; });
     assert.equal(signal.state, 'running'); assert(signal.rms > .00001 && signal.peak < .5, JSON.stringify(signal));
-    if (viewport.width === 1440) {
+    if (viewport.width === 1440 && filmPublished) {
       await page.getByRole('button', { name: '播放阿基米达一分钟介绍', exact: true }).click();
       await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
       await page.waitForFunction(() => !document.querySelector('#film video').paused);
