@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- Brand SVG files use stable relative paths across GitHub Pages and local previews. */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { MaintainableImage } from './components/MaintainableImage';
 import { contactContent, mediaContent } from '../content/site-content';
 import { careerContent } from '../content/career-content';
@@ -14,6 +14,7 @@ import { MobileOpening } from './components/MobileOpening';
 import { InternshipOverview } from './components/ZeekrJourney';
 import { PortalShare } from './components/PortalShare';
 import { portalContent } from '../content/portal-content';
+import { PersonalFilm } from './components/PersonalFilm';
 
 const careerNavItems = [
   ['top', '首页'], ['internships', '职业'], ['projects', '项目'],
@@ -25,6 +26,12 @@ const publicNavItems = [
 ] as const;
 
 export type PortalView = 'public' | 'career';
+const subscribeView = (notify: () => void) => {
+  window.addEventListener('popstate', notify);
+  return () => window.removeEventListener('popstate', notify);
+};
+const getView = (): PortalView => new URLSearchParams(window.location.search).get('view') === 'career' ? 'career' : 'public';
+const getServerView = (): PortalView => 'public';
 
 export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
   const career = view === 'career';
@@ -145,6 +152,7 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
       </header>
 
       <PortfolioHero view={view} />
+      <PersonalFilm />
       {career && <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><p className="eyebrow">CAREER / 职业与项目</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p><InternshipOverview /></section>}
 
       {career && <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
@@ -162,7 +170,7 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
         <div className="portal-ai-cases"><h3 className="portal-ai-title">两个项目中的具体 AI 协作</h3><ProjectAIWorkflow /></div>
       </section>
 
-      <div className="identity-overview">
+      <div className={`identity-overview ${career ? '' : 'identity-public'}`}>
         {career && <section className="chapter education-section" id="education" aria-labelledby="education-title">
           <p className="eyebrow">EDUCATION & JOURNEY / 成长经历</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2>
           <div className="education-grid"><article><span className="field-label">2028年毕业 / 硕士</span><h3>厦门大学</h3><p>应用统计硕士 · 保研入学</p><small>统计学与数据科学系 · 2027届校招</small></article><article><span className="field-label">本科</span><h3>浙江工商大学</h3><p>统计与数据科学学院 · 经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3%</small></article></div>
@@ -249,11 +257,7 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
 }
 
 export default function Home() {
-  const [view] = useState<PortalView>(() => (
-    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('view') === 'career'
-      ? 'career'
-      : 'public'
-  ));
+  const view = useSyncExternalStore(subscribeView, getView, getServerView);
 
   return <PortfolioPage view={view} />;
 }

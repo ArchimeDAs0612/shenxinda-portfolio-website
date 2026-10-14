@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: portalContent.title,
     description: portalContent.description,
     url: portalContent.url,
-    images: [{ url: new URL(portalContent.shareImage, portalContent.url).href, width: 1200, height: 630, alt: '阿基米达：统计、AI 创作与个人表达' }],
+    images: [{ url: new URL(portalContent.shareImage, portalContent.url).href, width: 1200, height: 675, alt: '阿基米达：统计、AI 创作与个人表达' }],
   },
 };
 

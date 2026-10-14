@@ -28,13 +28,16 @@ const styles = [...html.matchAll(/href="([^"<>]+\.css)"/g)].map((match) => match
 assert(styles.length > 0, 'Stylesheet missing');
 const site = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
 const images = [...new Set([...site.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
-const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/profile/bdf5afa6a8fc8fc136fd282f6c467fcd.jpg', '404.html', 'from/intro.css', 'from/intro.js'];
+const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/promo/archimedas-one-minute-v1.jpg', '404.html', 'from/intro.css', 'from/intro.js'];
 await Promise.all(assets.map(async (asset) => {
   const response = await get(new URL(asset, url));
   if (images.includes(asset)) assert.match(response.headers.get('content-type'), /^image\//);
   if (asset.endsWith('.css')) assert.match(response.headers.get('content-type'), /text\/css/);
 }));
 const missing = await fetch(new URL('portal-page-not-found', url), { signal: AbortSignal.timeout(20000) });
+const movie = await fetch(new URL('media/archimedas-one-minute-v1.mp4', url), { method: 'HEAD', signal: AbortSignal.timeout(20000) });
+assert.equal(movie.status, 200);
+assert.match(movie.headers.get('content-type'), /video\/mp4/);
 assert.equal(missing.status, 404, 'Unknown route must return an actual 404');
 assert.match(await missing.text(), /返回个人主页/);
 for (const [source, target] of [['xhs', '/?from=xhs'], ['douyin', '/?from=douyin']]) {

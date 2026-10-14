@@ -110,6 +110,8 @@ export class AmbientScore {
   setVolume(volume: number) {
     this.volume = volume;
     if (this.context.state === 'running') {
+      // A new volume choice must supersede an in-flight fade-in after resume.
+      this.master.gain.cancelScheduledValues(this.context.currentTime);
       this.master.gain.setTargetAtTime(volume / 100 * .7, this.context.currentTime, .1);
     }
   }

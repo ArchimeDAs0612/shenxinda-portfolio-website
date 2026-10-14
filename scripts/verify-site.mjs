@@ -14,6 +14,9 @@ const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx'
 const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg']);
 const errors = [];
 const warnings = [];
+for (const path of ['public/media/archimedas-one-minute-v1.mp4', 'public/images/promo/archimedas-one-minute-v1.jpg']) {
+  if (!existsSync(join(projectRoot, path))) errors.push(`宣传片资源缺少：${path}`);
+}
 
 for (const relativePath of [...requiredDirectories, ...requiredFiles]) {
   if (!existsSync(join(projectRoot, relativePath))) errors.push(`缺少：${relativePath}`);

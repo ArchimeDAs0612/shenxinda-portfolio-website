@@ -9,7 +9,7 @@ const output = 'outputs/refresh-20260930';
 await mkdir(output, { recursive: true });
 const media = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
 const assets = [...new Set([...media.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((m) => m[1]))];
-assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/profile/bdf5afa6a8fc8fc136fd282f6c467fcd.jpg');
+assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/promo/archimedas-one-minute-v1.jpg');
 const launch = { headless: true, ...(process.env.PORTFOLIO_CHROMIUM ? { executablePath: process.env.PORTFOLIO_CHROMIUM } : {}), args: ['--mute-audio', '--autoplay-policy=document-user-activation-required'] };
 const browser = await chromium.launch(launch);
 const results = [];
@@ -60,7 +60,24 @@ try {
     assert.equal(await page.locator('.hero-proof a').count(), 0);
     assert.equal(await page.locator('.portrait-frame img').evaluate((n) => getComputedStyle(n).objectPosition), '50% 100%');
     assert.equal(await page.locator('#internships').count(), 0);
-    await page.goto(new URL('?view=career', siteUrl).href, { waitUntil: 'networkidle' });
+    await page.screenshot({ path: `${output}/${viewport.width}-public-hero.png` });
+    for (const anchor of await page.locator('a[href^="#"]').evaluateAll(nodes => nodes.map(a => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
+    assert(await page.evaluate(() => document.querySelector('.hero').compareDocumentPosition(document.querySelector('#film')) & Node.DOCUMENT_POSITION_FOLLOWING));
+    assert(await page.evaluate(() => document.querySelector('#film').compareDocumentPosition(document.querySelector('#exploration')) & Node.DOCUMENT_POSITION_FOLLOWING));
+    assert.equal(await page.locator('#film video').evaluate(v => v.paused && !v.autoplay && v.preload === 'none'), true, 'Film waits for explicit play');
+    await page.locator('#film').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${output}/${viewport.width}-film-cover.png` });
+    await page.getByRole('button', { name: '播放阿基米达一分钟介绍', exact: true }).click();
+    await page.waitForFunction(() => { const v = document.querySelector('#film video'); return v.readyState >= 2 && v.currentTime > .15 && !v.paused; });
+    assert(Math.abs(await page.locator('#film video').evaluate(v => v.duration) - 60) < .2);
+    assert.equal(await page.locator('#film video').getAttribute('playsinline'), '');
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Film overflow ${viewport.width}`);
+    await page.screenshot({ path: `${output}/${viewport.width}-film-playing.png` });
+    await page.getByRole('button', { name: '收起短片' }).click();
+    assert.equal(await page.locator('#film video').evaluate(v => v.paused), true);
+    const careerEntry = ['127.0.0.1', 'localhost'].includes(new URL(siteUrl).hostname) ? '?view=career' : 'career/';
+    await page.goto(new URL(careerEntry, siteUrl).href, { waitUntil: 'networkidle' });
+    await page.waitForURL(/\?view=career$/);
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
     assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
     assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
@@ -123,6 +140,14 @@ try {
     await page.getByRole('button', { name: '开启音乐', exact: true }).click(); await page.getByRole('button', { name: '暂停音乐', exact: true }).waitFor(); await page.waitForTimeout(1600);
     const signal = await page.evaluate(() => { const s = new Float32Array(window.__musicAnalyser.fftSize); window.__musicAnalyser.getFloatTimeDomainData(s); return { state: window.__audioContexts.at(-1).state, peak: Math.max(...s.map(Math.abs)), rms: Math.sqrt(s.reduce((a, v) => a + v * v, 0) / s.length) }; });
     assert.equal(signal.state, 'running'); assert(signal.rms > .00001 && signal.peak < .5, JSON.stringify(signal));
+    if (viewport.width === 1440) {
+      await page.getByRole('button', { name: '播放阿基米达一分钟介绍', exact: true }).click();
+      await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
+      await page.waitForFunction(() => !document.querySelector('#film video').paused);
+      await page.getByRole('button', { name: '开启音乐', exact: true }).click();
+      await page.waitForFunction(() => document.querySelector('#film video').paused);
+      await page.getByRole('button', { name: '收起短片' }).click();
+    }
     await page.getByRole('button', { name: '音乐设置', exact: true }).click(); await page.locator('#music-volume').fill('0'); await page.waitForTimeout(700);
     assert(await page.evaluate(() => { const s = new Float32Array(window.__musicAnalyser.fftSize); window.__musicAnalyser.getFloatTimeDomainData(s); return Math.max(...s.map(Math.abs)) < .001; }));
     await page.locator('#music-volume').fill('25'); await page.getByRole('button', { name: '收起音乐设置' }).click(); await page.getByRole('button', { name: '暂停音乐', exact: true }).click(); await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
@@ -183,5 +208,5 @@ try {
 } finally { await browser.close(); }
 const permissive = await chromium.launch({ ...launch, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
 try { const p = await permissive.newPage(); await p.addInitScript(() => { window.__created = 0; const N = window.AudioContext; window.AudioContext = class extends N { constructor(...a) { super(...a); window.__created++; } }; }); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(500); assert.equal(await p.evaluate(() => window.__created), 0, 'Default off even when autoplay allowed'); } finally { await permissive.close(); }
-const report = { passed: true, url: siteUrl, results, checks: '4 viewports; mobile CTAs; mobile opening/skip/automatic close/session replay; optional diagrams/panning; navigation; images; clipboard; QR/focus; consent-only audio signal/volume/background pause; motion and no-JS reading', externalPlatforms: 'Platform login and app launch not verified' };
+const report = { passed: true, url: siteUrl, results, checks: '4 viewports; public/career views; mobile CTAs; mobile opening/skip/session replay; film consent/playback/duration/collapse; BGM mutual exclusion; optional diagrams/panning; navigation; images; clipboard; QR/focus; audio signal/volume/background pause; reduced motion and public no-JS reading', externalPlatforms: 'Physical devices, platform login and in-app browsers not verified' };
 await writeFile(`${output}/browser-result.json`, JSON.stringify(report, null, 2)); console.log(JSON.stringify(report));

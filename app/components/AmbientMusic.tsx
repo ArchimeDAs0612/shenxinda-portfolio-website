@@ -22,9 +22,11 @@ export function AmbientMusic() {
     const pauseWhenHidden = () => { if (document.hidden) pause(); };
     document.addEventListener('visibilitychange', pauseWhenHidden);
     window.addEventListener('pagehide', pause);
+    window.addEventListener('portfolio:film-play', pause);
     return () => {
       document.removeEventListener('visibilitychange', pauseWhenHidden);
       window.removeEventListener('pagehide', pause);
+      window.removeEventListener('portfolio:film-play', pause);
       score.current?.dispose();
       score.current = null;
     };
@@ -39,6 +41,7 @@ export function AmbientMusic() {
         setPlaying(false);
         await score.current?.pause();
       } else {
+        window.dispatchEvent(new Event('portfolio:music-play'));
         if (!score.current) {
           score.current = new AmbientScore();
           score.current.context.onstatechange = () => {
