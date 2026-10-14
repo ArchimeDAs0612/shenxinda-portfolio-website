@@ -65,7 +65,7 @@ try {
     assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
     assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
     assert.match(await page.locator('#education').innerText(), /2028年毕业.*2027届校招/s);
-    assert.match(await page.locator('meta[name="description"]').getAttribute('content'), /2028年毕业.*2027届校招/);
+    assert.match(await page.locator('meta[name="description"]').getAttribute('content'), /阿基米达/);
     assert.equal(await page.locator('.hero-proof a').count(), 3);
     for (const company of ['didi', 'zeekr']) assert.equal(await page.locator(`.internship-${company} .internship-bullets > li`).count(), 4);
     assert.match(await page.locator('.internship-didi').innerText(), /Pattern Agent/);
@@ -80,7 +80,7 @@ try {
     for (const item of await page.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible(), 'Both AI projects are visible without clicking');
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
     assert(!/PDF|简历下载|RESUME/.test(await page.locator('main').innerText()));
-    assert.match(await page.title(), /统计.*风险决策.*AI 创作/);
+    assert.match(await page.title(), /阿基米达.*统计.*AI 创作/);
     assert.equal(new URL(await page.locator('link[rel="canonical"]').getAttribute('href')).href, 'https://archimedas0612.github.io/');
     assert.equal(await page.locator('meta[property="og:image"]').count(), 1);
     assert.equal(await page.locator('#exploration .portal-social-link').count(), 1);
