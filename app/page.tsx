@@ -19,12 +19,12 @@ import { promoContent } from '../content/promo-content';
 
 const careerNavItems = [
   ['top', '首页'], ['internships', '职业'], ['projects', '项目'],
-  ['exploration', '创作'], ['ai', 'AI 协作'], ['about', '关于我'],
+  ['ai', 'AI 协作'], ['exploration', '创作'], ['about', '关于我'],
 ] as const;
 
 const publicNavItems = [
   ['top', '首页'], ['internships', '职业'], ['projects', '项目'],
-  ['exploration', '创作'], ['ai', 'AI 实践'], ['about', '关于我'],
+  ['ai', 'AI 实践'], ['exploration', '创作'], ['about', '关于我'],
 ] as const;
 
 export type PortalView = 'public' | 'career';
@@ -158,18 +158,18 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
       <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><p className="eyebrow">CAREER / 职业与项目</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p><InternshipOverview /></section>
 
       <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="portal-section-heading"><p className="eyebrow">SELECTED PROJECTS / 正在研究</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">先看问题、工作与进展；如果想深入，再展开研究方法。</p></div>
+        <div className="portal-section-heading"><p className="eyebrow">SELECTED PROJECTS / 正在研究</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">先看问题、工作与进展，再直接阅读四张研究图；Agent 协作紧随其后，创作展示在后。</p></div>
         <PublicProjects />
+      </section>
+
+      <section className="chapter workflow-section" id="ai">
+        <div className="portal-section-heading"><p className="eyebrow">AI / AGENT-ENHANCED RESEARCH</p><h2>把 Agent 融入研究，而不外包判断。</h2><p className="portal-lead">围绕 Pattern 研究与字段知识治理，定义问题、组织 Context、约束执行、核对证据并恢复可信进度。以下两张图直接呈现具体协作，不以创作流量替代研究能力。</p></div>
+        <div className="portal-ai-summary"><div><span className="field-label">AI-NATIVE PRACTITIONER / AGENT OPERATOR</span><h3>任务交给 Agent，判断留给人。</h3><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
+        <div className="portal-ai-cases"><h3 className="portal-ai-title">两个项目中的具体 AI 协作</h3><ProjectAIWorkflow /></div>
       </section>
 
       <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
         <div className="aigc-compact aigc-dual"><div><p className="eyebrow">CREATIVE EXPLORATION / 创作栏目</p><h2 id="exploration-title">另一种表达，另一种实验。</h2></div><div className="aigc-collections"><article><div className="creation-art creation-absurd" role="img" aria-label="荒诞研究所栏目视觉，非作品截图"><span>AI / SOCIAL OBSERVATION</span><b>荒诞<br />研究所</b><i>想象，与现实对话。</i></div><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.description}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>{careerContent.aigc.metricScope}累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><small>截至 {careerContent.aigc.dataAsOf} · 非实时数据</small></article><article><div className="creation-art creation-probability" role="img" aria-label="概率引擎栏目视觉，非作品截图"><span>STATISTICS / EVERYDAY LIFE</span><b>概率<br />引擎</b><i>让抽象的理论，走进生活。</i></div><h3>《{careerContent.aigc.probabilityEngine.title}》</h3><p>{careerContent.aigc.probabilityEngine.description}</p><small>{careerContent.aigc.probabilityEngine.status} · 尚未作为已发布作品展示</small></article></div><p className="aigc-production">{careerContent.aigc.production}</p><a className="portal-social-link" href={contactContent.xiaohongshuUrl} target="_blank" rel="noreferrer">到我的小红书主页，看看内容与生活 ↗</a><p className="metric-source">栏目视觉示意，非作品截图。前往小红书主页继续了解我。</p><div className="creation-paths" aria-label="继续认识我"><a href="#ai">{career ? 'AI 如何参与我的研究' : 'AI 如何参与我的创作与实践'} <span aria-hidden="true">↗</span></a>{career && <a href="#projects">回看职业项目 <span aria-hidden="true">↗</span></a>}<a href="#about">认识工作之外的我 <span aria-hidden="true">↗</span></a><a href="#contact">交流与合作 <span aria-hidden="true">↗</span></a></div></div>
-      </section>
-
-      <section className="chapter workflow-section" id="ai">
-        <div className="portal-section-heading"><p className="eyebrow">AI / PRACTICE & CREATION</p><h2>让 AI 扩展执行，也扩展表达。</h2><p className="portal-lead">在研究与开发里，我定义问题、组织 Context、委派 Coding Agent，并审查和验证交付；在创作里，把生成式 AI 组织成完整发布流程。</p></div>
-        <div className="portal-ai-summary"><div><span className="field-label">AI-NATIVE PRACTITIONER / AGENT OPERATOR</span><h3>任务交给 Agent，判断留给人。</h3><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
-        <div className="portal-ai-cases"><h3 className="portal-ai-title">两个项目中的具体 AI 协作</h3><ProjectAIWorkflow /></div>
       </section>
 
       <div className="identity-overview">

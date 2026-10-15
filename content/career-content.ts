@@ -1,6 +1,6 @@
 /** 公开职业内容：只维护去敏摘要，不存放内部资料、字段或实验数值。 */
 export const careerContent = {
-  updatedAt: '2026-10-09',
+  updatedAt: '2026-10-15',
   internshipOverview: {
     didi: {
       bullets: [
@@ -47,9 +47,9 @@ export const careerContent = {
       title: '支付风险 Pattern 研究与潜在误伤分析',
       english: 'Payment Risk Pattern Discovery & Decision Analysis',
       problem: '研究支付受阻与后续通过的观察关系，寻找值得进一步核验的风险与潜在误伤线索。',
-      work: '参与搭建风控 Pattern Agent 的研究工作流与原型，连接样本比较、策略复盘、特征研究及 PySpark GBT 实验，由人工审查候选线索与方法。',
-      evidence: '已完成阶段实验与方法审查；正式 Pattern 与 OOT 验证进行中。Rej→Pass 是观察线索，不是已证实的误拒；离线区分效果不代表风险识别能力或业务收益。',
-      tags: ['Python / SQL', 'PySpark GBT', 'Feature Engineering', 'Evaluation'],
+      work: '参与搭建风控 Pattern Agent 的研究工作流与原型：从可比样本和策略复盘出发，推进宽特征建模、候选筛选、成员重叠与结构稳定性分析，形成可审阅的研究交付。',
+      evidence: '候选定位、验证交付与宽特征研究已有阶段沉淀，候选深化探索继续推进。正式 Pattern、真实 OOT 与业务有效性仍待验证；Rej→Pass 仅是观察线索。',
+      tags: ['Python / SQL', 'Tree-based ML', 'Feature Engineering', 'Pattern Research'],
       details: [
         ['Context / 角色', '在国际支付风控实习中参与分析与验证，以公开摘要解释方法，不披露内部样本、规则或业务指标。'],
         ['Method / 方法', '由样本与特征出发，进行树模型辅助发现、交叉验证、特征族消融、复杂度敏感性与重复实验。'],
@@ -62,12 +62,12 @@ export const careerContent = {
       title: '跨市场支付风险字段治理与特征研究',
       english: 'International Payment Risk Feature Research',
       problem: '复杂原始字段如何变成可以理解、可以判断、适合风险研究的特征输入？',
-      work: '从物理可解析性、业务语义和决策价值理解字段，整理 Feature Family，并判断其用于 Pattern 研究的可用性。',
-      evidence: '外卖字段部分已做并有知识沉淀；钱包字段尚未做。整体仍为 WIP，不写成全量完成。',
+      work: '连接字段解析、业务语义、特征族与决策时点可用性；识别跨业务知识混放，明确钱包与外卖的隔离边界，借助 Agent 推进知识库拆分和内容一致性验收。',
+      evidence: '钱包研究阶段已封板；钱包与外卖知识库已拆分发布。外卖研究和字段业务准入继续推进；知识发布不等于特征有效或完整 Agent 系统已完成。',
       tags: ['Business Semantics', 'Feature Family', 'Data Quality', 'Pattern-ready Input'],
       details: [
         ['Context / 角色', '参与国际支付风险特征研究，重点是把字段理解转化为可复用的分析输入，而非仅做字段列表。'],
-        ['Method / 方法', '字段理解 → 业务语义 → 特征族 → 可用性判断 → Pattern-ready Input。先明确观察对象和分析粒度，再讨论特征价值。'],
+        ['Method / 方法', '解析、语义、特征族、决策时点可得性分别验收；知识资产保留业务归属、版本、证据状态和调用范围。'],
         ['Evaluation / 判断', '区分能解析、能解释与能用于决策；不把字段存在等同于特征有效，不把待核验的语义写成已确认结论。'],
         ['Reflection / 边界', '输入资产仍在完善。公开页面不展示内部字段名、数据源、SQL、阈值或具体市场业务细节，也不宣称 Agent 已上线。'],
       ],

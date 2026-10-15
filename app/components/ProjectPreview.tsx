@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ScientificDiagram } from './ScientificDiagram';
 
 const previews = [
-  { kind: 'risk-phase-2', target: 'risk-phase-2', label: '风险模型 · 对照实验', summary: '三组输入、交叉验证与重复实验：先审查模型学到了什么，再讨论决策价值。' },
-  { kind: 'field-governance', target: 'feature-research', label: '特征研究 · 语义治理', summary: '把可解析的字段，变成可理解、可追溯的研究输入。外卖已有沉淀，钱包尚未开展。' },
+  { kind: 'risk-phase-2', target: 'risk-phase-2', label: '风险研究 · 候选深化', summary: '从宽特征建模走到候选取舍与结构重现，区分研究稳定性与独立业务验证。' },
+  { kind: 'field-governance', target: 'feature-research', label: '特征研究 · 知识治理', summary: '钱包研究阶段封板，两业务知识库已拆分发布；语义、时点与业务准入继续核验。' },
   { kind: 'ai-case-0', target: 'ai-case-0', label: 'AI 协作 · 研究纠偏', summary: 'Agent 扩大代码与实验执行能力；我设定对照、审查证据并保留最终判断。' },
 ] as const;
 

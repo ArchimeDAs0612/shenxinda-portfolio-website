@@ -46,7 +46,8 @@ try {
     assert.equal(await page.getByText('沈鑫达', { exact: true }).count(), 0, 'Public view does not visibly disclose the career name');
     assert.equal(await page.locator('.hero .actions a').count(), 3);
     assert.equal(await page.locator('.hero .actions a').first().getAttribute('href'), '#internships', 'All visitors can discover career and projects');
-    assert(await page.evaluate(() => document.querySelector('#exploration').compareDocumentPosition(document.querySelector('#ai')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Creation precedes AI practice');
+    assert(await page.evaluate(() => document.querySelector('#projects').compareDocumentPosition(document.querySelector('#ai')) & Node.DOCUMENT_POSITION_FOLLOWING), 'AI follows research');
+    assert(await page.evaluate(() => document.querySelector('#ai').compareDocumentPosition(document.querySelector('#exploration')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Agent practice precedes AIGC');
     assert.equal(await page.locator('.nav-links a[href="#exploration"]').count(), 1);
     assert.equal(await page.locator('.mobile-nav a[href="#exploration"]').count(), 1);
     assert.equal(await page.locator('.nav-links a[href="#internships"]').count(), 1);
@@ -109,10 +110,14 @@ try {
     assert.match(await page.locator('.internship-didi').innerText(), /Pattern Agent/);
     for (const metric of ['3000+', '20万+', '20+', '约3小时 → 约5分钟']) assert((await page.locator('.internship-zeekr').innerText()).includes(metric));
     assert.equal(await page.locator('.portal-project').count(), 2);
-    assert.match(await page.locator('.portal-project').first().innerText(), /PySpark GBT.*OOT.*Rej→Pass/s);
-    assert.match(await page.locator('.portal-project').last().innerText(), /钱包字段尚未做/);
-    assert.equal(await page.locator('#research-details').getAttribute('open'), null);
-    assert.equal(await page.locator('#risk-pattern').isVisible(), false);
+    assert.match(await page.locator('.portal-project').first().innerText(), /候选筛选.*OOT.*Rej→Pass/s);
+    assert.match(await page.locator('.portal-project').last().innerText(), /钱包研究阶段已封板.*拆分发布/s);
+    assert.equal(await page.locator('#research-details').evaluate(n => n.tagName), 'SECTION', 'Research is permanent content, not collapsible');
+    assert.equal(await page.locator('#research-details > summary').count(), 0);
+    assert.equal(await page.locator('.research-directory a').count(), 6);
+    assert.equal(await page.locator('#risk-pattern').isVisible(), true);
+    assert.doesNotMatch(await page.locator('main').innerText(), /钱包字段尚未做|钱包尚未开展|钱包待开展|PySpark GBT/);
+    for (const id of ['risk-phase-0', 'risk-phase-1', 'risk-phase-2', 'feature-research', 'ai-case-0', 'ai-case-1']) assert(await page.locator(`#${id}`).isVisible(), `${id} visible without disclosure`);
     assert.equal(await page.locator('#ai details').count(), 0, 'Core AI collaboration is never gated by a disclosure');
     assert.equal(await page.locator('#ai .ai-case-readthrough').count(), 2);
     for (const item of await page.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible(), 'Both AI projects are visible without clicking');
@@ -140,17 +145,16 @@ try {
     assert.equal(await page.locator('.portal-share > a').getAttribute('href'), 'https://archimedas0612.github.io/career/');
     await page.evaluate(() => { delete navigator.clipboard.writeText; });
     for (const id of ['internships', 'education', 'about', 'projects', 'ai', 'exploration', 'contact']) { await page.locator(`#${id}`).scrollIntoViewIfNeeded(); await page.waitForTimeout(120); assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id} overflow ${viewport.width}`); await page.screenshot({ path: `${output}/${viewport.width}-${id}.png` }); }
-    await page.locator('#research-details > summary').click(); assert(await page.locator('#risk-pattern').isVisible());
+    assert(await page.locator('#risk-pattern').isVisible());
     assert.equal(await page.locator('#research-details .research-svg[role="img"]').count(), 4);
-    await page.getByRole('button', { name: '03 · 模型发现与审计', exact: true }).click();
-    assert.match(await page.locator('#risk-phase-2 .research-svg').textContent(), /PySpark GBT/);
-    await page.locator('#risk-phase-2 .process-nodes button').last().click(); assert.match(await page.locator('#risk-phase-2 .process-detail').last().innerText(), /阻断 OOT/);
+    await page.getByRole('button', { name: '03 · 模型发现与候选深化', exact: true }).click();
+    assert.match(await page.locator('#risk-phase-2 .research-svg').textContent(), /结构重现.*独立业务核验/s);
+    await page.locator('#risk-phase-2 .process-nodes button').last().click(); assert.match(await page.locator('#risk-phase-2 .process-detail').last().innerText(), /AUC.*真实 OOT/s);
     assert.match(await page.locator('#field-governance-detail-0').innerText(), /稳定解析/);
     if (viewport.width < 900) { const pan = page.locator('#risk-phase-2 .research-pan'); await pan.evaluate((n) => { n.scrollLeft = n.scrollWidth; }); assert(await pan.evaluate((n) => n.scrollLeft > 0)); }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
-    await page.locator('#research-details > summary').click();
     assert.equal(await page.locator('#ai .research-svg[role="img"]').count(), 2);
-    for (const kind of ['experiment-feedback-loop', 'semantic-evidence-atlas']) assert.equal(await page.locator(`[data-diagram-layout="${kind}"]`).count(), 1);
+    for (const kind of ['experiment-feedback-loop', 'evidence-recovery-namespace', 'model-candidate-evolution', 'field-knowledge-admission']) assert.equal(await page.locator(`[data-diagram-layout="${kind}"]`).count(), 1);
     for (const f of await page.locator('#ai .research-figure').all()) { assert.equal(await f.locator('svg title').count(), 1); assert.equal(await f.locator('svg desc').count(), 1); }
     await page.getByRole('button', { name: '下一张生活照片' }).click(); assert.match(await page.locator('.carousel-controls').innerText(), /02/);
     await page.getByRole('button', { name: '复制邮箱', exact: true }).click(); await page.getByRole('status').filter({ hasText: '已复制' }).waitFor(); assert.equal(await page.evaluate(() => navigator.clipboard.readText()), '19357506009@163.com');
@@ -192,7 +196,7 @@ try {
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
   const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(new URL('?view=career', siteUrl).href, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${new URL('?view=career', siteUrl).href}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
-  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1); for (const id of ['internships', 'projects', 'education']) assert.equal(await n.locator(`#${id}`).isVisible(), true, `No-JS ${id} remains readable`); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await noJs.close();
+  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1); for (const id of ['internships', 'projects', 'education', 'risk-phase-0', 'risk-phase-1', 'risk-phase-2', 'feature-research', 'ai-case-0', 'ai-case-1']) assert.equal(await n.locator(`#${id}`).isVisible(), true, `No-JS ${id} remains readable`); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await noJs.close();
   const phone = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   await phone.addInitScript(() => {
     window.__mobileOpeningCount = 0;

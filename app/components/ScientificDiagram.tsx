@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { AgentExperimentLoop, AgentSemanticAtlas } from './AgentResearchFigures';
+import { ModelCandidateEvolution, FieldKnowledgeEvolution } from './ResearchEvolutionFigures';
 
 type Tone = 'teal' | 'orange' | 'neutral';
 function Block({ x, y, w = 180, h = 76, title, sub, tone = 'neutral', dashed = false, children }: { x: number; y: number; w?: number; h?: number; title: string; sub?: string; tone?: Tone; dashed?: boolean; children?: ReactNode }) {
@@ -14,16 +15,6 @@ function Edge({ d, id, dashed = false, tone = 'neutral' }: { d: string; id: stri
 function Label({ x, y, children }: { x: number; y: number; children: ReactNode }) { return <text x={x} y={y} className="research-label">{children}</text>; }
 function Group({ x, y, w, h, title, tone = 'neutral' }: { x: number; y: number; w: number; h: number; title: string; tone?: Tone }) {
   return <g className={`research-group tone-${tone}`}><rect x={x} y={y} width={w} height={h} rx="10" /><text x={x + 16} y={y + 26}>{title}</text></g>;
-}
-
-function TreeModel({ x, y }: { x: number; y: number }) {
-  return <g className="research-model" transform={`translate(${x} ${y})`}>
-    <rect width="180" height="188" rx="8" />
-    <text x="90" y="29" className="model-name">PySpark GBT</text>
-    <path d="M90 64L52 99M90 64L128 99M52 99L31 136M52 99L73 136M128 99L107 136M128 99L149 136" />
-    {[[90, 64], [52, 99], [128, 99], [31, 136], [73, 136], [107, 136], [149, 136]].map(([cx, cy], i) => <circle key={i} cx={cx} cy={cy} r={i < 3 ? 8 : 5} />)}
-    <text x="90" y="172" className="model-caption">树结构示意 · 非真实模型</text>
-  </g>;
 }
 
 const readingGuide = {
@@ -42,42 +33,134 @@ const readingGuide = {
     takeaway: '保留每一层证据的口径，不把相关差异写成因果或收益。',
   },
   'risk-phase-2': {
-    number: '03', category: 'CONTROLLED MODEL STUDY', headline: '模型高分，还不够。要知道它学到了什么。',
-    summary: '评分、原始行为、两者组合分别建模，再检验稳定性与来源混淆；跨时间验证不足时，不提前宣布业务有效。',
-    lenses: [['实验设计', '3 组输入，保持可比较'], ['重复检验', '5 折验证、5 种子、字段族消融'], ['实际产物', '可复跑实验链与 30 页汇报']],
-    terms: [['Score / Raw / Hybrid', '只用评分 / 原始行为 / 评分与行为组合。'], ['OOT', '时间外验证：用独立时间的样本检验泛化。']],
-    takeaway: '实验与审计已完成；真实 OOT 和业务有效性仍待验证。',
-  },
-  'field-governance': {
-    number: '04', category: 'FEATURE SEMANTICS FRAMEWORK', headline: '从“读得出”，走到“理解对、用得上”。',
-    summary: '字段治理不是堆字段名，而是建立解析、业务含义、特征组织和决策可用性之间的联系。',
-    lenses: [['已有范围', '外卖字段已有工作与沉淀'], ['研究框架', '解析性 × 语义 × 决策可用性'], ['进度边界', '钱包尚未开展，不合并计成果']],
-    terms: [['Feature Family', '按行为与语义组织的特征族。'], ['Pattern-ready', '为风险模式研究准备输入，不代表已建生产模型。']],
-    takeaway: '沉淀可理解、可追溯的研究输入；未知含义继续保留待核验。',
-  },
-  'ai-case-0': {
-    number: '05', category: 'HUMAN–AGENT RESEARCH LOOP', headline: 'AI 跑实验，人审查结论。',
-    summary: '同一模型项目里，Agent 辅助代码、调试与重复执行；我设定对照、审查模型到底学到什么，再重新约束下一轮。',
-    lenses: [['人设定', '问题、实验对照与验证要求'], ['Agent 执行', '代码、Debug、运行与日志整理'], ['人负责', '理解结果、纠偏、确定结论边界']],
-    terms: [['方法审查', '检查特征含义、来源与标签关系。'], ['Human Ownership', '最终判断与结果责任由人承担。']],
-    takeaway: '保留实验设计，调整执行环境；不让 Agent 把随机划分包装成 OOT。',
-  },
-  'ai-case-1': {
-    number: '06', category: 'SCOPE & SEMANTIC REVIEW', headline: 'AI 整理信息，人限定业务边界。',
-    summary: '字段研究里，先规定哪些业务已做、哪些含义待核验。Agent 组织资料，但不能凭字段名猜业务，也不能提前写完钱包分支。',
-    lenses: [['先限定', '外卖已有工作，钱包未做'], ['再协作', '按研究框架整理语义与特征族'], ['再核验', '保留未知，不提前确认价值']],
-    terms: [['Context', '限定业务范围与已有知识。'], ['Critical Review', '检查含义与可用性，不把可读写成有效。']],
-    takeaway: '外卖与钱包分别维护；尚未开展的分支始终不计已完成成果。',
-  },
-} as const;
+  "number": "03",
+  "category": "MODEL → CANDIDATE → EVIDENCE",
+  "headline": "从模型发现，走到候选取舍与业务核验。",
+  "summary": "宽特征研究与深化探索属于同一主线。模型提出组合线索，再审查候选筛选、成员重叠、结构重现及金额证据，不把实验可复现写成业务有效。",
+  "lenses": [
+    [
+      "已有沉淀",
+      "宽特征实验与方法审查"
+    ],
+    [
+      "持续深化",
+      "候选取舍、结构稳定与解释"
+    ],
+    [
+      "验证边界",
+      "正式 Pattern 与真实 OOT 待核验"
+    ]
+  ],
+  "terms": [
+    [
+      "结构重现",
+      "比较不同训练子集模型的同字段集合路径及命中成员；不是独立业务验证。"
+    ],
+    [
+      "候选取舍",
+      "同时看覆盖、浓度和成员包含关系，不将重叠子群相加。"
+    ]
+  ],
+  "takeaway": "候选总览与证据交接继续完善；原研究总体上的稳定性，不等于独立时间或真实业务效果。"
+},  'field-governance': {
+  "number": "04",
+  "category": "FIELD KNOWLEDGE & ADMISSION",
+  "headline": "不只整理字段，还要管住业务、版本与调用。",
+  "summary": "钱包研究已有阶段封板，两条业务线的知识库已拆分发布。解析、语义、时点与效果分别验收；外卖业务准入继续推进。",
+  "lenses": [
+    [
+      "研究状态",
+      "钱包阶段封板；外卖继续研究"
+    ],
+    [
+      "知识资产",
+      "两业务知识库独立发布"
+    ],
+    [
+      "准入边界",
+      "可读与发布成功不等于业务有效"
+    ]
+  ],
+  "terms": [
+    [
+      "分层验收",
+      "物理存在、技术解析、语义、决策时点和效果不自动相互推导。"
+    ],
+    [
+      "调用边界",
+      "按业务范围、证据版本和准入状态使用知识。"
+    ]
+  ],
+  "takeaway": "知识资产既要可理解，也要有正确归属和证据状态；完整 Pattern Agent 仍不是已验证的生产系统。"
+},  'ai-case-0': {
+  "number": "05",
+  "category": "HUMAN–AGENT RESEARCH LOOP",
+  "headline": "搭建研究工作流，把执行与判断接成闭环。",
+  "summary": "我定义问题、输入版本与验收，Agent 执行代码和整理证据；人工追问候选取舍与结构稳定性，再定向修订，不擅改既有实验和评价口径。",
+  "lenses": [
+    [
+      "我设定",
+      "研究问题、对照与修改边界"
+    ],
+    [
+      "Agent 执行",
+      "代码、Debug、证据与报告迭代"
+    ],
+    [
+      "我审查",
+      "解释、候选取舍与交付验收"
+    ]
+  ],
+  "terms": [
+    [
+      "方法审查",
+      "检查来源、标签、结构稳定性和业务验证的区别。"
+    ],
+    [
+      "Human Ownership",
+      "团队评价要求保持；个人承担判断与验收责任。"
+    ]
+  ],
+  "takeaway": "交付可复核的研究材料，不将协作原型表述为成熟独立 Agent 系统。"
+},  'ai-case-1': {
+  "number": "06",
+  "category": "EVIDENCE RECOVERY & BUSINESS ISOLATION",
+  "headline": "先恢复可信成果，再让 Agent 在正确范围内工作。",
+  "summary": "会话中断后从检查点和交付记录恢复进度。我识别业务混放并确认边界，Agent 迁移、核对和检查发布；知识资产与业务准入分别验收。",
+  "lenses": [
+    [
+      "恢复依据",
+      "检查点、交付物与验收回执"
+    ],
+    [
+      "我负责",
+      "发现混放、确定业务范围与验收"
+    ],
+    [
+      "Agent 执行",
+      "知识迁移、链接核对与发布检查"
+    ]
+  ],
+  "terms": [
+    [
+      "证据恢复",
+      "复用已有可信成果，不以重新执行代替状态核对。"
+    ],
+    [
+      "业务隔离",
+      "目录、知识归属、调用入口和版本共同约束使用。"
+    ]
+  ],
+  "takeaway": "钱包与外卖知识库已拆分发布；时点、业务准入与遗留发布配置仍需核验。"
+},} as const;
 
 const descriptions: Record<string, [string, string]> = {
   'risk-phase-0': ['观察范围与候选发现', '以 Rej→Pass 作为复盘入口，经范围拆分、同质比较与窗口分析汇合为复核候选，不将候选视为误伤真值。'],
   'risk-phase-1': ['多层证据与命中审计', '分布、订单覆盖和规则上下文形成证据链；实际动作记录独立回接，条件覆盖与最终命中不等价。'],
-  'risk-phase-2': ['对照实验与验证准入', '评分、原始特征与混合输入并行对照，使用 PySpark GBT；完成交叉验证与稳健性实验，真实 OOT 不足时阻断正式准入。'],
-  'field-governance': ['字段语义与输入治理', '外卖分支已有沉淀，钱包分支未开展；解析、语义、特征族与可用性构成研究输入的审查框架。'],
+  'risk-phase-2': ['模型发现、候选取舍与业务核验', '宽特征研究承接候选筛选、成员重叠、结构重现与金额证据；原研究总体回放不等于独立业务验证，正式 Pattern 和真实 OOT 待核验。'],
+  'field-governance': ['字段资产、知识隔离与分层准入', '钱包研究阶段已封板，两业务知识库已拆分发布；技术解析、语义、决策时点和效果分别验收，外卖业务准入继续推进。'],
   'ai-case-0': ['人机协作与研究纠偏', '人定义对照与审查方法，Agent 辅助代码、运行与整理；审查结果重新约束执行，最终结论由人负责。'],
-  'ai-case-1': ['业务范围与语义审查', '人限定外卖范围和研究口径，执行层组织已有字段知识，未知语义保留待核验，钱包明确为未来分支。'],
+  'ai-case-1': ['证据恢复与跨业务知识治理', '检查点和交付记录恢复可信状态，人确定业务边界，Agent 迁移并核对两业务知识资产；发布完成不替代业务准入。'],
 };
 
 export function ScientificDiagram({ kind, preview = false, idPrefix = '' }: { kind: string; preview?: boolean; idPrefix?: string }) {
@@ -88,7 +171,7 @@ export function ScientificDiagram({ kind, preview = false, idPrefix = '' }: { ki
     <figcaption className="research-heading"><span className="research-number">{guide.number}</span><div><span className="research-kicker">{guide.category}</span><strong>{guide.headline}</strong><p>{guide.summary}</p></div></figcaption>
     {!preview && <dl className="research-readout">{guide.lenses.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
     <div className="research-pan" tabIndex={0} role="region" aria-label={`${title}，可左右滚动`}>
-      <svg className="research-svg" viewBox={kind.startsWith('ai-case-') ? '0 0 1040 580' : '0 0 1040 420'} role="img" aria-labelledby={`${id}-title ${id}-desc`}>
+      <svg className="research-svg" viewBox={kind.startsWith('ai-case-') || kind === 'risk-phase-2' || kind === 'field-governance' ? '0 0 1040 580' : '0 0 1040 420'} role="img" aria-labelledby={`${id}-title ${id}-desc`}>
         <title id={`${id}-title`}>{title}</title><desc id={`${id}-desc`}>{description}</desc>
         <defs>{(['neutral', 'teal', 'orange'] as const).map((tone) => <marker key={tone} id={`${id}-arrow-${tone}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 1L9 5L0 9" className={`arrow-${tone}`} /></marker>)}</defs>
         {kind === 'risk-phase-0' && <>
@@ -116,40 +199,8 @@ export function ScientificDiagram({ kind, preview = false, idPrefix = '' }: { ki
           <Edge id={id} d="M887 151V218" tone="orange" /><Edge id={id} d="M666 200H715V265H758" tone="teal" />
           <path className="research-bracket" d="M42 341v12h974v-12" /><Label x={215} y={383}>字段条件覆盖 ≠ 完整规则逻辑 ≠ 最终命中 · 不作因果或收益推断</Label>
         </>}
-        {kind === 'risk-phase-2' && <>
-          <Group x={14} y={36} w={196} h={318} title="A / 输入审查" />
-          <Block x={30} y={84} w={162} title="特征治理" sub="决策时可用性" tone="teal" />
-          <Label x={32} y={194}>排除 / 审查：</Label><Label x={32} y={222}>标签 · ID</Label><Label x={32} y={250}>决策后信息</Label><Label x={32} y={278}>代理特征</Label>
-          <Group x={250} y={36} w={218} h={318} title="B / 三组并行对照" tone="teal" />
-          {['Score-only', 'Raw-all', 'Hybrid'].map((name, i) => <Block key={name} x={269} y={83 + i * 86} w={180} h={66} title={name} sub={['评分输入', '原始行为输入', '评分 + 原始行为'][i]} tone="teal" />)}
-          <path className="research-edge" d="M192 123H228V116M228 116V288M228 116H269M228 202H269M228 288H269" />
-          <path className="research-edge" d="M449 116H485V202M449 202H520M449 288H485V202" />
-          <TreeModel x={510} y={110} />
-          <Group x={725} y={36} w={296} h={185} title="C / 稳健性与解释审计" tone="orange" />
-          {['订单级 5 折', '字段族消融', '5 种子重复', '复杂度敏感性'].map((name, i) => <g key={name}><rect className="audit-cell" x={741 + (i % 2) * 133} y={84 + Math.floor(i / 2) * 49} width="122" height="38" rx="4" /><text className="audit-text" x={802 + (i % 2) * 133} y={108 + Math.floor(i / 2) * 49}>{name}</text></g>)}
-          <Edge id={id} d="M690 203H710V129H725" tone="teal" />
-          <Label x={739} y={198}>来源 / 标签关系 · 指标解释限定切片</Label>
-          <path className="gate-diamond" d="M805 279L877 241L949 279L877 317Z" /><text className="gate-text" x="877" y="276">真实 OOT</text><text className="gate-text small" x="877" y="296">条件不足</text>
-          <Edge id={id} d="M877 221V241" tone="orange" /><Edge id={id} d="M877 317V350" tone="orange" dashed />
-          <Block x={739} y={352} w={276} h={58} title="阻断正式 Pattern 准入" tone="orange" dashed />
-          <Label x={30} y={388}>已完成实验与审计 ≠ 已验证线上收益</Label>
-        </>}
-        {kind === 'field-governance' && <>
-          <Group x={20} y={38} w={215} h={300} title="业务分支 / Scope" />
-          <Block x={38} y={99} w={179} title="外卖字段" sub="已有工作与知识沉淀" tone="teal" />
-          <Block x={38} y={234} w={179} title="钱包字段" sub="尚未开展 / 不计成果" dashed />
-          <Group x={274} y={38} w={494} h={300} title="研究框架 / 非全量完成声明" tone="teal" />
-          <circle className="semantic-cycle" cx="518" cy="209" r="110" />
-          <Block x={292} y={99} w={204} title="物理可解析性" sub="格式 / 缺失 / 稳定解析" />
-          <Block x={535} y={99} w={214} title="业务语义" sub="对象 / 行为 / 含义" tone="teal" />
-          <Block x={292} y={234} w={204} title="Feature Family" sub="行为与语义的特征组织" tone="teal" />
-          <Block x={535} y={234} w={214} title="决策可用性" sub="可读 ≠ 可解释 ≠ 有效" tone="orange" />
-          <Edge id={id} d="M217 137H292" tone="teal" /><Edge id={id} d="M496 137H535" />
-          <Edge id={id} d="M642 175V203H394V234" tone="teal" /><Edge id={id} d="M496 272H535" tone="teal" />
-          <Block x={824} y={166} w={194} h={103} title="Pattern-ready" sub="可理解 / 可追溯输入" tone="orange"><text x="16" y="82" className="block-sub">不代表生产模型</text></Block>
-          <Edge id={id} d="M749 272H788V215H824" tone="orange" />
-          <Edge id={id} d="M642 310V375H394V310" dashed tone="orange" /><Label x={433} y={397}>未知语义 / 待核验项保留</Label>
-        </>}
+        {kind === 'risk-phase-2' && <ModelCandidateEvolution id={id} />}
+        {kind === 'field-governance' && <FieldKnowledgeEvolution id={id} />}
         {kind === 'ai-case-0' && <AgentExperimentLoop id={id} />}
         {kind === 'ai-case-1' && <AgentSemanticAtlas id={id} />}
       </svg>

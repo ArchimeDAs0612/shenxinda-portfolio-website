@@ -934,6 +934,17 @@ html:has(:target) .hero-editorial .hero-opening-trace i { animation: none; }
 .portal-ai-summary li span { display: block; margin-bottom: 8px; font: 11px monospace; color: #9c7753; }
 .portal-ai-cases { border-top: 1px solid #d5cbbb; margin-top: 28px; min-width: 0; }
 .portal-ai-title { font-size: clamp(21px, 2.3vw, 28px); line-height: 1.5; margin: 28px 0 20px; color: #76563e; }
+.research-readthrough > h3 { font-size: clamp(24px, 3vw, 34px); line-height: 1.5; margin: 32px 0 12px; color: #594733; }
+.research-directory { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; margin: 24px 0 30px; }
+.research-directory a { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; padding: 12px; border: 1px solid #c9bfaf; color: #34594b; font-size: 13px; line-height: 1.5; }
+.research-directory a:nth-last-child(-n+2) { background: #e8eee5; border-color: #9eae98; font-weight: 650; }
+.research-directory a:hover, .research-directory a:focus-visible { background: #e4eada; outline: 2px solid #7a8d71; outline-offset: 2px; }
+.research-context { margin: 24px 0; padding: 20px 24px; border-left: 3px solid #8a7354; background: #f2eee4; }
+.research-context strong { font-size: 17px; color: #594733; }
+.research-context p { font-size: 15px; line-height: 1.9; color: #706859; margin-bottom: 0; }
+.candidate-overlap > rect { fill: #f0f6f1; stroke: #c4d7c9; }
+.candidate-overlap ellipse { fill: #dfebe3; stroke: #438e76; stroke-width: 1.5; }
+.candidate-overlap ellipse + ellipse { fill: #f5e6ce; stroke: #b57035; }
 .creation-paths { display: flex; flex-wrap: wrap; gap: 12px 28px; padding: 20px 0 0; border-top: 1px solid #d5cbbb; }
 .creation-paths a { min-height: 44px; display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: #76563e; }
 .creation-paths a span { transition: transform .2s ease; }
