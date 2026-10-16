@@ -9,7 +9,7 @@ export const portalContent = {
     xiaohongshu: '/from/xhs/',
     douyin: '/from/douyin/',
   },
-  updatedAt: '2026-10-15',
+  updatedAt: '2026-10-16',
   title: '阿基米达｜统计 · AI 创作 · 个人表达',
   description: '阿基米达的个人主页。用统计理解世界，用 AI 创作表达；记录研究、创作与生活，欢迎同行交流与内容合作。',
   careerTitle: '沈鑫达｜统计 · 风险决策 · AI 创作',

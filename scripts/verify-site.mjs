@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join } from 'node:path';
+import { createHash } from 'node:crypto';
 
 const projectRoot = process.cwd();
 const pagePath = join(projectRoot, 'app/page.tsx');
@@ -14,8 +15,16 @@ const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx'
 const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg']);
 const errors = [];
 const warnings = [];
-for (const path of ['public/media/archimedas-one-minute-v1.mp4', 'public/images/promo/archimedas-one-minute-v1.jpg']) {
+const promoSource = readFileSync(join(projectRoot, 'content/promo-content.ts'), 'utf8');
+const promoVideo = promoSource.match(/video:\s*'([^']+)'/)?.[1];
+const promoPoster = promoSource.match(/poster:\s*'([^']+)'/)?.[1];
+for (const path of [promoVideo, promoPoster].filter(Boolean).map(path => `public${path}`)) {
   if (!existsSync(join(projectRoot, path))) errors.push(`宣传片资源缺少：${path}`);
+}
+if (!promoVideo || !promoPoster) errors.push('宣传片资源配置缺失');
+if (promoVideo && existsSync(join(projectRoot, 'public', promoVideo))) {
+  const expected = promoSource.match(/sha256:\s*'([a-f0-9]{64})'/)?.[1];
+  if (createHash('sha256').update(readFileSync(join(projectRoot, 'public', promoVideo))).digest('hex') !== expected) errors.push('宣传片不是获批的83秒A版文件');
 }
 
 for (const relativePath of [...requiredDirectories, ...requiredFiles]) {

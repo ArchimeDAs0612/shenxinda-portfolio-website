@@ -29,17 +29,24 @@ assert.match(careerHtml, /\?view=career/);
 const styles = [...html.matchAll(/href="([^"<>]+\.css)"/g)].map((match) => match[1]);
 assert(styles.length > 0, 'Stylesheet missing');
 const site = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
+const promo = await readFile('content/promo-content.ts', 'utf8');
+const moviePath = promo.match(/video:\s*'([^']+)'/)?.[1];
+const posterPath = promo.match(/poster:\s*'([^']+)'/)?.[1];
+const movieHash = promo.match(/sha256:\s*'([a-f0-9]{64})'/)?.[1];
 const images = [...new Set([...site.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
-const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/promo/archimedas-one-minute-v1.jpg', '404.html', 'from/intro.css', 'from/intro.js'];
+const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', posterPath, '404.html', 'from/intro.css', 'from/intro.js'];
 await Promise.all(assets.map(async (asset) => {
   const response = await get(new URL(asset, url));
   if (images.includes(asset)) assert.match(response.headers.get('content-type'), /^image\//);
   if (asset.endsWith('.css')) assert.match(response.headers.get('content-type'), /text\/css/);
 }));
 const missing = await fetch(new URL('portal-page-not-found', url), { signal: AbortSignal.timeout(20000) });
-const movie = await fetch(new URL('media/archimedas-one-minute-v1.mp4', url), { method: 'HEAD', signal: AbortSignal.timeout(20000) });
+const movie = await get(new URL(moviePath, url));
 assert.equal(movie.status, 200);
 assert.match(movie.headers.get('content-type'), /video\/mp4/);
+assert.equal(createHash('sha256').update(Buffer.from(await movie.arrayBuffer())).digest('hex'), movieHash, 'Public video must match the approved A film');
+assert.match(html, /83 秒，看我的技术实践/);
+assert(!html.includes('/media/archimedas-one-minute-v1.mp4'), 'Do not attach the old 60s film');
 assert.equal(missing.status, 404, 'Unknown route must return an actual 404');
 assert.match(await missing.text(), /返回个人主页/);
 for (const [source, target] of [['xhs', '/?from=xhs'], ['douyin', '/?from=douyin']]) {

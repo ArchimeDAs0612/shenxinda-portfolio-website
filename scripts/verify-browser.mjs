@@ -5,12 +5,16 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PORTFOLIO_PLAYWRIGHT_MODULE || 'playwright');
 const siteUrl = process.argv[2] || 'http://127.0.0.1:3100/';
-const filmPublished = /published:\s*true/.test(await readFile('content/promo-content.ts', 'utf8'));
+const filmSource = await readFile('content/promo-content.ts', 'utf8');
+const filmPublished = /published:\s*true/.test(filmSource);
+const filmDuration = Number(filmSource.match(/durationSeconds:\s*(\d+)/)?.[1]);
+const filmPath = filmSource.match(/video:\s*'([^']+)'/)?.[1];
+const filmPoster = filmSource.match(/poster:\s*'([^']+)'/)?.[1];
 const output = 'outputs/refresh-20260930';
 await mkdir(output, { recursive: true });
 const media = await readFile('content/site-content.ts', 'utf8') + await readFile('content/brand-content.ts', 'utf8');
 const assets = [...new Set([...media.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((m) => m[1]))];
-assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/promo/archimedas-one-minute-v1.jpg');
+assets.push('images/brands/didi.svg', 'images/brands/zeekr.svg', filmPoster.replace(/^\//, ''));
 const launch = { headless: true, ...(process.env.PORTFOLIO_CHROMIUM ? { executablePath: process.env.PORTFOLIO_CHROMIUM } : {}), args: ['--mute-audio', '--autoplay-policy=document-user-activation-required'] };
 const browser = await chromium.launch(launch);
 const results = [];
@@ -18,6 +22,8 @@ try {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 820, height: 1180 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
     const context = await browser.newContext({ viewport, isMobile: viewport.width < 640, hasTouch: viewport.width < 900, reducedMotion: 'reduce', permissions: ['clipboard-read', 'clipboard-write'] });
     const page = await context.newPage();
+    const filmRequests = [];
+    page.on('request', request => { if (new URL(request.url()).pathname === filmPath) filmRequests.push(request.url()); });
     await page.addInitScript(() => {
       window.__audioContexts = [];
       const Native = window.AudioContext;
@@ -82,13 +88,17 @@ try {
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll(nodes => nodes.map(a => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
     if (filmPublished) {
     assert(await page.evaluate(() => document.querySelector('.hero').compareDocumentPosition(document.querySelector('#film')) & Node.DOCUMENT_POSITION_FOLLOWING));
+    assert(await page.evaluate(() => document.querySelector('#film').compareDocumentPosition(document.querySelector('#internships')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Film precedes internships');
     assert(await page.evaluate(() => document.querySelector('#film').compareDocumentPosition(document.querySelector('#exploration')) & Node.DOCUMENT_POSITION_FOLLOWING));
     assert.equal(await page.locator('#film video').evaluate(v => v.paused && !v.autoplay && v.preload === 'none'), true, 'Film waits for explicit play');
+    assert.equal(await page.locator('#film video').getAttribute('src'), null, 'Video URL stays detached before consent');
+    assert.equal(filmRequests.length, 0, 'No video download before a visitor clicks');
     await page.locator('#film').scrollIntoViewIfNeeded();
     await page.screenshot({ path: `${output}/${viewport.width}-film-cover.png` });
-    await page.getByRole('button', { name: '播放阿基米达一分钟介绍', exact: true }).click();
+    await page.getByRole('button', { name: '播放阿基米达83秒技术实践', exact: true }).click();
     await page.waitForFunction(() => { const v = document.querySelector('#film video'); return v.readyState >= 2 && v.currentTime > .15 && !v.paused; });
-    assert(Math.abs(await page.locator('#film video').evaluate(v => v.duration) - 60) < .2);
+    assert(Math.abs(await page.locator('#film video').evaluate(v => v.duration) - filmDuration) < .2);
+    assert.equal(new URL(await page.locator('#film video').getAttribute('src'), siteUrl).pathname, filmPath);
     assert.equal(await page.locator('#film video').getAttribute('playsinline'), '');
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Film overflow ${viewport.width}`);
     await page.screenshot({ path: `${output}/${viewport.width}-film-playing.png` });
@@ -166,7 +176,7 @@ try {
     const signal = await page.evaluate(() => { const s = new Float32Array(window.__musicAnalyser.fftSize); window.__musicAnalyser.getFloatTimeDomainData(s); return { state: window.__audioContexts.at(-1).state, peak: Math.max(...s.map(Math.abs)), rms: Math.sqrt(s.reduce((a, v) => a + v * v, 0) / s.length) }; });
     assert.equal(signal.state, 'running'); assert(signal.rms > .00001 && signal.peak < .5, JSON.stringify(signal));
     if (viewport.width === 1440 && filmPublished) {
-      await page.getByRole('button', { name: '播放阿基米达一分钟介绍', exact: true }).click();
+      await page.getByRole('button', { name: '播放阿基米达83秒技术实践', exact: true }).click();
       await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
       await page.waitForFunction(() => !document.querySelector('#film video').paused);
       await page.getByRole('button', { name: '开启音乐', exact: true }).click();
