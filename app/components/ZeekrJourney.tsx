@@ -13,7 +13,7 @@ export function InternshipOverview() {
         {overview.didi.bullets.map((item) => <li key={item.title}><strong className="internship-point-title">{item.title}</strong><p>{item.text}</p></li>)}
       </ul>
       <p className="internship-foundation">{overview.didi.progress}</p>
-      <a className="internship-detail-link" href="#projects">看看正在推进的两个研究项目 ↘</a>
+      <a className="internship-detail-link" href="#projects">看看两个项目的研究与结项交付 ↘</a>
     </article>
     <article className="career-secondary internship-summary internship-zeekr">
       <div className="internship-summary-heading"><div><span className="field-label">{experience.period} / 实习履历</span><div className="company-logo-shell zeekr-logo-shell"><img className="company-logo zeekr-logo" src="images/brands/zeekr.svg" alt="极氪 ZEEKR Logo" /></div><h3>数据分析实习</h3><p className="internship-company">品牌营销中心 · 吉利控股集团旗下智能电动品牌</p></div><figure className="company-brand-visual zeekr-brand-visual"><MaintainableImage className="brand-reference-image" src={brandContent.zeekr.src} alt={brandContent.zeekr.alt} label="ZEEKR 9X" fallbackTitle="极氪品牌产品形象" /><figcaption><a href={brandContent.zeekr.source} target="_blank" rel="noreferrer">9X 品牌示意 ↗</a></figcaption></figure></div>

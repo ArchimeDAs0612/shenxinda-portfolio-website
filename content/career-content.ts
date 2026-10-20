@@ -1,15 +1,15 @@
 /** 公开职业内容：只维护去敏摘要，不存放内部资料、字段或实验数值。 */
 export const careerContent = {
-  updatedAt: '2026-10-15',
+  updatedAt: '2026-10-20',
   internshipOverview: {
     didi: {
       bullets: [
-        { title: '风控 Pattern Agent 搭建', text: '将样本分析、策略复盘、特征研究与机器学习辅助发现组织为可迭代的研究工作流。' },
-        { title: '风险识别与潜在误伤分析', text: '支持候选风险 Pattern 的发现、解释与验证，研究支付风险识别与正常支付受阻问题。' },
-        { title: '支付字段治理', text: '为 Agent 与风险研究提供具有明确业务语义的特征输入。' },
-        { title: '实验验证与人工审查', text: '完善研究流程和审查机制，由人判断候选 Pattern 与实验结论的有效性。' },
+        { title: '支付风控复盘与候选研究', text: '完成短窗复盘、非限额信号建模、LGBM 消融与路径审查，形成可回放的调查候选。' },
+        { title: '候选反证与交付', text: '核对完整条件、成员包含与金额结构，完成候选取舍、报告及恢复交接。' },
+        { title: '巴西字段 Pattern 与 Agent', text: '完成钱包与外卖字段研究、可用性分析和知识库拆分，沉淀字段治理 SOP 与 Agent 输入、评估设计。' },
+        { title: '人机协作与人工审查', text: '我负责需求、业务判断、纠偏与验收；团队提供业务与数据支持，AI 辅助分析实现和交付整理。' },
       ],
-      progress: '研究工作流与原型进行中；正式 Pattern 与跨时间验证待完成。',
+      progress: '两大项目研究与交付均已结项；不等同于生产上线、真实 OOT 或业务收益验收。',
     },
     zeekr: {
       bullets: [
@@ -36,40 +36,40 @@ export const careerContent = {
   // 只填写经本人确认、实际修读的课程；空数组时页面不显示该模块。
   selectedCoursework: [] as string[],
   didiFocus: [
-    '构造 Rej → Pass 观察关系，组织同质样本与短窗口复盘范围',
-    '设计订单级策略条件对比，连接分布、窗口、分支与实际命中',
-    '推进 Score-only / Raw-all / Hybrid 树模型对照、消融与重复实验',
-    '审查来源混淆与信息泄漏；将 OOT 和 Pattern 准入纳入验证边界',
+    '完成 Rej → Pass 配对与短窗口策略复盘，限定观察与解释范围',
+    '完成非限额信号建模、候选回放与策略条件覆盖分析',
+    '完成 LGBM 宽特征消融、完整路径审查与金额反证',
+    '完成前置细分、候选取舍与恢复交接，保留独立业务验证边界',
   ],
   projects: [
     {
-      id: 'risk-pattern', number: '01', status: 'WIP',
-      title: '支付风险 Pattern 研究与潜在误伤分析',
+      id: 'risk-pattern', number: '01', status: '研究与交付已结项',
+      title: '支付风控短窗口策略误伤复盘与增益识别',
       english: 'Payment Risk Pattern Discovery & Decision Analysis',
-      problem: '研究支付受阻与后续通过的观察关系，寻找值得进一步核验的风险与潜在误伤线索。',
-      work: '参与搭建风控 Pattern Agent 的研究工作流与原型：从可比样本和策略复盘出发，推进宽特征建模、候选筛选、成员重叠与结构稳定性分析，形成可审阅的研究交付。',
-      evidence: '候选定位、验证交付与宽特征研究已有阶段沉淀，候选深化探索继续推进。正式 Pattern、真实 OOT 与业务有效性仍待验证；Rej→Pass 仅是观察线索。',
-      tags: ['Python / SQL', 'Tree-based ML', 'Feature Engineering', 'Pattern Research'],
+      problem: '从短窗口支付受阻出发，研究原策略命中群中是否存在值得进一步核验的额外信息与调查候选。',
+      work: '参与完成配对复盘、非限额信号建模、LGBM 宽特征消融、完整路径回放与金额反证；我负责问题拆解、关键追问、候选取舍和交付审查，AI 辅助分析与报告实现。',
+      evidence: '四个研究阶段及交付恢复已结项，形成候选说明、完整回放、反证与版本化交接材料。Rej→Pass 不是误伤真值；真实 OOT、正式 Pattern 及上线收益没有充分验收证据，不作为结项成果宣称。',
+      tags: ['Python / SQL', 'LightGBM', 'Feature Ablation', 'Candidate Replay'],
       details: [
         ['Context / 角色', '在国际支付风控实习中参与分析与验证，以公开摘要解释方法，不披露内部样本、规则或业务指标。'],
-        ['Method / 方法', '由样本与特征出发，进行树模型辅助发现、交叉验证、特征族消融、复杂度敏感性与重复实验。'],
+        ['Method / 方法', '从早期分布式树模型实验演进到 LGBM 宽特征研究，结合输入对照、特征族消融、完整路径、集合核对与主动反证。各阶段总体与标签不同，不拼接成效果增长曲线。'],
         ['Evaluation / 判断', '不把高模型分数直接当作风险识别能力。检查样本可比性、来源差异、信息泄漏与验证口径，区分实验可复现和业务可应用。'],
-        ['Reflection / 边界', '观察关联、条件覆盖与实际决策是不同证据层级。跨时间验证尚未完成；不宣称正式 Pattern、策略上线、业务增益或生产模型所有权。'],
+        ['Reflection / 边界', '研究已完成，业务验证另计。结构重现、搜索流程留出与固定最终规则的独立验证分开记录；不宣称真实误伤认证、真实 OOT、业务正式接收、策略上线或收益。'],
       ],
     },
     {
-      id: 'feature-research', number: '02', status: 'WIP',
-      title: '跨市场支付风险字段治理与特征研究',
+      id: 'feature-research', number: '02', status: '研究与交付已结项',
+      title: '巴西字段 Pattern 与 Agent',
       english: 'International Payment Risk Feature Research',
       problem: '复杂原始字段如何变成可以理解、可以判断、适合风险研究的特征输入？',
-      work: '连接字段解析、业务语义、特征族与决策时点可用性；识别跨业务知识混放，明确钱包与外卖的隔离边界，借助 Agent 推进知识库拆分和内容一致性验收。',
-      evidence: '钱包研究阶段已封板；钱包与外卖知识库已拆分发布。外卖研究和字段业务准入继续推进；知识发布不等于特征有效或完整 Agent 系统已完成。',
+      work: '完成钱包方法沉淀、外卖全量字段整理与可用性分析、成果接管对账和业务分库；我负责需求、来源与口径纠偏、人工解释规则及验收，AI 辅助解析、统计和知识组织。',
+      evidence: '项目研究与交付已结项，形成字段资产、治理 SOP、独立业务知识库及 Agent 输入与评估设计。外卖技术账本与业务目录分层；未确认语义保留未知。项目完结不代表全字段业务准入、正式 Pattern 或生产 Agent 已完成。',
       tags: ['Business Semantics', 'Feature Family', 'Data Quality', 'Pattern-ready Input'],
       details: [
-        ['Context / 角色', '参与国际支付风险特征研究，重点是把字段理解转化为可复用的分析输入，而非仅做字段列表。'],
+        ['Context / 角色', '参与钱包与外卖字段研究，把字段目录推进为带来源、语义、用途和证据状态的研究输入；不认领全部 SQL / Python 的独立实现。'],
         ['Method / 方法', '解析、语义、特征族、决策时点可得性分别验收；知识资产保留业务归属、版本、证据状态和调用范围。'],
         ['Evaluation / 判断', '区分能解析、能解释与能用于决策；不把字段存在等同于特征有效，不把待核验的语义写成已确认结论。'],
-        ['Reflection / 边界', '输入资产仍在完善。公开页面不展示内部字段名、数据源、SQL、阈值或具体市场业务细节，也不宣称 Agent 已上线。'],
+        ['Reflection / 边界', '既定研究与交付范围已关闭；全字段语义、决策时点与跨期效果没有整体通过。Agent 输入合同与评估规范是设计交付，不是已实现、运行或部署的独立系统。'],
       ],
     },
   ],
@@ -79,8 +79,15 @@ export const careerContent = {
     english: 'AIGC Content Production System',
     views: '210万+', likes: '5万+', dataAsOf: '2026-10-07',
     metricScope: '全平台',
-    description: '用 Seedance 创作社会观察与讽喻内容，借荒诞叙事表达哲思。',
-    probabilityEngine: { title: '阿基米达的概率引擎', description: '以可视化讲解统计与 AI 理论，探索生活中的统计应用技巧。', status: 'WIP · 首集制作验收中' },
+    description: '用 Seedance 创作社会观察与讽喻短片，借荒诞叙事表达哲思。已有公开作品；新作《重生也逃不掉》EP01《逃离建筑学》逐幕制作中，尚无可核实的整片发布记录。',
+    probabilityEngine: {
+      title: '阿基米达的概率引擎',
+      description: '从生活中的选择与错觉切入，用概率、数据和连续可视化实验解释机制；以可核验的推演连接统计、AI 与个人经验。',
+      status: '已有多集发布 · 已核对抖音 EP001—EP012 发布记录（截至2026-10-15）',
+      publishedWorks: ['你羡慕的“同龄人”，可能根本不存在', '你以为在挑对象，其实你也在候选名单里', '把三省六部制装进AI，会发生什么？'],
+      productionStatus: '《只回了三条消息，为什么像没下班？》Motion 重制版已完成（2026-10-19）；现有记录为待审，未计入已发布作品。',
+      linkNote: '代表作名称依据已保存发布记录展示；作品直链待补，不以制作文件或活动示例冒充本人作品链接。',
+    },
     production: '选题由我敲定；AI 协作生成视频、BGM、封面、标签与文案，形成发布包。内容与科学性由人审查，发布由本人决定。',
     question: '如何把生成式 AI 从一次性生成工具，变成可重复的内容生产能力？',
     process: [

@@ -60,7 +60,7 @@ try {
     assert.equal(await page.locator('.creation-paths a').count(), 3);
     assert.equal(await page.locator('.social-source-welcome').count(), 0, 'Normal visits do not get a source greeting');
     assert(await page.evaluate(() => document.querySelector('.hero-copy > .eyebrow').getBoundingClientRect().bottom <= document.querySelector('.hero h1').getBoundingClientRect().top), 'Hero label and name must not overlap');
-    assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
+    assert.match(await page.locator('.hero').innerText(), /2028年6月毕业 · 计划参加2027年秋招/);
     assert.doesNotMatch(await page.locator('meta[name="description"]').getAttribute('content'), /沈鑫达|滴滴国际支付风控/);
     assert.equal(await page.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none');
     assert.equal(await page.evaluate(() => window.__audioContexts.length), 0, 'Music waits for visitor consent');
@@ -112,16 +112,19 @@ try {
     await page.waitForURL(/\?view=career$/);
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
     assert.equal(await page.getByRole('heading', { name: '沈鑫达', exact: true }).count(), 1);
-    assert.match(await page.locator('.hero').innerText(), /2028年毕业.*2027届校招/);
-    assert.match(await page.locator('#education').innerText(), /2028年毕业.*2027届校招/s);
+    assert.match(await page.locator('.hero').innerText(), /2028年6月毕业 · 计划参加2027年秋招/);
+    assert.match(await page.locator('#education').innerText(), /2028年6月毕业 · 计划参加2027年秋招/s);
+    assert.doesNotMatch(await page.locator('main').innerText(), /2027届校招|2027届应届/);
     assert.match(await page.locator('meta[name="description"]').getAttribute('content'), /阿基米达/);
     assert.equal(await page.locator('.hero-proof a').count(), 3);
     for (const company of ['didi', 'zeekr']) assert.equal(await page.locator(`.internship-${company} .internship-bullets > li`).count(), 4);
-    assert.match(await page.locator('.internship-didi').innerText(), /Pattern Agent/);
+    assert.match(await page.locator('.internship-didi').innerText(), /Pattern.*Agent/);
     for (const metric of ['3000+', '20万+', '20+', '约3小时 → 约5分钟']) assert((await page.locator('.internship-zeekr').innerText()).includes(metric));
     assert.equal(await page.locator('.portal-project').count(), 2);
-    assert.match(await page.locator('.portal-project').first().innerText(), /候选筛选.*OOT.*Rej→Pass/s);
-    assert.match(await page.locator('.portal-project').last().innerText(), /钱包研究阶段已封板.*拆分发布/s);
+    for (const card of await page.locator('.portal-project').all()) assert.match(await card.innerText(), /研究与交付已结项/);
+    assert.match(await page.locator('.portal-project').first().innerText(), /LGBM.*四个研究阶段.*Rej→Pass.*OOT/s);
+    assert.match(await page.locator('.portal-project').last().innerText(), /钱包.*外卖.*已结项.*评估设计/s);
+    assert.doesNotMatch(await page.locator('#projects').innerText(), /进行中|WIP|LGBM未完成|只有GBT/);
     assert.equal(await page.locator('#research-details').evaluate(n => n.tagName), 'SECTION', 'Research is permanent content, not collapsible');
     assert.equal(await page.locator('#research-details > summary').count(), 0);
     assert.equal(await page.locator('.research-directory a').count(), 6);
@@ -140,7 +143,10 @@ try {
     assert.equal(await page.locator('#exploration .portal-social-link').getAttribute('href'), 'https://www.xiaohongshu.com/user/profile/5c5054a7000000001000b66e');
     assert.equal(await page.locator('a[href*="douyin.com/user/self"]').count(), 0);
     assert.match(await page.locator('#exploration').innerText(), /210万\+.*5万\+.*2026-10-07/s);
-    assert.match(await page.locator('#exploration').innerText(), /尚未作为已发布作品/);
+    assert.doesNotMatch(await page.locator('#exploration').innerText(), /首集制作验收中|尚未作为已发布作品/);
+    assert.match(await page.locator('#exploration').innerText(), /已有多集发布.*EP001—EP012.*2026-10-15/s);
+    assert.equal(await page.locator('.aigc-collections article').last().locator('ul li').count(), 3);
+    assert.match(await page.locator('#exploration').innerText(), /Motion 重制版已完成.*2026-10-19.*未计入已发布/s);
     assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(251, 249, 244)');
     await page.screenshot({ path: `${output}/${viewport.width}-hero.png` });
     await page.locator('.hero .actions a').nth(1).click();
@@ -159,8 +165,8 @@ try {
     assert.equal(await page.locator('#research-details .research-svg[role="img"]').count(), 4);
     await page.getByRole('button', { name: '03 · 模型发现与候选深化', exact: true }).click();
     assert.match(await page.locator('#risk-phase-2 .research-svg').textContent(), /结构重现.*独立业务核验/s);
-    await page.locator('#risk-phase-2 .process-nodes button').last().click(); assert.match(await page.locator('#risk-phase-2 .process-detail').last().innerText(), /AUC.*真实 OOT/s);
-    assert.match(await page.locator('#field-governance-detail-0').innerText(), /稳定解析/);
+    await page.locator('#risk-phase-2 .process-nodes button').last().click(); assert.match(await page.locator('#risk-phase-2 .process-detail').last().innerText(), /版本化交接.*恢复/s);
+    assert.match(await page.locator('#field-governance-detail-0').innerText(), /全量技术项.*业务目录/);
     if (viewport.width < 900) { const pan = page.locator('#risk-phase-2 .research-pan'); await pan.evaluate((n) => { n.scrollLeft = n.scrollWidth; }); assert(await pan.evaluate((n) => n.scrollLeft > 0)); }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
     assert.equal(await page.locator('#ai .research-svg[role="img"]').count(), 2);

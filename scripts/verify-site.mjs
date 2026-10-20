@@ -35,6 +35,11 @@ const pageSource = readFileSync(pagePath, 'utf8') + readFileSync(join(projectRoo
 const portalSource = readFileSync(join(projectRoot, 'content/portal-content.ts'), 'utf8');
 const layoutSource = readFileSync(join(projectRoot, 'app/layout.tsx'), 'utf8');
 const contentSource = readFileSync(contentPath, 'utf8') + readFileSync(join(projectRoot, 'content/brand-content.ts'), 'utf8');
+const careerSource = readFileSync(join(projectRoot, 'content/career-content.ts'), 'utf8');
+if (/2027届校招|2028年毕业/.test(pageSource + portalSource)) errors.push('毕业与秋招口径未同步');
+if (!pageSource.includes('2028年6月毕业 · 计划参加2027年秋招')) errors.push('缺少已确认毕业与秋招时间');
+if (/status:\s*'WIP'|首集制作验收中/.test(careerSource)) errors.push('仍保留过期项目或创作总状态');
+if ((careerSource.match(/status: '研究与交付已结项'/g) || []).length !== 2) errors.push('两大项目应明确标为研究与交付已结项');
 const ids = new Set([...pageSource.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
 const literalAnchors = [...pageSource.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]);
 

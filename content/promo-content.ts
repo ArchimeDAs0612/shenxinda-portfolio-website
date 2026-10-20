@@ -4,7 +4,7 @@ export const promoContent = {
   // 2026-10-16: approved A film + placement + retention of its original audio.
   published: true,
   title: '83 秒，看我的技术实践',
-  description: '支付风控研究、字段知识与 Agent 原型，以及数据分析自动化。',
+  description: '支付风控研究、字段知识与 Agent 输入设计，以及数据分析自动化。',
   video: '/media/archimedas-83s-a-v1.mp4',
   poster: '/images/promo/archimedas-83s-a-v1.jpg',
   durationLabel: '01:23',

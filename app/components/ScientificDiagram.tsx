@@ -20,14 +20,14 @@ function Group({ x, y, w, h, title, tone = 'neutral' }: { x: number; y: number; 
 const readingGuide = {
   'risk-phase-0': {
     number: '01', category: 'OBSERVATIONAL DESIGN', headline: '先找可比对象，再找复盘线索。',
-    summary: '“先被拒绝、后来通过”只能提供研究线索。先限定可比范围，再检查短窗口行为差异。',
+    summary: 'Phase 1 配对与短窗复盘已封板。“先被拒绝、后来通过”提供观察入口；先限定可比范围，再检查行为变化。',
     lenses: [['观察入口', '先拒后过的支付关系'], ['研究判断', '样本是否可比？行为哪里不同？'], ['实际产物', '值得复核的候选范围']],
     terms: [['Rej → Pass', '先拒绝，后通过；不等于已确认误伤。'], ['同质比较', '先限定相近的业务背景，再比较差异。']],
     takeaway: '得到复核线索，不直接给出放行或误伤结论。',
   },
   'risk-phase-1': {
     number: '02', category: 'EVIDENCE TRIANGULATION', headline: '把群体差异，追溯到实际决策。',
-    summary: '分布差异、条件覆盖、规则上下文是三层不同证据，需要与实际动作记录核对，不能相互替代。',
+    summary: 'Phase 2 非限额信号建模、候选回放与策略条件覆盖已交付；分布、条件和动作分别解释，不把覆盖当作实际命中。',
     lenses: [['研究输入', '候选群体与窗口特征'], ['关键核对', '满足条件，是否等于真的命中？'], ['实际产物', '可追溯的分析章节与结果索引']],
     terms: [['条件覆盖', '描述条件满足情况，不代表完整规则或最终动作。'], ['实际命中', '回接动作记录核对，不从覆盖量直接推断。']],
     takeaway: '保留每一层证据的口径，不把相关差异写成因果或收益。',
@@ -36,19 +36,19 @@ const readingGuide = {
   "number": "03",
   "category": "MODEL → CANDIDATE → EVIDENCE",
   "headline": "从模型发现，走到候选取舍与业务核验。",
-  "summary": "宽特征研究与深化探索属于同一主线。模型提出组合线索，再审查候选筛选、成员重叠、结构重现及金额证据，不把实验可复现写成业务有效。",
+  "summary": "Phase 2.1 的 LGBM 消融、路径与反证，及 Phase 2.2 的前置细分、金额审查、候选交接和恢复收尾均已交付；研究结项不等于业务有效。",
   "lenses": [
     [
-      "已有沉淀",
-      "宽特征实验与方法审查"
+      "已完成研究",
+      "LGBM 消融、路径与金额反证"
     ],
     [
-      "持续深化",
-      "候选取舍、结构稳定与解释"
+      "已完成交付",
+      "候选取舍、完整回放与恢复交接"
     ],
     [
       "验证边界",
-      "正式 Pattern 与真实 OOT 待核验"
+      "真实 OOT 与正式 Pattern 不作完成宣称"
     ]
   ],
   "terms": [
@@ -61,16 +61,16 @@ const readingGuide = {
       "同时看覆盖、浓度和成员包含关系，不将重叠子群相加。"
     ]
   ],
-  "takeaway": "候选总览与证据交接继续完善；原研究总体上的稳定性，不等于独立时间或真实业务效果。"
+  "takeaway": "研究与交付已结项。结构重现、搜索流程留出与固定规则独立验证分开记录，不以候选更浓推断新增覆盖或业务收益。"
 },  'field-governance': {
   "number": "04",
   "category": "FIELD KNOWLEDGE & ADMISSION",
   "headline": "不只整理字段，还要管住业务、版本与调用。",
-  "summary": "钱包研究已有阶段封板，两条业务线的知识库已拆分发布。解析、语义、时点与效果分别验收；外卖业务准入继续推进。",
+  "summary": "钱包方法沉淀、外卖全量整理及可用性分析、成果接管对账与知识库拆分均已交付。未确认语义、时点和效果保留未知，不影响既定研究范围结项。",
   "lenses": [
     [
       "研究状态",
-      "钱包阶段封板；外卖继续研究"
+      "钱包与外卖研究交付已结项"
     ],
     [
       "知识资产",
@@ -91,7 +91,7 @@ const readingGuide = {
       "按业务范围、证据版本和准入状态使用知识。"
     ]
   ],
-  "takeaway": "知识资产既要可理解，也要有正确归属和证据状态；完整 Pattern Agent 仍不是已验证的生产系统。"
+  "takeaway": "字段资产、SOP、独立知识库与 Agent 输入评估设计已交付；全字段业务准入和生产 Agent 不是本次完成主张。"
 },  'ai-case-0': {
   "number": "05",
   "category": "HUMAN–AGENT RESEARCH LOOP",
@@ -121,7 +121,7 @@ const readingGuide = {
       "团队评价要求保持；个人承担判断与验收责任。"
     ]
   ],
-  "takeaway": "交付可复核的研究材料，不将协作原型表述为成熟独立 Agent 系统。"
+  "takeaway": "已完成四阶段研究与恢复交付。人、团队和 AI 的责任分别记录，不将 AI 辅助工作流表述为独立生产 Agent。"
 },  'ai-case-1': {
   "number": "06",
   "category": "EVIDENCE RECOVERY & BUSINESS ISOLATION",
@@ -151,14 +151,14 @@ const readingGuide = {
       "目录、知识归属、调用入口和版本共同约束使用。"
     ]
   ],
-  "takeaway": "钱包与外卖知识库已拆分发布；时点、业务准入与遗留发布配置仍需核验。"
+  "takeaway": "研究、接管对账与业务分库已完成；Agent 输入合同、受限检索与评估属于设计交付，不宣称已经实现或部署。"
 },} as const;
 
 const descriptions: Record<string, [string, string]> = {
   'risk-phase-0': ['观察范围与候选发现', '以 Rej→Pass 作为复盘入口，经范围拆分、同质比较与窗口分析汇合为复核候选，不将候选视为误伤真值。'],
   'risk-phase-1': ['多层证据与命中审计', '分布、订单覆盖和规则上下文形成证据链；实际动作记录独立回接，条件覆盖与最终命中不等价。'],
-  'risk-phase-2': ['模型发现、候选取舍与业务核验', '宽特征研究承接候选筛选、成员重叠、结构重现与金额证据；原研究总体回放不等于独立业务验证，正式 Pattern 和真实 OOT 待核验。'],
-  'field-governance': ['字段资产、知识隔离与分层准入', '钱包研究阶段已封板，两业务知识库已拆分发布；技术解析、语义、决策时点和效果分别验收，外卖业务准入继续推进。'],
+  'risk-phase-2': ['模型发现、候选取舍与业务核验', 'LGBM 消融、完整路径回放、前置细分、金额反证与候选交接已完成；原总体回放不等于独立业务验证，真实 OOT 与正式 Pattern 不作完成宣称。'],
+  'field-governance': ['字段资产、知识隔离与分层准入', '钱包与外卖研究、可用性分析、接管对账和知识分库已交付；解析、语义、决策时点和效果分别记录。'],
   'ai-case-0': ['人机协作与研究纠偏', '人定义对照与审查方法，Agent 辅助代码、运行与整理；审查结果重新约束执行，最终结论由人负责。'],
   'ai-case-1': ['证据恢复与跨业务知识治理', '检查点和交付记录恢复可信状态，人确定业务边界，Agent 迁移并核对两业务知识资产；发布完成不替代业务准入。'],
 };
@@ -194,8 +194,8 @@ export function ScientificDiagram({ kind, preview = false, idPrefix = '' }: { ki
           <Label x={44} y={314}>三层证据分别解释，不能互相替代</Label>
           <Block x={492} y={145} w={174} h={110} title="候选证据链" sub="保留窗口与分支" tone="teal"><text x="16" y="82" className="block-sub">曾达到 ≠ 同时发生</text></Block>
           <Edge id={id} d="M444 255H469V200H492" tone="teal" />
-          <Block x={758} y={75} w={258} title="实际动作记录" sub="独立回接 / Actual Hit" tone="orange" />
-          <Block x={758} y={218} w={258} h={103} title="命中审计与分析交付" sub="HTML / 释义 / 可复跑资产" tone="orange" />
+          <Block x={758} y={75} w={258} title="非限额信号与候选" sub="受约束建模 / 回放" tone="orange" />
+          <Block x={758} y={218} w={258} h={103} title="覆盖分析已交付" sub="HTML / 释义 / 可复跑资产" tone="orange" />
           <Edge id={id} d="M887 151V218" tone="orange" /><Edge id={id} d="M666 200H715V265H758" tone="teal" />
           <path className="research-bracket" d="M42 341v12h974v-12" /><Label x={215} y={383}>字段条件覆盖 ≠ 完整规则逻辑 ≠ 最终命中 · 不作因果或收益推断</Label>
         </>}

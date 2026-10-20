@@ -6,7 +6,7 @@ export function PublicProjects() {
     <nav className="research-directory" aria-label="研究与 Agent 实践目录">{[['risk-phase-0', '01 / 候选定位'], ['risk-phase-1', '02 / 验证交付'], ['risk-phase-2', '03 / 模型与候选'], ['feature-research', '04 / 字段知识'], ['ai-case-0', '05 / Agent 研究闭环'], ['ai-case-1', '06 / 知识治理与恢复']].map(([id, title]) => <a href={`#${id}`} key={id}>{title}<span aria-hidden="true">↘</span></a>)}</nav>
     <div className="portal-project-grid">
       {careerContent.projects.map((project) => <article className="portal-project" key={project.id}>
-        <div className="portal-project-meta"><span>{project.number} / RESEARCH</span><span className="status wip">进行中</span></div>
+        <div className="portal-project-meta"><span>{project.number} / RESEARCH</span><span className="status">{project.status}</span></div>
         <h3>{project.title}</h3>
         <p className="project-question">{project.problem}</p>
         <div className="project-work"><span className="field-label">我做了什么</span><p>{project.work}</p></div>

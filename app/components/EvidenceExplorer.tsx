@@ -27,7 +27,7 @@ export function ProjectEvidence() {
   const [phase, setPhase] = useState(0);
   return <div className="project-evidence-library">
     <article id="risk-pattern" className="risk-case">
-      <div className="case-heading"><span className="status wip">阶段沉淀 + 深化研究进行中</span><p className="field-label">PAYMENT RISK · ALGORITHM · DECISION</p><h3>支付风险 Pattern 研究<br />与潜在误伤分析</h3><p>候选定位 → 验证交付 → 宽特征研究 → 候选深化，是同一母项目的演进，不是四个独立项目。先理解业务，再组织可比较、可解释、可复核的研究。</p></div>
+      <div className="case-heading"><span className="status">研究与交付已结项</span><p className="field-label">PAYMENT RISK · ALGORITHM · DECISION</p><h3>支付风控短窗口策略<br />误伤复盘与增益识别</h3><p>配对复盘 → 非限额信号与候选回放 → LGBM 消融与路径审查 → 前置细分、金额反证与交接，四阶段及恢复收尾均已完成。它们是同一母项目的演进，不重复计作独立项目。</p></div>
       <aside className="research-context"><strong>业务理解的底座：风控 Landing 知识体系</strong><p>将风险信息、模型与策略判断、动作及反馈组织成完整决策链解释，形成阶段知识沉淀。我确定范围与正文，团队提供知识与评审，AI 辅助解释、绘图和整理；不等于生产系统建设或正式推广。</p></aside>
       <p className="metric-source">以下数字仅对应既有阶段实验与交付，不代表最新全部研究规模或业务收益。</p>
       <ContributionMetrics />
@@ -37,10 +37,10 @@ export function ProjectEvidence() {
       </div>)}
     </article>
     <article id="feature-research" className="field-case">
-      <div className="case-heading"><span className="status wip">知识资产已交付 · 业务验证继续</span><p className="field-label">FEATURE GOVERNANCE · BUSINESS SEMANTICS</p><h3>支付风险字段治理<br />与特征输入建设</h3><p>从字段解析与业务理解，走到有明确业务归属、证据版本和调用边界的研究输入。研究阶段、知识发布与业务准入分别记录。</p></div>
-      <div className="field-scope"><div><span className="scope-dot completed" /><strong>钱包研究</strong><span>研究阶段已封板</span><small>独立知识库已发布</small></div><div><span className="scope-dot completed" /><strong>外卖字段资产</strong><span>知识库已拆分发布</span><small>研究与业务准入继续推进</small></div></div>
+      <div className="case-heading"><span className="status">研究与交付已结项</span><p className="field-label">FEATURE GOVERNANCE · BUSINESS SEMANTICS</p><h3>巴西字段 Pattern<br />与 Agent</h3><p>字段库方法论 → 钱包方法沉淀与外卖交接 → 外卖全量整理及可用性分析 → 成果接管、对账与知识库拆分，既定范围均已交付。研究完成与逐字段业务准入分别记录。</p></div>
+      <div className="field-scope"><div><span className="scope-dot completed" /><strong>钱包研究</strong><span>研究与方法已封板</span><small>字段资产与迁移 SOP 已交付</small></div><div><span className="scope-dot completed" /><strong>外卖字段资产</strong><span>全量整理与可用性分析已交付</span><small>技术账本、业务目录与独立知识库</small></div></div>
       <p className="diagram-hint">按已确认的研究与知识交付状态展示；发布成功不自动代表业务有效。</p><ProcessMap nodes={fieldSteps} label="field-governance" />
-      <dl className="ownership-evidence"><div><dt>研究连接</dt><dd>原始信息 → 业务语义与特征族 → 决策时点与证据核验 → 研究输入。内容正确之外，还要保证调用属于正确业务和版本。</dd></div><div><dt>个人与 AI 分工</dt><dd>我识别跨业务混放，确定拆分边界和验收要求；Agent 执行迁移、内容结构核对与发布检查。外卖业务准入和完整 Pattern Agent 仍待验证。</dd></div></dl>
+      <dl className="ownership-evidence"><div><dt>研究连接</dt><dd>来源与全量账本 → 语义、解析及质量关系 → 分用途准入 → 同版本知识交付。钱包方法已迁移到外卖，未确认语义、时点与效果仍保留未知。</dd></div><div><dt>个人与 AI 分工</dt><dd>我负责需求、来源和分母纠偏、人工解释规则、业务分库及验收；团队补充数据与业务知识，AI 辅助解析、统计、迁移和交付核对。不认领全部独立编码或生产 Agent 部署。</dd></div><div><dt>交付与范围</dt><dd>字段资产、治理 SOP、两业务知识库、对账记录及 Agent 输入与评估设计已交付；全字段语义、决策时点和跨期效果未整体通过，Agent 设计不等于系统实现。</dd></div></dl>
     </article>
   </div>;
 }

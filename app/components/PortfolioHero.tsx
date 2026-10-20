@@ -21,7 +21,7 @@ export function PortfolioHero({ view = 'public' }: { view?: HeroView }) {
         <h1 id="hero-title" aria-label={identity.cn}><span className="hero-name-mask" aria-hidden="true">{identity.cn.split('').map((letter, index) => <span className="hero-name-letter" style={{ '--letter-index': index } as CSSProperties} key={`${letter}-${index}`}>{letter}</span>)}</span></h1>
         <p className="hero-name-en hero-intro-copy" aria-hidden="true">{identity.en}</p>
         <p className="hero-role hero-intro-copy">{career ? '以应用统计为底座，探索风险决策、机器学习与 AI 创作。' : '用统计理解世界，用 AI 创作表达。'}</p>
-        <div className="hero-identity hero-intro-copy"><p>厦门大学 · 应用统计硕士 · 2028年毕业 · 2027届校招</p><p>滴滴国际支付风控算法实习 · Risk / Decision Algorithm</p></div>
+        <div className="hero-identity hero-intro-copy"><p>厦门大学 · 应用统计硕士 · 2028年6月毕业 · 计划参加2027年秋招</p><p>滴滴国际支付风控算法实习 · Risk / Decision Algorithm</p></div>
         <SocialSourceWelcome career={career} />
         <div className="actions hero-intro-copy"><a className="button primary" href="#internships">职业与项目 <span aria-hidden="true">↗</span></a><a className="button quiet" href="#exploration">看 AI 创作与生活</a><a className="button quiet" href="#contact">联系我</a></div>
       </div>
