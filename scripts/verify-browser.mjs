@@ -142,10 +142,11 @@ try {
     assert.equal(await page.locator('#exploration .portal-social-link').count(), 1);
     assert.equal(await page.locator('#exploration .portal-social-link').getAttribute('href'), 'https://www.xiaohongshu.com/user/profile/5c5054a7000000001000b66e');
     assert.equal(await page.locator('a[href*="douyin.com/user/self"]').count(), 0);
-    assert.match(await page.locator('#exploration').innerText(), /210万\+.*5万\+.*2026-10-07/s);
+    assert.match(await page.locator('#exploration').innerText(), /230万.*6万\+.*2026-10-20/s);
     assert.doesNotMatch(await page.locator('#exploration').innerText(), /首集制作验收中|尚未作为已发布作品/);
     assert.match(await page.locator('#exploration').innerText(), /已有多集发布.*EP001—EP012.*2026-10-15/s);
-    assert.equal(await page.locator('.aigc-collections article').last().locator('ul li').count(), 3);
+    assert.equal(await page.locator('.aigc-collections article').last().locator('ul li').count(), 0);
+    assert.doesNotMatch(await page.locator('#exploration').innerText(), /代表作|作品直链待补/);
     assert.match(await page.locator('#exploration').innerText(), /Motion 重制版已完成.*2026-10-19.*未计入已发布/s);
     assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(251, 249, 244)');
     await page.screenshot({ path: `${output}/${viewport.width}-hero.png` });

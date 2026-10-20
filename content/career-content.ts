@@ -77,16 +77,14 @@ export const careerContent = {
   aigc: {
     title: 'AI荒诞研究所',
     english: 'AIGC Content Production System',
-    views: '210万+', likes: '5万+', dataAsOf: '2026-10-07',
+    views: '230万', likes: '6万+', dataAsOf: '2026-10-20',
     metricScope: '全平台',
     description: '用 Seedance 创作社会观察与讽喻短片，借荒诞叙事表达哲思。已有公开作品；新作《重生也逃不掉》EP01《逃离建筑学》逐幕制作中，尚无可核实的整片发布记录。',
     probabilityEngine: {
       title: '阿基米达的概率引擎',
       description: '从生活中的选择与错觉切入，用概率、数据和连续可视化实验解释机制；以可核验的推演连接统计、AI 与个人经验。',
       status: '已有多集发布 · 已核对抖音 EP001—EP012 发布记录（截至2026-10-15）',
-      publishedWorks: ['你羡慕的“同龄人”，可能根本不存在', '你以为在挑对象，其实你也在候选名单里', '把三省六部制装进AI，会发生什么？'],
       productionStatus: '《只回了三条消息，为什么像没下班？》Motion 重制版已完成（2026-10-19）；现有记录为待审，未计入已发布作品。',
-      linkNote: '代表作名称依据已保存发布记录展示；作品直链待补，不以制作文件或活动示例冒充本人作品链接。',
     },
     production: '选题由我敲定；AI 协作生成视频、BGM、封面、标签与文案，形成发布包。内容与科学性由人审查，发布由本人决定。',
     question: '如何把生成式 AI 从一次性生成工具，变成可重复的内容生产能力？',
