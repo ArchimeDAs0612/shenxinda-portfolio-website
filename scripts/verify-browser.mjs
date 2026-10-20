@@ -144,10 +144,10 @@ try {
     assert.equal(await page.locator('a[href*="douyin.com/user/self"]').count(), 0);
     assert.match(await page.locator('#exploration').innerText(), /230万.*6万\+.*2026-10-20/s);
     assert.doesNotMatch(await page.locator('#exploration').innerText(), /首集制作验收中|尚未作为已发布作品/);
-    assert.match(await page.locator('#exploration').innerText(), /已有多集发布.*EP001—EP012.*2026-10-15/s);
     assert.equal(await page.locator('.aigc-collections article').last().locator('ul li').count(), 0);
     assert.doesNotMatch(await page.locator('#exploration').innerText(), /代表作|作品直链待补/);
-    assert.match(await page.locator('#exploration').innerText(), /Motion 重制版已完成.*2026-10-19.*未计入已发布/s);
+    assert.doesNotMatch(await page.locator('.aigc-collections article').last().innerText(), /EP\d|已核对抖音|已有多集发布|只回了三条消息|制作状态|待审|重制版/);
+    assert.equal(await page.locator('.aigc-collections article').last().locator('h3').innerText(), '《阿基米达的概率引擎》');
     assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(251, 249, 244)');
     await page.screenshot({ path: `${output}/${viewport.width}-hero.png` });
     await page.locator('.hero .actions a').nth(1).click();
