@@ -1,4 +1,4 @@
-/** Public method views, not deployed agent systems or private company architecture. */
+/** Public method and capability views, not private company architecture or production-deployment claims. */
 type Tone = 'teal' | 'orange' | 'neutral';
 
 function Plate({ x, y, w, h, label, title, lines, tone = 'teal', pending = false }: { x: number; y: number; w: number; h: number; label: string; title: string; lines: string[]; tone?: Tone; pending?: boolean }) {
@@ -62,22 +62,21 @@ export function AgentExperimentLoop({ id }: { id: string }) {
 }
 
 export function AgentSemanticAtlas({ id }: { id: string }) {
-  return <g data-diagram-layout="evidence-recovery-namespace">
+  return <g data-diagram-layout="fieldops-governance-workbench">
     <Link id={id} d="M298 92H385" /><Link id={id} d="M655 92H740" tone="orange" />
-    <Plate x={28} y={35} w={270} h={116} label="01 / EVIDENCE RECOVERY" title="恢复成果，不盲目重算" lines={['检查点 · 交付物 · 验收回执', '区分已完成、候选与无法确认']} />
-    <Plate x={385} y={35} w={270} h={116} label="02 / HUMAN · SCOPE" title="发现混放，确定边界" lines={['我确认业务拆分与验收范围', '保留历史，明确当前入口']} tone="orange" />
-    <Plate x={740} y={35} w={270} h={116} label="03 / AGENT · EXECUTION" title="迁移、核对与发布检查" lines={['Agent 执行，按约定回传证据', '不把执行工作归为独立开发']} />
-    <Link id={id} d="M875 151V185H520V223" />
-    <Link id={id} d="M520 151V185H158V223" tone="orange" />
-    <Plate x={28} y={223} w={270} h={110} label="WALLET / 独立业务范围" title="钱包研究与方法已封板" lines={['字段资产与迁移 SOP 已交付', '研究沉淀不等于生产准入']} />
-    <Plate x={28} y={391} w={270} h={110} label="DELIVERY / 独立业务范围" title="外卖研究已完成交付" lines={['全量整理 / 可用性分析', '技术账本与业务目录分层']} />
+    <Plate x={28} y={35} w={270} h={116} label="01 / KNOWLEDGE FOUNDATION" title="复用已交付的知识资产" lines={['钱包 / 外卖研究与分库已结项', '保留业务、版本与接管记录']} />
+    <Plate x={385} y={35} w={270} h={116} label="02 / HUMAN · DESIGN REVIEW" title="我定义目标，评审方案" lines={['特征 × 策略联合治理', '需求拆解 · 方向纠偏 · 验收']} tone="orange" />
+    <Plate x={740} y={35} w={270} h={116} label="03 / WORKING PROTOTYPE" title="FieldOps 独立工作台" lines={['已有可运行原型', 'AI 辅助工程实现与迭代']} />
+    <Link id={id} d="M875 151V185H158V223" />
+    <Plate x={28} y={223} w={270} h={110} label="04 / FEATURE FAMILIES" title="宗族图谱" lines={['检索字段 · 展开相关特征', '节点与关系可查看依据']} />
+    <Plate x={28} y={391} w={270} h={110} label="05 / USABILITY · ACCEPTED" title="可用性评分" lines={['已完成功能验收', '辅助比较，不等同于风险效果']} />
     <Link id={id} d="M298 278H385" /><Link id={id} d="M298 446H342V278H385" />
-    <Plate x={385} y={223} w={270} h={110} label="04 / CONTENT × STRUCTURE" title="双维度一致性验收" lines={['关键文本 · 标识 · 目录归属', '链接目标 · 当前调用入口']} />
+    <Plate x={385} y={223} w={270} h={110} label="06 / EVIDENCE EXPLORATION" title="证据联查" lines={['关联图谱与评价信息', '查看依据，再作研究判断']} />
     <Link id={id} d="M655 278H740" />
-    <Plate x={740} y={223} w={270} h={110} label="DELIVERED / 知识交付" title="两业务知识库独立发布" lines={['保留历史与迁移指引', '不是完整 Pattern Agent 上线']} />
+    <Plate x={740} y={223} w={270} h={110} label="07 / OVERVIEW · ACCEPTED" title="全局首页看板" lines={['整体情况与功能入口', '先看全貌，再进入具体研究']} />
     <Link id={id} d="M520 333V391" tone="orange" /><Link id={id} d="M655 446H740" tone="orange" feedback />
-    <Plate x={385} y={391} w={270} h={110} label="05 / VERSIONED RETRIEVAL" title="约束后续知识调用" lines={['业务范围 · 版本 · 证据状态', '先确认适用性，再交给 Agent']} tone="orange" />
-    <Plate x={740} y={391} w={270} h={110} label="DESIGN DELIVERED / 非生产系统" title="Agent 输入与评估设计" lines={['受限检索 / 分用途准入 / 人审', '未实现、运行或部署该系统']} tone="orange" pending />
-    <text x="28" y="551" className="agent-footnote">研究、接管与分库交付已结项；业务语义、时点与效果分别保留边界 · 无内部链接或字段明细</text>
+    <Plate x={385} y={391} w={270} h={110} label="08 / HUMAN OWNERSHIP" title="人工治理与验收" lines={['我提出要求、审查并验收', '知识依据与判断责任保留']} tone="orange" />
+    <Plate x={740} y={391} w={270} h={110} label="SEPARATE / 策略侧边界" title="效果与上线另行验证" lines={['字段侧功能验收 ≠ 策略有效', '不推导自动下发或生产上线']} tone="orange" pending />
+    <text x="28" y="551" className="agent-footnote">公开能力关系示意 · 字段侧功能已验收 · 非内部系统架构、真实字段或生产策略图</text>
   </g>;
 }

@@ -163,7 +163,7 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
       </section>
 
       <section className="chapter workflow-section" id="ai">
-        <div className="portal-section-heading"><p className="eyebrow">AI / AGENT-ENHANCED RESEARCH</p><h2>把 Agent 融入研究，而不外包判断。</h2><p className="portal-lead">围绕 Pattern 研究与字段知识治理，定义问题、组织 Context、约束执行、核对证据并恢复可信进度。以下两张图直接呈现具体协作，不以创作流量替代研究能力。</p></div>
+        <div className="portal-section-heading"><p className="eyebrow">AI / AGENT-ENHANCED RESEARCH</p><h2>把 Agent 融入研究，而不外包判断。</h2><p className="portal-lead">从 Pattern 研究中的人机协作，到 FieldOps 特征×策略联合治理工作台：我定义目标、评审方案并验收功能，让 AI 扩大实现与迭代能力。两张图分别呈现研究闭环与已验收的字段侧工作台。</p></div>
         <div className="portal-ai-summary"><div><span className="field-label">AI-NATIVE PRACTITIONER / AGENT OPERATOR</span><h3>任务交给 Agent，判断留给人。</h3><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
         <div className="portal-ai-cases"><h3 className="portal-ai-title">两个项目中的具体 AI 协作</h3><ProjectAIWorkflow /></div>
       </section>

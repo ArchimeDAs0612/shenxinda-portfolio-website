@@ -5,7 +5,7 @@ import { ScientificDiagram } from './ScientificDiagram';
 
 const previews = [
   { kind: 'risk-phase-2', target: 'risk-phase-2', label: '风险研究 · 结项交付', summary: 'LGBM 消融、完整回放、候选取舍与金额反证已完成研究交付，独立业务验证另计。' },
-  { kind: 'field-governance', target: 'feature-research', label: '特征研究 · 知识治理', summary: '钱包与外卖字段研究、可用性分析及知识分库已交付；Agent 输入和评估设计不等于生产系统。' },
+  { kind: 'field-governance', target: 'feature-research', label: '特征研究 · FieldOps', summary: '字段研究与知识分库已结项；后续 FieldOps 工作台的图谱、证据联查、可用性评分与全局看板已验收。' },
   { kind: 'ai-case-0', target: 'ai-case-0', label: 'AI 协作 · 研究纠偏', summary: 'Agent 扩大代码与实验执行能力；我设定对照、审查证据并保留最终判断。' },
 ] as const;
 

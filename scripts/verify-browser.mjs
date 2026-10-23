@@ -123,7 +123,7 @@ try {
     assert.equal(await page.locator('.portal-project').count(), 2);
     for (const card of await page.locator('.portal-project').all()) assert.match(await card.innerText(), /研究与交付已结项/);
     assert.match(await page.locator('.portal-project').first().innerText(), /LGBM.*四个研究阶段.*Rej→Pass.*OOT/s);
-    assert.match(await page.locator('.portal-project').last().innerText(), /钱包.*外卖.*已结项.*评估设计/s);
+    assert.match(await page.locator('.portal-project').last().innerText(), /钱包.*外卖.*已结项.*FieldOps.*可运行原型.*已完成功能验收/s);
     assert.doesNotMatch(await page.locator('#projects').innerText(), /进行中|WIP|LGBM未完成|只有GBT/);
     assert.equal(await page.locator('#research-details').evaluate(n => n.tagName), 'SECTION', 'Research is permanent content, not collapsible');
     assert.equal(await page.locator('#research-details > summary').count(), 0);
@@ -134,6 +134,13 @@ try {
     assert.equal(await page.locator('#ai details').count(), 0, 'Core AI collaboration is never gated by a disclosure');
     assert.equal(await page.locator('#ai .ai-case-readthrough').count(), 2);
     for (const item of await page.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible(), 'Both AI projects are visible without clicking');
+    const fieldOpsText = await page.locator('#ai-case-1').innerText();
+    assert.match(fieldOpsText, /FieldOps Agent：特征×策略联合治理/);
+    for (const capability of ['宗族图谱', '证据联查', '可用性评分', '全局首页看板']) assert(fieldOpsText.includes(capability), `FieldOps capability visible: ${capability}`);
+    assert.match(fieldOpsText, /已完成功能验收/);
+    assert.match(fieldOpsText, /我的贡献/);
+    assert.match(fieldOpsText, /策略侧.*生产上线.*不由此推导/s);
+    assert.doesNotMatch(await page.locator('#projects, #ai').allInnerTexts().then(texts => texts.join(' ')), /独立 Agent 未实现部署|未实现、运行或部署该系统|不是已实现、运行或部署的独立系统|不宣称系统已经实现、运行或部署/);
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
     assert(!/PDF|简历下载|RESUME/.test(await page.locator('main').innerText()));
     assert.match(await page.title(), /阿基米达.*统计.*AI 创作/);
@@ -161,7 +168,7 @@ try {
     await page.waitForFunction(() => document.querySelector('.portal-share [role="status"]').textContent === '请长按下方网址复制');
     assert.equal(await page.locator('.portal-share > a').getAttribute('href'), 'https://archimedas0612.github.io/career/');
     await page.evaluate(() => { delete navigator.clipboard.writeText; });
-    for (const id of ['internships', 'education', 'about', 'projects', 'ai', 'exploration', 'contact']) { await page.locator(`#${id}`).scrollIntoViewIfNeeded(); await page.waitForTimeout(120); assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id} overflow ${viewport.width}`); await page.screenshot({ path: `${output}/${viewport.width}-${id}.png` }); }
+    for (const id of ['internships', 'education', 'about', 'projects', 'ai', 'ai-case-1', 'exploration', 'contact']) { await page.locator(`#${id}`).scrollIntoViewIfNeeded(); await page.waitForTimeout(120); assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id} overflow ${viewport.width}`); await page.screenshot({ path: `${output}/${viewport.width}-${id}.png` }); }
     assert(await page.locator('#risk-pattern').isVisible());
     assert.equal(await page.locator('#research-details .research-svg[role="img"]').count(), 4);
     await page.getByRole('button', { name: '03 · 模型发现与候选深化', exact: true }).click();
@@ -171,7 +178,7 @@ try {
     if (viewport.width < 900) { const pan = page.locator('#risk-phase-2 .research-pan'); await pan.evaluate((n) => { n.scrollLeft = n.scrollWidth; }); assert(await pan.evaluate((n) => n.scrollLeft > 0)); }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
     assert.equal(await page.locator('#ai .research-svg[role="img"]').count(), 2);
-    for (const kind of ['experiment-feedback-loop', 'evidence-recovery-namespace', 'model-candidate-evolution', 'field-knowledge-admission']) assert.equal(await page.locator(`[data-diagram-layout="${kind}"]`).count(), 1);
+    for (const kind of ['experiment-feedback-loop', 'fieldops-governance-workbench', 'model-candidate-evolution', 'field-knowledge-admission']) assert.equal(await page.locator(`[data-diagram-layout="${kind}"]`).count(), 1);
     for (const f of await page.locator('#ai .research-figure').all()) { assert.equal(await f.locator('svg title').count(), 1); assert.equal(await f.locator('svg desc').count(), 1); }
     await page.getByRole('button', { name: '下一张生活照片' }).click(); assert.match(await page.locator('.carousel-controls').innerText(), /02/);
     await page.getByRole('button', { name: '复制邮箱', exact: true }).click(); await page.getByRole('status').filter({ hasText: '已复制' }).waitFor(); assert.equal(await page.evaluate(() => navigator.clipboard.readText()), '19357506009@163.com');

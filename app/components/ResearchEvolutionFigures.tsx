@@ -50,7 +50,7 @@ export function FieldKnowledgeEvolution({ id }: { id: string }) {
     <Path id={id} d="M461 185V237" />
     <Plate x={314} y={237} w={294} title="接管、对账与知识库拆分" lines={['内容 / 结构 / 目录归属已核对', '两业务独立知识库已交付', '保留历史与迁移指引']} />
     <Path id={id} d="M608 302H660" />
-    <Plate x={660} y={237} w={350} title="SOP 与 Agent 输入评估设计" lines={['业务范围 · 证据版本 · 准入状态', '受限检索 / 人工关口 / 离线评估', '设计已交付 ≠ 系统已实现部署']} />
+    <Plate x={660} y={237} w={350} title="SOP 沉淀 → FieldOps 续作" lines={['原研究与 Agent 输入评估设计已交付', '后续：图谱 / 证据 / 评分 / 看板', '工作台功能已验收，详见第六图']} />
     <path className="research-bracket" d="M28 420v14h982v-14" />
     <text x="28" y="469" className="agent-title">我确认业务边界与验收要求；Agent 执行迁移、核对与发布检查。</text>
     <text x="28" y="506" className="agent-copy">项目研究与交付已结项；全字段业务语义、决策时点与跨期效果没有整体通过。</text>
