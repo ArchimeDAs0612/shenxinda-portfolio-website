@@ -155,15 +155,15 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
 
       <PortfolioHero view={view} />
       {promoContent.published && <PersonalFilm />}
-      <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><p className="eyebrow">CAREER / 职业与项目</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p><InternshipOverview /></section>
+      <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">01</span><p className="eyebrow">CAREER / 职业与项目</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p></div><InternshipOverview /></section>
 
       <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="portal-section-heading"><p className="eyebrow">SELECTED PROJECTS / 研究与交付</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">两大项目研究与交付已结项。先看问题、贡献与交付，再直接阅读四张研究图；Agent 协作紧随其后，创作展示在后。</p></div>
+        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">02</span><p className="eyebrow">SELECTED PROJECTS / 研究与交付</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">两大项目研究与交付已结项。先看问题、贡献与交付，再直接阅读四张研究图；Agent 协作紧随其后，创作展示在后。</p></div>
         <PublicProjects />
       </section>
 
       <section className="chapter workflow-section" id="ai">
-        <div className="portal-section-heading"><p className="eyebrow">AI / AGENT-ENHANCED RESEARCH</p><h2>把 Agent 融入研究，而不外包判断。</h2><p className="portal-lead">从 Pattern 研究中的人机协作，到 FieldOps 特征×策略联合治理工作台：我定义目标、评审方案并验收功能，让 AI 扩大实现与迭代能力。两张图分别呈现研究闭环与已验收的字段侧工作台。</p></div>
+        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">03</span><p className="eyebrow">AI / AGENT-ENHANCED RESEARCH</p><h2><span className="editorial-title-line">把 Agent 融入研究，</span><span className="editorial-title-line">而不外包判断。</span></h2><p className="portal-lead">从 Pattern 研究中的人机协作，到 FieldOps 特征×策略联合治理工作台：我定义目标、评审方案并验收功能，让 AI 扩大实现与迭代能力。两张图分别呈现研究闭环与已验收的字段侧工作台。</p></div>
         <div className="portal-ai-summary"><div><span className="field-label">AI-NATIVE PRACTITIONER / AGENT OPERATOR</span><h3>任务交给 Agent，判断留给人。</h3><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
         <div className="portal-ai-cases"><h3 className="portal-ai-title">两个项目中的具体 AI 协作</h3><ProjectAIWorkflow /></div>
       </section>

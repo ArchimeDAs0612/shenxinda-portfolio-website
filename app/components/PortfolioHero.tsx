@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import { MaintainableImage } from './MaintainableImage';
 import { mediaContent } from '../../content/site-content';
 import { SocialSourceWelcome } from './SocialSourceWelcome';
+import { ResearchMotif } from './ResearchMotif';
 
 type HeroView = 'public' | 'career';
 
@@ -15,6 +16,7 @@ export function PortfolioHero({ view = 'public' }: { view?: HeroView }) {
   return (
     <section className="hero hero-editorial hero-portal" aria-labelledby="hero-title">
       <MaintainableImage className="hero-background" priority {...mediaContent.heroBackground} />
+      <ResearchMotif />
       <div className="hero-opening-trace" aria-hidden="true"><span>STATISTICS</span><i /><span>ALGORITHM</span><i /><span>HUMAN JUDGMENT</span></div>
       <div className="hero-copy">
         <p className="eyebrow hero-intro-copy">STATISTICS · DECISION · CREATION</p>
