@@ -7,7 +7,7 @@ export function PublicProjects() {
     <div className="portal-project-grid">
       {careerContent.projects.map((project) => <article className="portal-project" key={project.id}>
         <div className="portal-project-meta">
-          <span className="portal-project-index"><span className="portal-project-number">{project.number}</span><span className="portal-project-category"> / RESEARCH</span></span>
+          <span className="portal-project-index"><span className="portal-project-number">{project.number}</span></span>
           <span className="status">{project.status}</span>
         </div>
         <div className="portal-project-intro">
@@ -24,7 +24,6 @@ export function PublicProjects() {
     <section className="portal-details research-readthrough" id="research-details" aria-labelledby="research-readthrough-title">
       <div className="research-readthrough-heading">
         <h3 id="research-readthrough-title">研究全景：样本、实验与方法判断</h3>
-        <p className="portal-lead">四张研究图直接呈现。前三张是同一 Pattern 研究主线的阶段演进，第四张是字段与知识输入治理；下方继续展示两张 Agent 协作图。</p>
       </div>
       <ProjectEvidence />
       <p className="content-boundary">仅展示去敏的方法与个人贡献，不公开内部数据、字段、规则阈值或代码。</p>

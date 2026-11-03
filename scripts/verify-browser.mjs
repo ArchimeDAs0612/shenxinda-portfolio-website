@@ -59,7 +59,7 @@ try {
     assert.equal(await page.locator('.nav-links a[href="#internships"]').count(), 1);
     assert.equal(await page.locator('.creation-paths a').count(), 3);
     assert.equal(await page.locator('.social-source-welcome').count(), 0, 'Normal visits do not get a source greeting');
-    assert(await page.evaluate(() => document.querySelector('.hero-copy > .eyebrow').getBoundingClientRect().bottom <= document.querySelector('.hero h1').getBoundingClientRect().top), 'Hero label and name must not overlap');
+    assert(await page.evaluate(() => document.querySelector('.hero h1').getBoundingClientRect().bottom <= document.querySelector('.hero-role').getBoundingClientRect().top), 'Hero name and introduction must not overlap');
     assert.match(await page.locator('.hero').innerText(), /2028年6月毕业 · 计划参加2027年秋招/);
     assert.doesNotMatch(await page.locator('meta[name="description"]').getAttribute('content'), /沈鑫达|滴滴国际支付风控/);
     assert.equal(await page.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none');

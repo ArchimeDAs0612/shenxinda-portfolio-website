@@ -22,7 +22,6 @@ export function PortalShare({ career = false }: { career?: boolean }) {
   };
 
   return <aside className="portal-share" aria-label="分享个人主页">
-    <p>{career ? '把这份职业介绍，留给下一次交流。' : '把这个个人主页，留给下一次交流。'}</p>
     <div><button type="button" onClick={copy}>复制{career ? '职业页' : '主页'}链接 <span aria-hidden="true">↗</span></button><span role="status" aria-live="polite">{feedback}</span></div>
     <a href={url}>{url}</a>
   </aside>;

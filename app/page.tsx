@@ -155,28 +155,28 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
 
       <PortfolioHero view={view} />
       {promoContent.published && <PersonalFilm />}
-      <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">01</span><p className="eyebrow">CAREER / 职业与项目</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p></div><InternshipOverview /></section>
+      <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">01</span><p className="eyebrow">实习经历</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p></div><InternshipOverview /></section>
 
       <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">02</span><p className="eyebrow">SELECTED PROJECTS / 研究与交付</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">两大项目研究与交付已结项。先看问题、贡献与交付，再直接阅读四张研究图；Agent 协作紧随其后，创作展示在后。</p></div>
+        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">02</span><p className="eyebrow">研究与交付</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">两大项目研究与交付已结项。</p></div>
         <PublicProjects />
       </section>
 
       <section className="chapter workflow-section" id="ai">
-        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">03</span><p className="eyebrow">AI / AGENT-ENHANCED RESEARCH</p><h2><span className="editorial-title-line">把 Agent 融入研究，</span><span className="editorial-title-line">而不外包判断。</span></h2><p className="portal-lead">从 Pattern 研究中的人机协作，到 FieldOps 特征×策略联合治理工作台：我定义目标、评审方案并验收功能，让 AI 扩大实现与迭代能力。两张图分别呈现研究闭环与已验收的字段侧工作台。</p></div>
-        <div className="portal-ai-summary"><div><span className="field-label">AI-NATIVE PRACTITIONER / AGENT OPERATOR</span><h3>任务交给 Agent，判断留给人。</h3><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
-        <div className="portal-ai-cases"><h3 className="portal-ai-title">两个项目中的具体 AI 协作</h3><ProjectAIWorkflow /></div>
+        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">03</span><p className="eyebrow">Agent 实践</p><h2><span className="editorial-title-line">把 Agent 融入研究，</span><span className="editorial-title-line">而不外包判断。</span></h2><p className="portal-lead">从 Pattern 研究中的人机协作，到 FieldOps 特征×策略联合治理工作台：我定义目标、评审方案并验收功能，让 AI 扩大实现与迭代能力。</p></div>
+        <div className="portal-ai-summary"><div><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
+        <div className="portal-ai-cases"><ProjectAIWorkflow /></div>
       </section>
 
       <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
-        <div className="aigc-compact aigc-dual"><div><p className="eyebrow">CREATIVE EXPLORATION / 创作栏目</p><h2 id="exploration-title">另一种表达，另一种实验。</h2></div><div className="aigc-collections"><article><div className="creation-art creation-absurd" role="img" aria-label="荒诞研究所栏目视觉，非作品截图"><span>AI / SOCIAL OBSERVATION</span><b>荒诞<br />研究所</b><i>想象，与现实对话。</i></div><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.description}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>{careerContent.aigc.metricScope}累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><small>截至 {careerContent.aigc.dataAsOf} · 非实时数据</small></article><article><div className="creation-art creation-probability" role="img" aria-label="概率引擎栏目视觉，非作品截图"><span>STATISTICS / EVERYDAY LIFE</span><b>概率<br />引擎</b><i>让抽象的理论，走进生活。</i></div><h3>《{careerContent.aigc.probabilityEngine.title}》</h3><p>{careerContent.aigc.probabilityEngine.description}</p></article></div><p className="aigc-production">{careerContent.aigc.production}</p><a className="portal-social-link" href={contactContent.xiaohongshuUrl} target="_blank" rel="noreferrer">到我的小红书主页，看看内容与生活 ↗</a><p className="metric-source">栏目视觉示意，非作品截图。数据按标注日期记录，非实时计数。</p><div className="creation-paths" aria-label="继续认识我"><a href="#ai">{career ? 'AI 如何参与我的研究' : 'AI 如何参与我的创作与实践'} <span aria-hidden="true">↗</span></a>{career && <a href="#projects">回看职业项目 <span aria-hidden="true">↗</span></a>}<a href="#about">认识工作之外的我 <span aria-hidden="true">↗</span></a><a href="#contact">交流与合作 <span aria-hidden="true">↗</span></a></div></div>
+        <div className="aigc-compact aigc-dual"><div><p className="eyebrow">AI 创作</p><h2 id="exploration-title">另一种表达，另一种实验。</h2></div><div className="aigc-collections"><article><div className="creation-art creation-absurd" role="img" aria-label="荒诞研究所栏目视觉，非作品截图"><span>AI / SOCIAL OBSERVATION</span><b>荒诞<br />研究所</b><i>想象，与现实对话。</i></div><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.description}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>{careerContent.aigc.metricScope}累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><small>截至 {careerContent.aigc.dataAsOf} · 非实时数据</small></article><article><div className="creation-art creation-probability" role="img" aria-label="概率引擎栏目视觉，非作品截图"><span>STATISTICS / EVERYDAY LIFE</span><b>概率<br />引擎</b><i>让抽象的理论，走进生活。</i></div><h3>《{careerContent.aigc.probabilityEngine.title}》</h3><p>{careerContent.aigc.probabilityEngine.description}</p></article></div><p className="aigc-production">{careerContent.aigc.production}</p><a className="portal-social-link" href={contactContent.xiaohongshuUrl} target="_blank" rel="noreferrer">到我的小红书主页，看看内容与生活 ↗</a><p className="metric-source">栏目视觉示意，非作品截图。</p><div className="creation-paths" aria-label="继续认识我"><a href="#ai">{career ? 'AI 如何参与我的研究' : 'AI 如何参与我的创作与实践'} <span aria-hidden="true">↗</span></a>{career && <a href="#projects">回看职业项目 <span aria-hidden="true">↗</span></a>}<a href="#about">认识工作之外的我 <span aria-hidden="true">↗</span></a><a href="#contact">交流与合作 <span aria-hidden="true">↗</span></a></div></div>
       </section>
 
       <div className="identity-overview">
         <section className="chapter education-section" id="education" aria-labelledby="education-title">
-          <p className="eyebrow">EDUCATION & JOURNEY / 成长经历</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2>
+          <p className="eyebrow">成长经历</p><h2 id="education-title">从统计出发，<br />走进真实问题。</h2>
           <div className="education-grid"><article><span className="field-label">2028年6月毕业 · 计划参加2027年秋招</span><h3>厦门大学</h3><p>应用统计硕士 · 保研入学</p><small>统计学与数据科学系</small></article><article><span className="field-label">本科</span><h3>浙江工商大学</h3><p>统计与数据科学学院 · 经济统计学本科</p><small>GPA 3.93 / 5 · 专业前3%</small></article></div>
-          {careerContent.selectedCoursework.length > 0 && <div className="coursework"><span className="field-label">SELECTED COURSEWORK / 已修课程</span><ul>{careerContent.selectedCoursework.map((course) => <li key={course}>{course}</li>)}</ul></div>}
+          {careerContent.selectedCoursework.length > 0 && <div className="coursework"><span className="field-label">已修课程</span><ul>{careerContent.selectedCoursework.map((course) => <li key={course}>{course}</li>)}</ul></div>}
           <p className="journey-credentials">本科阶段曾获挑战杯国家级特等奖（国赛前3%）、正大杯国家一等奖。</p>
           <p className="journey-caption">统计基础 → 业务数据分析 → 支付风险算法与决策</p>
         </section>
@@ -188,22 +188,21 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
               <div className="carousel-dots" aria-label="选择生活照片">{mediaContent.life.photos.map((photo, index) => <button type="button" className={index === lifeIndex ? 'active' : ''} onClick={() => setLifeIndex(index)} aria-label={`查看第 ${index + 1} 张生活照片`} aria-current={index === lifeIndex ? 'true' : undefined} key={photo.src} />)}</div>
             </div>
           </div>
-          <div className="about-copy"><p className="eyebrow">XIAMEN → BEIJING / LIFE</p><h2>生活也在场。</h2><p>厦大校园、北漂实习、跑步与马拉松。专业之外的探索，是我的另一面。</p><a className="life-contact-link" href="#contact">交流工作，也交流新的想法 ↘</a></div>
+          <div className="about-copy"><h2>生活也在场。</h2><p>厦大校园、北漂实习、跑步与马拉松。专业之外的探索，是我的另一面。</p><a className="life-contact-link" href="#contact">交流工作，也交流新的想法 ↘</a></div>
         </section>
       </div>
 
       <section className="contact-section" id="contact" data-reveal aria-labelledby="contact-title">
         <div className="contact-intro">
-          <p className="eyebrow light">CONTACT / 联系我</p>
+          <p className="eyebrow light">联系我</p>
           <h2 id="contact-title">保持判断，<br />持续进化。</h2>
           <p>{career ? '欢迎交流风险决策、机器学习与 AI 实践，也欢迎职业机会、同行交流与内容合作。' : '欢迎交流统计思考、AI 创作与新的合作可能，也欢迎职业与同行交流。'}</p>
-          <div className="contact-topics" aria-label="交流方向"><span>职业与同行交流</span><span>AI 实践交流</span><span>内容与创作合作</span></div>
           <PortalShare career={career} />
         </div>
 
         <div className="contact-list">
           <article className="contact-row contact-primary">
-            <div className="contact-row-heading"><span>01</span><p>Email / 邮箱</p></div>
+            <div className="contact-row-heading"><span>01</span><p>邮箱</p></div>
             <div className="contact-row-content">
               <a className="contact-email" href={`mailto:${contactContent.email}`}>{contactContent.email}</a>
               <div className="contact-actions">
@@ -215,15 +214,14 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
           </article>
 
           <article className="contact-row">
-            <div className="contact-row-heading"><span>02</span><p>WeChat / 微信</p></div>
+            <div className="contact-row-heading"><span>02</span><p>微信</p></div>
             <div className="contact-row-content compact-contact-content">
-              <p>国内沟通的辅助入口</p>
               <button className="contact-action" type="button" ref={wechatTriggerRef} onClick={() => { setWechatQrMissing(false); setWechatOpen(true); }}>微信联系 <span aria-hidden="true">↗</span></button>
             </div>
           </article>
 
           <article className="contact-row">
-            <div className="contact-row-heading"><span>03</span><p>Xiaohongshu / 小红书</p></div>
+            <div className="contact-row-heading"><span>03</span><p>小红书</p></div>
             <div className="contact-row-content xiaohongshu-content">
               <div><strong>{contactContent.xiaohongshuName}</strong><p>小红书号：{contactContent.xiaohongshuId}</p><small>{contactContent.xiaohongshuDescription}</small></div>
               {contactContent.xiaohongshuUrl ? (
@@ -244,7 +242,7 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
         <div className="wechat-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setWechatOpen(false); }}>
           <section className="wechat-modal" role="dialog" aria-modal="true" aria-labelledby="wechat-modal-title">
             <button className="wechat-modal-close" type="button" ref={wechatCloseRef} onClick={() => setWechatOpen(false)} aria-label="关闭微信二维码">×</button>
-            <p className="wechat-modal-kicker">WECHAT / 微信</p>
+            <p className="wechat-modal-kicker">微信</p>
             <h2 id="wechat-modal-title">扫码添加微信</h2>
             <div className={`wechat-qr ${wechatQrMissing ? 'is-missing' : ''}`}>
               {!wechatQrMissing && <img src={`${contactContent.wechatQrImage}?v=20260912`} alt={`${career ? '沈鑫达' : '阿基米达'}的微信二维码`} onError={() => setWechatQrMissing(true)} />}

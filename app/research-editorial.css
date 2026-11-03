@@ -21,7 +21,8 @@
 .hero-portal .portrait-aperture { border: 1px solid #fffdf7; box-shadow: 0 18px 40px #293b2d0d; }
 .hero-portal .portrait-frame { aspect-ratio: 1; max-height: none; }
 .hero-portal .portrait-frame .media-image { transform: none; object-position: center bottom !important; filter: saturate(.9); }
-.hero-portal .portrait-index, .hero-portal .portrait-caption { color: #646b5c; }
+.hero-portal .portrait-caption { color: #646b5c; }
+.hero-portal .register-top { top: -8px; }
 .hero-mathematics { position: absolute; pointer-events: none; z-index: 0; width: 810px; height: auto; bottom: 66px; right: 100px; color: #708875; opacity: .25; mask-image: linear-gradient(90deg, transparent, #000 45%, #000 88%, transparent); }
 .hero-mathematics path { stroke: currentColor; stroke-width: .8; vector-effect: non-scaling-stroke; }
 .hero-mathematics .motif-accent { stroke: #9b794e; stroke-width: 1.3; }
@@ -80,9 +81,10 @@
 .research-readout > div + div { border-left: 1px solid #d0d8c7; padding-left: 22px; }
 .research-pan { background-image: radial-gradient(#82977924 .7px, transparent .7px); background-size: 18px 18px; }
 .research-interpretation { background: #f3eee2; }
-.portal-ai-summary { margin-top: 34px; padding: 28px; border: 1px solid #cdd6c5; border-radius: 6px; background: #f1f3ea; }
+.portal-ai-summary { display: block; margin-top: 34px; padding: 28px; border: 1px solid #cdd6c5; border-radius: 6px; background: #f1f3ea; }
 .portal-ai-summary h3 { color: #31553f; }
-.portal-ai-summary ol { gap: 14px 22px; }
+.portal-ai-summary p { margin: 0 0 16px; }
+.portal-ai-summary ol { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 22px; }
 .portal-ai-summary li { border-bottom-color: #c5d0ba; }
 .portal-ai-summary li span { font: italic 30px/1 Georgia, serif; color: #718668; }
 
@@ -154,6 +156,7 @@
   .research-heading .research-number { font-size: 38px; }
   .research-readout > div + div { padding: 12px 0 0; border-left: 0; border-top: 1px solid #d0d8c7; }
   .portal-ai-summary { padding: 22px 18px; gap: 20px; }
+  .portal-ai-summary ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .portal-ai-summary li { font-size: 14px; line-height: 1.7; }
   .creation-art { height: 220px; padding: 24px; }
   .creation-art b { font-size: 40px; }

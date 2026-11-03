@@ -7,3 +7,4 @@
 - Prefer local, low-risk changes. Do not modify `FROZEN` areas without explicit user approval.
 - Never invent professional experience, project results, business metrics, internal company details, photos, contact details, or resume content.
 - A website task is complete only after local verification, deployment, and public URL/resource checks succeed.
+- Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.

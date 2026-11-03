@@ -33,7 +33,6 @@ export function PersonalFilm() {
 
   return <section className={`personal-film ${opened ? 'is-open' : ''}`} id="film" aria-labelledby="personal-film-title">
     <div className="personal-film-copy">
-      <p className="eyebrow">A PERSONAL FILM / 个人技术实践</p>
       <h2 id="personal-film-title">{promoContent.title}</h2>
       <p>{promoContent.description}</p>
     </div>
