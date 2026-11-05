@@ -1,8 +1,6 @@
 name: Portfolio scheduled health check
 
 on:
-  schedule:
-    - cron: '17 1 * * *'
   workflow_dispatch:
 
 # Read-only: this schedule cannot commit content or deploy a new version.
