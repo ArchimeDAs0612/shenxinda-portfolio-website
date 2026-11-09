@@ -5,6 +5,7 @@ export const promoContent = {
   published: true,
   title: '83 秒，看我的技术实践',
   description: '支付风控研究、字段知识与 Agent 输入设计，以及数据分析自动化。',
+  recordNote: '2026年10月阶段记录，最新项目进展见下方。',
   video: '/media/archimedas-83s-a-v1.mp4',
   poster: '/images/promo/archimedas-83s-a-v1.jpg',
   durationLabel: '01:23',

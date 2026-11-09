@@ -63,20 +63,22 @@ export function AgentExperimentLoop({ id }: { id: string }) {
 
 export function AgentSemanticAtlas({ id }: { id: string }) {
   return <g data-diagram-layout="fieldops-governance-workbench">
-    <Link id={id} d="M298 92H385" /><Link id={id} d="M655 92H740" tone="orange" />
-    <Plate x={28} y={35} w={270} h={116} label="01 / KNOWLEDGE FOUNDATION" title="复用已交付的知识资产" lines={['钱包 / 外卖研究与分库已结项', '保留业务、版本与接管记录']} />
-    <Plate x={385} y={35} w={270} h={116} label="02 / HUMAN · DESIGN REVIEW" title="我定义目标，评审方案" lines={['特征 × 策略联合治理', '需求拆解 · 方向纠偏 · 验收']} tone="orange" />
-    <Plate x={740} y={35} w={270} h={116} label="03 / WORKING PROTOTYPE" title="FieldOps 独立工作台" lines={['已有可运行原型', 'AI 辅助工程实现与迭代']} />
-    <Link id={id} d="M875 151V185H158V223" />
-    <Plate x={28} y={223} w={270} h={110} label="04 / FEATURE FAMILIES" title="宗族图谱" lines={['检索字段 · 展开相关特征', '节点与关系可查看依据']} />
-    <Plate x={28} y={391} w={270} h={110} label="05 / USABILITY · ACCEPTED" title="可用性评分" lines={['已完成功能验收', '辅助比较，不等同于风险效果']} />
-    <Link id={id} d="M298 278H385" /><Link id={id} d="M298 446H342V278H385" />
-    <Plate x={385} y={223} w={270} h={110} label="06 / EVIDENCE EXPLORATION" title="证据联查" lines={['关联图谱与评价信息', '查看依据，再作研究判断']} />
-    <Link id={id} d="M655 278H740" />
-    <Plate x={740} y={223} w={270} h={110} label="07 / OVERVIEW · ACCEPTED" title="全局首页看板" lines={['整体情况与功能入口', '先看全貌，再进入具体研究']} />
-    <Link id={id} d="M520 333V391" tone="orange" /><Link id={id} d="M655 446H740" tone="orange" feedback />
-    <Plate x={385} y={391} w={270} h={110} label="08 / HUMAN OWNERSHIP" title="人工治理与验收" lines={['我提出要求、审查并验收', '知识依据与判断责任保留']} tone="orange" />
-    <Plate x={740} y={391} w={270} h={110} label="SEPARATE / 策略侧边界" title="效果与上线另行验证" lines={['字段侧功能验收 ≠ 策略有效', '不推导自动下发或生产上线']} tone="orange" pending />
-    <text x="28" y="551" className="agent-footnote">公开能力关系示意 · 字段侧功能已验收 · 非内部系统架构、真实字段或生产策略图</text>
+    <text x="28" y="32" className="agent-overline">FIELDOPS / 核心架构通过评审 · 持续开发</text>
+    <Link id={id} d="M242 148H288" /><Link id={id} d="M242 326H288" />
+    <Link id={id} d="M526 148H552V213H580" />
+    <Link id={id} d="M526 326H552V267H580" />
+    <Link id={id} d="M770 237H798V148H824" tone="orange" />
+    <Link id={id} d="M770 237H798V326H824" tone="orange" />
+
+    <Plate x={28} y={82} w={214} h={132} label="01 / FEATURE ASSETS" title="特征资产" lines={['钱包 / 外卖研究知识', '业务归属与使用条件', '复用已交付研究资产']} />
+    <Plate x={28} y={260} w={214} h={132} label="01 / STRATEGY RULES" title="策略规则" lines={['完整条件与适用范围', '关系与版本分别记录', '不同业务保持隔离']} />
+    <Plate x={288} y={82} w={238} h={132} label="02 / EVALUATION" title="用途准入与分维评价" lines={['字段自身质量', '相关特征的互补信息', '策略使用证据']} />
+    <Plate x={288} y={260} w={238} h={132} label="02 / RULE UNDERSTANDING" title="完整条件与关系解析" lines={['部分真实配置已实现', '保留适用范围与未知', '本地实现与测试记录']} />
+    <Plate x={580} y={171} w={190} h={132} label="03 / HUMAN REVIEW" title="证据与审核状态" lines={['追溯来源与版本', '关键结论由人确认', '未确认保持候选']} tone="orange" />
+    <Plate x={824} y={82} w={188} h={132} label="04 / CANDIDATE" title="特征治理知识" lines={['含义 · 用途 · 依据', '来源 · 版本 · 状态', '待业务审核与接入']} />
+    <Plate x={824} y={260} w={188} h={132} label="04 / CANDIDATE" title="策略治理知识" lines={['条件 · 关系 · 机制', '来源 · 版本 · 状态', '待业务审核与接入']} />
+
+    <Plate x={28} y={435} w={984} h={112} label="HUMAN OWNERSHIP" title="我定义问题与评价边界，推动方案评审和 AI 辅助工程实现" lines={['团队提供业务与数据支持；AI 参与代码、测试和材料整理，人工保留关键判断。', '核心能力已有本地实现；完整业务验收、远端知识服务接入及生产应用仍待验证。']} tone="orange" />
+    <text x="28" y="569" className="agent-footnote">公开方法关系示意 · 资料截至 2026-11-06 · 非公司内部架构、真实字段或生产策略图</text>
   </g>;
 }

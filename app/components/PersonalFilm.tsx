@@ -35,6 +35,7 @@ export function PersonalFilm() {
     <div className="personal-film-copy">
       <h2 id="personal-film-title">{promoContent.title}</h2>
       <p>{promoContent.description}</p>
+      <p className="metric-source">{promoContent.recordNote}</p>
     </div>
     <div className="personal-film-stage">
       <div className="personal-film-media">

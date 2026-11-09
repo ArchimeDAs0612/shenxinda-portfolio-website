@@ -158,12 +158,12 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
       <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">01</span><p className="eyebrow">实习经历</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p></div><InternshipOverview /></section>
 
       <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">02</span><p className="eyebrow">研究与交付</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">两大项目研究与交付已结项。</p></div>
+        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">02</span><p className="eyebrow">研究与交付</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">两项研究已完成交付；FieldOps 在既有研究基础上持续推进工程建设。</p></div>
         <PublicProjects />
       </section>
 
       <section className="chapter workflow-section" id="ai">
-        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">03</span><p className="eyebrow">Agent 实践</p><h2><span className="editorial-title-line">把 Agent 融入研究，</span><span className="editorial-title-line">而不外包判断。</span></h2><p className="portal-lead">从 Pattern 研究中的人机协作，到 FieldOps 特征×策略联合治理工作台：我定义目标、评审方案并验收功能，让 AI 扩大实现与迭代能力。</p></div>
+        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">03</span><p className="eyebrow">Agent 实践</p><h2><span className="editorial-title-line">把 Agent 融入研究，</span><span className="editorial-title-line">而不外包判断。</span></h2><p className="portal-lead">从风险候选研究到 FieldOps 联合治理，我定义问题与评价边界，组织 AI 协作完成分析、实现和验证；关键业务判断与交付审查由人承担。</p></div>
         <div className="portal-ai-summary"><div><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
         <div className="portal-ai-cases"><ProjectAIWorkflow /></div>
       </section>
@@ -234,7 +234,7 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
         </div>
       </section>
 
-      <footer><div><strong>{career ? '沈鑫达 / Shen Xinda' : '阿基米达 / Archimedas'}</strong><p>{career ? 'Statistics · Risk Decision · AI Creation' : 'Statistics · AI Creation · Personal Expression'}</p><p>页面更新：{portalContent.updatedAt} · 个人门户，非公司官方信息</p></div><a href="#top">返回顶部 ↑</a></footer>
+      <footer><div><strong>{career ? '沈鑫达 / Shen Xinda' : '阿基米达 / Archimedas'}</strong><p>{career ? 'Statistics · Risk Decision · AI Creation' : 'Statistics · AI Creation · Personal Expression'}</p><p>项目资料：{careerContent.updatedAt} · 页面更新：{portalContent.updatedAt} · 个人门户，非公司官方信息</p></div><a href="#top">返回顶部 ↑</a></footer>
 
       <AmbientMusic />
 

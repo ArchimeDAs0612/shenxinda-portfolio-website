@@ -5,7 +5,7 @@ import { ScientificDiagram } from './ScientificDiagram';
 
 const previews = [
   { kind: 'risk-phase-2', target: 'risk-phase-2', label: '风险研究 · 结项交付', summary: 'LGBM 消融、完整回放、候选取舍与金额反证已完成研究交付，独立业务验证另计。' },
-  { kind: 'field-governance', target: 'feature-research', label: '特征研究 · FieldOps', summary: '字段研究与知识分库已结项；后续 FieldOps 工作台的图谱、证据联查、可用性评分与全局看板已验收。' },
+  { kind: 'field-governance', target: 'feature-research', label: '特征研究 · FieldOps', summary: '字段研究与知识资产已完成交付；后续 FieldOps 联合治理核心方案通过评审，已形成工程实现并持续开发。' },
   { kind: 'ai-case-0', target: 'ai-case-0', label: 'AI 协作 · 研究纠偏', summary: 'Agent 扩大代码与实验执行能力；我设定对照、审查证据并保留最终判断。' },
 ] as const;
 
@@ -48,6 +48,6 @@ export function ProjectPreview() {
     <div className="preview-track" ref={track} onPointerDown={() => setPaused(true)} onScroll={() => { const node = track.current; if (node) setIndex(Math.round(node.scrollLeft / node.clientWidth)); }}>
       {previews.map((item, i) => <article className="preview-slide" key={item.kind} aria-label={item.label}><ScientificDiagram kind={item.kind} preview idPrefix={`preview-${i}-`} /><div className="preview-caption"><div><strong>{item.label}</strong><p>{item.summary}</p></div><a href={`#${item.target}`}>阅读完整案例 ↘</a></div></article>)}
     </div>
-    <p className="preview-boundary">两大项目研究与交付已结项。图示展示方法与个人工作，不代表公司系统、生产上线或业务收益。</p>
+    <p className="preview-boundary">两项研究已完成交付；FieldOps 持续推进工程建设。图示展示方法与个人工作，不代表公司系统、生产上线或业务收益。</p>
   </section>;
 }
