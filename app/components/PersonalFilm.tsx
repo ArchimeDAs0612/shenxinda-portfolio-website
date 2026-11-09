@@ -39,16 +39,16 @@ export function PersonalFilm() {
     </div>
     <div className="personal-film-stage">
       <div className="personal-film-media">
-      <video ref={videoRef} poster={promoContent.poster} controls={opened} playsInline preload="none" tabIndex={opened ? 0 : -1} aria-hidden={!opened} aria-label="阿基米达83秒个人技术实践，A配乐版" onPlay={() => window.dispatchEvent(new Event('portfolio:film-play'))} onError={() => setError(true)} />
-      {!opened && <button type="button" className="personal-film-trigger" onClick={play} aria-label="播放阿基米达83秒技术实践" aria-expanded={false}>
+      <video ref={videoRef} poster={promoContent.poster} controls={opened} playsInline preload="none" tabIndex={opened ? 0 : -1} aria-hidden={!opened} aria-label="阿基米达88秒个人技术作品" onPlay={() => window.dispatchEvent(new Event('portfolio:film-play'))} onError={() => setError(true)} />
+      {!opened && <button type="button" className="personal-film-trigger" onClick={play} aria-label="播放阿基米达88秒技术作品" aria-expanded={false}>
         <img src={promoContent.poster} alt="阿基米达个人短片封面" loading="lazy" width="960" height="540" />
         <span className="film-play-symbol" aria-hidden="true">▶</span>
-        <span className="film-play-label">播放短片 <small>{promoContent.durationLabel} · A 配乐版</small></span>
+        <span className="film-play-label">播放短片 <small>{promoContent.durationLabel}</small></span>
       </button>}
       </div>
       {opened && <button className="film-collapse" type="button" onClick={() => { videoRef.current?.pause(); setOpened(false); requestAnimationFrame(() => document.querySelector<HTMLButtonElement>('.personal-film-trigger')?.focus({ preventScroll: true })); }}>收起短片 ↑</button>}
       {error && <p className="film-error" role="status">如播放器暂未开始，可使用播放控件，或<a href={promoContent.video}>直接打开短片 ↗</a>。</p>}
-      <noscript><p className="film-error"><a href={promoContent.video}>直接打开83秒A配乐短片 ↗</a></p></noscript>
+      <noscript><p className="film-error"><a href={promoContent.video}>直接打开88秒个人短片 ↗</a></p></noscript>
     </div>
   </section>;
 }

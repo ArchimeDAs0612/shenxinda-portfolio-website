@@ -95,7 +95,7 @@ try {
     assert.equal(filmRequests.length, 0, 'No video download before a visitor clicks');
     await page.locator('#film').scrollIntoViewIfNeeded();
     await page.screenshot({ path: `${output}/${viewport.width}-film-cover.png` });
-    await page.getByRole('button', { name: '播放阿基米达83秒技术实践', exact: true }).click();
+    await page.getByRole('button', { name: '播放阿基米达88秒技术作品', exact: true }).click();
     await page.waitForFunction(() => { const v = document.querySelector('#film video'); return v.readyState >= 2 && v.currentTime > .15 && !v.paused; });
     assert(Math.abs(await page.locator('#film video').evaluate(v => v.duration) - filmDuration) < .2);
     assert.equal(new URL(await page.locator('#film video').getAttribute('src'), siteUrl).pathname, filmPath);
@@ -142,7 +142,7 @@ try {
     assert.match(fieldOpsText, /我的贡献/);
     assert.match(fieldOpsText, /部分真实规则配置.*本地实现和测试记录/s);
     assert.match(fieldOpsText, /尚未整体完成.*完整业务验收.*远端知识服务接入.*生产应用仍待验证/s);
-    assert.match(await page.locator('#film').innerText(), /2026年10月阶段记录，最新项目进展见下方/);
+    assert.match(await page.locator('#film').innerText(), /2026年11月更新 · 阿基米达个人作品/);
     assert.doesNotMatch(await page.locator('#projects, #ai').allInnerTexts().then(texts => texts.join(' ')), /独立 Agent 未实现部署|未实现、运行或部署该系统|不是已实现、运行或部署的独立系统|不宣称系统已经实现、运行或部署/);
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
     assert(!/PDF|简历下载|RESUME/.test(await page.locator('main').innerText()));
@@ -193,7 +193,7 @@ try {
     const signal = await page.evaluate(() => { const s = new Float32Array(window.__musicAnalyser.fftSize); window.__musicAnalyser.getFloatTimeDomainData(s); return { state: window.__audioContexts.at(-1).state, peak: Math.max(...s.map(Math.abs)), rms: Math.sqrt(s.reduce((a, v) => a + v * v, 0) / s.length) }; });
     assert.equal(signal.state, 'running'); assert(signal.rms > .00001 && signal.peak < .5, JSON.stringify(signal));
     if (viewport.width === 1440 && filmPublished) {
-      await page.getByRole('button', { name: '播放阿基米达83秒技术实践', exact: true }).click();
+      await page.getByRole('button', { name: '播放阿基米达88秒技术作品', exact: true }).click();
       await page.waitForFunction(() => window.__audioContexts.at(-1).state === 'suspended');
       await page.waitForFunction(() => !document.querySelector('#film video').paused);
       await page.getByRole('button', { name: '开启音乐', exact: true }).click();

@@ -1,14 +1,14 @@
 /** A single, public-facing film shared by the public and career views. */
 export const promoContent = {
   // Switch on only after the user explicitly approves a specific final film.
-  // 2026-10-16: approved A film + placement + retention of its original audio.
+  // 2026-11-10: user approved the new 88-second film and replacement on the website.
   published: true,
-  title: '83 秒，看我的技术实践',
-  description: '支付风控研究、字段知识与 Agent 输入设计，以及数据分析自动化。',
-  recordNote: '2026年10月阶段记录，最新项目进展见下方。',
-  video: '/media/archimedas-83s-a-v1.mp4',
-  poster: '/images/promo/archimedas-83s-a-v1.jpg',
-  durationLabel: '01:23',
-  durationSeconds: 83,
-  sha256: 'a9761dd29d8bc4d21d62acfe9e8d2fd088b4c631c9040b4b55b382b875ea57d2',
+  title: '88 秒，看我的技术作品',
+  description: '支付风控研究、FieldOps 联合治理、数据自动化与 AI 创作。',
+  recordNote: '2026年11月更新 · 阿基米达个人作品。',
+  video: '/media/archimedas-88s-20261110.mp4',
+  poster: '/images/promo/archimedas-88s-20261110.jpg',
+  durationLabel: '01:28',
+  durationSeconds: 88,
+  sha256: '42331e340e85263e5b153404d05d4daa790a7511598fad6a0ddc1c05fa73a774',
 } as const;

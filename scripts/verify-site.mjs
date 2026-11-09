@@ -24,7 +24,7 @@ for (const path of [promoVideo, promoPoster].filter(Boolean).map(path => `public
 if (!promoVideo || !promoPoster) errors.push('宣传片资源配置缺失');
 if (promoVideo && existsSync(join(projectRoot, 'public', promoVideo))) {
   const expected = promoSource.match(/sha256:\s*'([a-f0-9]{64})'/)?.[1];
-  if (createHash('sha256').update(readFileSync(join(projectRoot, 'public', promoVideo))).digest('hex') !== expected) errors.push('宣传片不是获批的83秒A版文件');
+  if (createHash('sha256').update(readFileSync(join(projectRoot, 'public', promoVideo))).digest('hex') !== expected) errors.push('宣传片与获批文件指纹不一致');
 }
 
 for (const relativePath of [...requiredDirectories, ...requiredFiles]) {

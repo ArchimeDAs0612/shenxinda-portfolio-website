@@ -18,7 +18,7 @@ assert.doesNotMatch(html, /2027届校招|首集制作验收中|尚未作为已�
 assert.match(html, /研究与交付已结项/);
 assert.match(html, /LGBM/);
 assert.match(html, /FieldOps：特征×策略联合治理 Agent/);
-for (const capability of ['核心架构通过评审', '持续开发', '用途准入与三维评价', '完整条件解析与关系查询', '两类候选治理知识', '生产应用仍待验证', '2026年10月阶段记录，最新项目进展见下方。']) assert(html.includes(capability), `FieldOps content missing: ${capability}`);
+for (const capability of ['核心架构通过评审', '持续开发', '用途准入与三维评价', '完整条件解析与关系查询', '两类候选治理知识', '生产应用仍待验证', '2026年11月更新 · 阿基米达个人作品。']) assert(html.includes(capability), `FieldOps content missing: ${capability}`);
 assert.doesNotMatch(html, /独立 Agent 未实现部署|未实现、运行或部署该系统|不是已实现、运行或部署的独立系统/);
 assert.doesNotMatch(html, /EP001—EP012|只回了三条消息|Motion 重制版已完成/);
 assert.match(html, /230万/);
@@ -55,8 +55,8 @@ const missing = await fetch(new URL('portal-page-not-found', url), { signal: Abo
 const movie = await get(new URL(moviePath, url));
 assert.equal(movie.status, 200);
 assert.match(movie.headers.get('content-type'), /video\/mp4/);
-assert.equal(createHash('sha256').update(Buffer.from(await movie.arrayBuffer())).digest('hex'), movieHash, 'Public video must match the approved A film');
-assert.match(html, /83 秒，看我的技术实践/);
+assert.equal(createHash('sha256').update(Buffer.from(await movie.arrayBuffer())).digest('hex'), movieHash, 'Public video must match the approved film');
+assert.match(html, /88 秒，看我的技术作品/);
 assert(!html.includes('/media/archimedas-one-minute-v1.mp4'), 'Do not attach the old 60s film');
 assert.equal(missing.status, 404, 'Unknown route must return an actual 404');
 assert.match(await missing.text(), /返回个人主页/);
