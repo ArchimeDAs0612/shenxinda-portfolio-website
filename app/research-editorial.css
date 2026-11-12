@@ -212,3 +212,7 @@
   .seg2-case-tags span { font-size: 11px; }
   .seg2-figure-section { margin-top: 26px; }
 }
+
+/* Shared collection totals retain their scope on narrow screens. */
+.aigc-aggregate .aigc-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; max-width: 520px; }
+.aigc-aggregate .aigc-stats strong { font-size: clamp(24px, 6vw, 28px); white-space: nowrap; }

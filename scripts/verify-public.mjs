@@ -26,8 +26,8 @@ for (const id of ['fieldops', 'risk-pattern', 'feature-research', 'risk-lab', 'f
 for (const href of ['https://github.com/ArchimeDAs0612/archimeda-risk-lab', 'https://archimedas0612.github.io/archimeda-risk-lab/']) assert(html.includes(`href="${href}"`), `Public lab link missing: ${href}`);
 assert.doesNotMatch(html, /独立 Agent 未实现部署|未实现、运行或部署该系统|不是已实现、运行或部署的独立系统/);
 assert.doesNotMatch(html, /EP001—EP012|只回了三条消息|Motion 重制版已完成/);
-assert.match(html, /230万/);
-assert.match(html, /6万\+/);
+for (const value of ['40+', '240万+', '6万+', '两栏目合计', '抖音、小红书、视频号', '2026-11-08']) assert(html.includes(value), `Creative aggregate missing: ${value}`);
+assert.doesNotMatch(html, /230万|2026-10-20/);
 assert.doesNotMatch(html, /已发布代表作|作品直链待补/);
 for (const id of ['internships', 'projects', 'education']) assert(html.includes(`id="${id}"`), `Public homepage must retain ${id}`);
 for (const asset of ['images/brands/didi.svg', 'images/brands/zeekr.svg', 'images/brands/99pay-app.webp', 'images/brands/zeekr-9x-front.webp']) assert(html.includes(asset), `Public homepage must display ${asset}`);

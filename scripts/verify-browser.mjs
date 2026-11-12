@@ -167,7 +167,10 @@ try {
     assert.equal(await page.locator('#exploration .portal-social-link').count(), 1);
     assert.equal(await page.locator('#exploration .portal-social-link').getAttribute('href'), 'https://www.xiaohongshu.com/user/profile/5c5054a7000000001000b66e');
     assert.equal(await page.locator('a[href*="douyin.com/user/self"]').count(), 0);
-    assert.match(await page.locator('#exploration').innerText(), /230万.*6万\+.*2026-10-20/s);
+    const creativeTotals = page.locator('#exploration .aigc-aggregate');
+    assert.match(await creativeTotals.innerText(), /40\+.*240万\+.*6万\+.*两栏目合计.*抖音、小红书、视频号.*2026-11-08/s);
+    assert.equal(await page.locator('.aigc-collections article .aigc-stats').count(), 0, 'Aggregate metrics must not be attributed to one collection');
+    assert.doesNotMatch(await page.locator('#exploration').innerText(), /230万|2026-10-20/);
     assert.doesNotMatch(await page.locator('#exploration').innerText(), /首集制作验收中|尚未作为已发布作品/);
     assert.equal(await page.locator('.aigc-collections article').last().locator('ul li').count(), 0);
     assert.doesNotMatch(await page.locator('#exploration').innerText(), /代表作|作品直链待补/);

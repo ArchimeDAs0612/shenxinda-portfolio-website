@@ -76,8 +76,10 @@ export const careerContent = {
   aigc: {
     title: 'AI荒诞研究所',
     english: 'AIGC Content Production System',
-    views: '230万', likes: '6万+', dataAsOf: '2026-10-20',
-    metricScope: '全平台',
+    aggregate: {
+      works: '40+', views: '240万+', likes: '6万+', dataAsOf: '2026-11-08',
+      scope: '两栏目合计', platforms: '抖音、小红书、视频号',
+    },
     description: '用 Seedance 创作社会观察与讽喻短片，借荒诞叙事表达哲思。已有公开作品；新作《重生也逃不掉》EP01《逃离建筑学》逐幕制作中，尚无可核实的整片发布记录。',
     probabilityEngine: {
       title: '阿基米达的概率引擎',
