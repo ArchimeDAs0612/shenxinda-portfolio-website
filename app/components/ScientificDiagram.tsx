@@ -1,198 +1,88 @@
-import type { ReactNode } from 'react';
-import { AgentExperimentLoop, AgentSemanticAtlas } from './AgentResearchFigures';
-import { ModelCandidateEvolution, FieldKnowledgeEvolution } from './ResearchEvolutionFigures';
-
-type Tone = 'teal' | 'orange' | 'neutral';
-function Block({ x, y, w = 180, h = 76, title, sub, tone = 'neutral', dashed = false, children }: { x: number; y: number; w?: number; h?: number; title: string; sub?: string; tone?: Tone; dashed?: boolean; children?: ReactNode }) {
-  return <g className={`research-block tone-${tone} ${dashed ? 'is-provisional' : ''}`} transform={`translate(${x} ${y})`}>
-    <rect width={w} height={h} rx="6" /><rect className="block-accent" width="4" height={h - 16} x="0" y="8" rx="2" />
-    <text x="16" y="29" className="block-title">{title}</text>{sub && <text x="16" y="51" className="block-sub">{sub}</text>}{children}
-  </g>;
-}
-function Edge({ d, id, dashed = false, tone = 'neutral' }: { d: string; id: string; dashed?: boolean; tone?: Tone }) {
-  return <path d={d} className={`research-edge edge-${tone} ${dashed ? 'is-provisional' : ''}`} markerEnd={`url(#${id}-arrow-${tone})`} />;
-}
-function Label({ x, y, children }: { x: number; y: number; children: ReactNode }) { return <text x={x} y={y} className="research-label">{children}</text>; }
-function Group({ x, y, w, h, title, tone = 'neutral' }: { x: number; y: number; w: number; h: number; title: string; tone?: Tone }) {
-  return <g className={`research-group tone-${tone}`}><rect x={x} y={y} width={w} height={h} rx="10" /><text x={x + 16} y={y + 26}>{title}</text></g>;
-}
+import { FieldOpsPurpose, FieldOpsEngineering, RiskDiscovery, RiskValidation, FieldMethodTransfer, PublicRiskLab } from './Seg2ResearchFigures';
 
 const readingGuide = {
-  'risk-phase-0': {
-    number: '01', category: 'OBSERVATIONAL DESIGN', headline: '先找可比对象，再找复盘线索。',
-    summary: 'Phase 1 配对与短窗复盘已封板。“先被拒绝、后来通过”提供观察入口；先限定可比范围，再检查行为变化。',
-    lenses: [['观察入口', '先拒后过的支付关系'], ['研究判断', '样本是否可比？行为哪里不同？'], ['实际产物', '值得复核的候选范围']],
-    terms: [['Rej → Pass', '先拒绝，后通过；不等于已确认误伤。'], ['同质比较', '先限定相近的业务背景，再比较差异。']],
-    takeaway: '得到复核线索，不直接给出放行或误伤结论。',
+  'fieldops-purpose': {
+    number: '01', category: 'FIELDOPS / GOVERNANCE', headline: '把特征与策略，组织成可审查的治理知识。',
+    summary: '以特征和策略为两类治理对象，将用途评价、规则理解、图谱与证据联查连接到知识交付。',
+    lenses: [['治理对象', '特征资产与策略规则'], ['我的职责', '核心架构与工程推进'], ['阶段交付', '可追溯的候选治理知识']],
+    terms: [['用途评价', '先说明任务能否使用，再解释质量、关系和使用证据，不用一个总分代替依据。'], ['候选治理知识', '携带来源、版本、适用范围与审核状态，供后续研究和人工判断。']],
+    takeaway: '评分、图谱与看板帮助人理解和审核；知识生成不自动等于业务批准。',
+    description: '特征与策略分别进入用途评价和完整规则理解，经证据联查、评分、图谱、看板及人工审核，形成两类候选治理知识。',
   },
-  'risk-phase-1': {
-    number: '02', category: 'EVIDENCE TRIANGULATION', headline: '把群体差异，追溯到实际决策。',
-    summary: 'Phase 2 非限额信号建模、候选回放与策略条件覆盖已交付；分布、条件和动作分别解释，不把覆盖当作实际命中。',
-    lenses: [['研究输入', '候选群体与窗口特征'], ['关键核对', '满足条件，是否等于真的命中？'], ['实际产物', '可追溯的分析章节与结果索引']],
-    terms: [['条件覆盖', '描述条件满足情况，不代表完整规则或最终动作。'], ['实际命中', '回接动作记录核对，不从覆盖量直接推断。']],
-    takeaway: '保留每一层证据的口径，不把相关差异写成因果或收益。',
+  'fieldops-engineering': {
+    number: '02', category: 'FIELDOPS / ENGINEERING', headline: '让治理流程可以迭代、追溯与恢复。',
+    summary: '从资料增量与版本变化到解析、测试、人工审核和知识产物，把治理方法推进为可接续的工程工作流。',
+    lenses: [['已经实现', '局部解析、验证与知识交付'], ['工作方式', '本人定义审查，AI 辅助执行'], ['继续推进', 'RAG 接入与周期调度']],
+    terms: [['Checkpoint', '记录输入、产物、验证状态与恢复位置，避免失败后从头重做。'], ['工程状态', '核心方案通过评审、已有实现且持续开发；本地测试不等于生产验收。']],
+    takeaway: '我负责架构取舍、评价约束、工程推进和交付审查；团队提供业务支持，AI 承担受约束的执行。',
+    description: '资料增量与版本经过解析验证、人工审核到候选知识交付；AI执行和本人审查通过纠偏及检查点恢复闭环，RAG接入和周期调度继续推进。',
   },
-  'risk-phase-2': {
-  "number": "03",
-  "category": "MODEL → CANDIDATE → EVIDENCE",
-  "headline": "从模型发现，走到候选取舍与业务核验。",
-  "summary": "Phase 2.1 的 LGBM 消融、路径与反证，及 Phase 2.2 的前置细分、金额审查、候选交接和恢复收尾均已交付；研究结项不等于业务有效。",
-  "lenses": [
-    [
-      "已完成研究",
-      "LGBM 消融、路径与金额反证"
-    ],
-    [
-      "已完成交付",
-      "候选取舍、完整回放与恢复交接"
-    ],
-    [
-      "验证边界",
-      "真实 OOT 与正式 Pattern 不作完成宣称"
-    ]
-  ],
-  "terms": [
-    [
-      "结构重现",
-      "比较不同训练子集模型的同字段集合路径及命中成员；不是独立业务验证。"
-    ],
-    [
-      "候选取舍",
-      "同时看覆盖、浓度和成员包含关系，不将重叠子群相加。"
-    ]
-  ],
-  "takeaway": "研究与交付已结项。结构重现、搜索流程留出与固定规则独立验证分开记录，不以候选更浓推断新增覆盖或业务收益。"
-},  'field-governance': {
-  "number": "04",
-  "category": "FIELD KNOWLEDGE & ADMISSION",
-  "headline": "让字段成为有使用条件的研究输入。",
-  "summary": "钱包方法沉淀、外卖全量整理及可用性分析、成果接管对账与知识库拆分均已交付。未确认语义、时点和效果保留未知，不影响既定研究范围结项。",
-  "lenses": [
-    [
-      "研究状态",
-      "钱包与外卖研究交付已结项"
-    ],
-    [
-      "知识资产",
-      "两业务知识库独立发布"
-    ],
-    [
-      "准入边界",
-      "可读与发布成功不等于业务有效"
-    ]
-  ],
-  "terms": [
-    [
-      "分层验收",
-      "物理存在、技术解析、语义、决策时点和效果不自动相互推导。"
-    ],
-    [
-      "调用边界",
-      "按业务范围、证据版本和准入状态使用知识。"
-    ]
-  ],
-  "takeaway": "字段研究与知识交付已结项，沉淀的方法和资产支撑后续 FieldOps 联合治理。FieldOps 核心方案通过评审，工程持续推进，详见第六图。"
-},  'ai-case-0': {
-  "number": "05",
-  "category": "HUMAN–AGENT RESEARCH LOOP",
-  "headline": "搭建研究工作流，把执行与判断接成闭环。",
-  "summary": "我定义问题、输入版本与验收，Agent 执行代码和整理证据；人工追问候选取舍与结构稳定性，再定向修订，不擅改既有实验和评价口径。",
-  "lenses": [
-    [
-      "我设定",
-      "研究问题、对照与修改边界"
-    ],
-    [
-      "Agent 执行",
-      "代码、Debug、证据与报告迭代"
-    ],
-    [
-      "我审查",
-      "解释、候选取舍与交付验收"
-    ]
-  ],
-  "terms": [
-    [
-      "方法审查",
-      "检查来源、标签、结构稳定性和业务验证的区别。"
-    ],
-    [
-      "Human Ownership",
-      "团队评价要求保持；个人承担判断与验收责任。"
-    ]
-  ],
-  "takeaway": "已完成四阶段研究与恢复交付。人、团队和 AI 的责任分别记录，不将 AI 辅助工作流表述为独立生产 Agent。"
-},  'ai-case-1': {
-  "number": "06",
-  "category": "FIELDOPS / FEATURE × STRATEGY GOVERNANCE",
-  "headline": "为策略研究，准备可信的特征与规则知识。",
-  "summary": "FieldOps 核心架构已通过评审，联合治理、用途评价、规则解析及候选知识交付已形成工程实现。部分真实配置已有本地实现与测试记录；项目持续开发，资料截至 2026-11-06。",
-  "lenses": [
-    ["治理对象", "特征资产与策略规则"],
-    ["我的贡献", "问题定义、评价约束、架构取舍与推进"],
-    ["阶段产物", "两类可追溯候选治理知识"]
-  ],
-  "terms": [
-    ["分维度评价", "先明确用途准入，再看字段质量、互补信息及策略使用证据；不以综合分掩盖缺失依据。"],
-    ["候选治理知识", "保留来源、版本、适用范围和审核状态；已生成不等于业务批准或远端知识服务已接入。"]
-  ],
-  "takeaway": "我推动联合治理目标、评价口径与业务隔离，推进方案评审及 AI 辅助工程实现；团队提供业务与数据支持。核心能力已有本地验证记录，完整业务验收、远端接入与生产应用仍待验证。"
-},} as const;
+  'risk-discovery': {
+    number: '03', category: 'FP / MODEL DISCOVERY', headline: '先定义可比问题，再用模型发现候选。',
+    summary: '从短窗口受阻与配对复盘出发，结合非限额信号、XGBoost / LightGBM 对照和宽特征消融，研究值得复核的组合。',
+    lenses: [['问题入口', '支付受阻观察与短窗口复盘'], ['研究方法', '输入对照、模型探索与消融'], ['本人判断', '问题定义、方法纠偏与候选取舍']],
+    terms: [['Rej → Pass', '先拒绝、后通过是观察关系，不是已确认的误伤标签。'], ['模型解释', '区分来源、代理标签和业务含义；不同阶段不拼成效果增长曲线。']],
+    takeaway: '模型提供发现线索；候选是否值得继续研究，取决于对输入、依赖条件与反证的审查。',
+    description: '从短窗口观察限定可比对象，研究包括输入对照、XGBoost / LightGBM 探索、消融与完整路径解释；各阶段按自身范围分别审查，形成候选复核线索。',
+  },
+  'risk-validation': {
+    number: '04', category: 'FP / VALIDATION & HANDOFF', headline: '把候选取舍，落到可复核的证据上。',
+    summary: '将完整条件、回放、覆盖与集合关系连接到稳定性和金额反证，形成候选说明与恢复交接。',
+    lenses: [['复核对象', '完整路径、候选成员与策略覆盖'], ['取舍依据', '重叠、稳定性与金额反证'], ['已完成交付', '方法流程、回放与版本化交接']],
+    terms: [['覆盖与命中', '条件满足、完整规则逻辑与最终动作分别核对，不能相互替代。'], ['验证层次', '结构重现、搜索流程留出与固定规则独立验证分别记录。']],
+    takeaway: '研究与交付已结项；真实 OOT、正式 Pattern、生产上线和业务收益不由此推导。',
+    description: '还原完整路径并固定输入，复核覆盖、重叠和新增成员，再审查稳定性、前置细分及金额聚集，形成保留排除依据、回放反证和冻结恢复交付。',
+  },
+  'field-governance': {
+    number: '05', category: 'FIELD GOVERNANCE / METHOD TRANSFER', headline: '迁移整理方法，保留每条业务的使用边界。',
+    summary: '钱包方法沉淀、外卖全量整理与可用性分析、成果接管对账及知识分库，构成后续 FieldOps 建设的研究基础。',
+    lenses: [['已完成范围', '钱包与外卖研究、方法及知识交付'], ['方法核心', '语义、使用条件、质量与关系'], ['交付方式', '分业务知识资产与治理 SOP']],
+    terms: [['方法迁移', '迁移检查和整理方法，不把钱包含义直接套给外卖字段。'], ['分层判断', '物理存在、技术解析、业务语义、决策时点和效果各自保留证据状态。']],
+    takeaway: '两条研究线已完成既定交付；它们为 FieldOps 提供基础，不与后续工程重复计作一次结项。',
+    description: '钱包和外卖保持业务隔离，共享语义使用条件及质量关系整理方法，经人工纠偏和验收，分别形成知识资产、治理SOP及接管记录，支持FieldOps后续建设。',
+  },
+  'risk-lab': {
+    number: '06', category: 'RISK DECISION LAB / PUBLIC WORK', headline: '把研究方法，做成能公开查看的实验作品。',
+    summary: '在独立实验环境中组织数据、模型、候选与策略模拟，并用测试、版本记录和失败恢复让工作可接续。',
+    lenses: [['作品归属', '独立个人公开项目'], ['可以查看', '代码、运行说明与静态 Demo'], ['协作方式', 'Specification → AI Coding → Review']],
+    terms: [['独立研究环境', '使用模拟及许可外部观测资料，与公司研究数据和工程隔离。'], ['工具工作流', '确定性工具调用与恢复机制，不能直接等同于自主规划的 LLM Agent。']],
+    takeaway: '公开实验室展示研究实现和工程过程；模拟结果不作为真实支付业务效果的证明。',
+    description: '独立实验数据进入模型候选研究、策略成本模拟和版本化实验，结合确定性工具调用、测试审查与检查点恢复，交付公开源码、说明和静态演示。',
+  },
+} as const;
 
-const descriptions: Record<string, [string, string]> = {
-  'risk-phase-0': ['观察范围与候选发现', '以 Rej→Pass 作为复盘入口，经范围拆分、同质比较与窗口分析汇合为复核候选，不将候选视为误伤真值。'],
-  'risk-phase-1': ['多层证据与命中审计', '分布、订单覆盖和规则上下文形成证据链；实际动作记录独立回接，条件覆盖与最终命中不等价。'],
-  'risk-phase-2': ['模型发现、候选取舍与业务核验', 'LGBM 消融、完整路径回放、前置细分、金额反证与候选交接已完成；原总体回放不等于独立业务验证，真实 OOT 与正式 Pattern 不作完成宣称。'],
-  'field-governance': ['字段资产、知识隔离与分层准入', '钱包与外卖研究、可用性分析、接管对账和知识分库已交付；解析、语义、决策时点和效果分别记录。'],
-  'ai-case-0': ['人机协作与研究纠偏', '人定义对照与审查方法，Agent 辅助代码、运行与整理；审查结果重新约束执行，最终结论由人负责。'],
-  'ai-case-1': ['FieldOps 特征与策略联合治理', '特征资产与策略规则分别治理，经用途与分维评价、完整条件解析、证据和人工审核状态管理，形成两类候选知识。核心方案通过评审，已有本地实现与测试，项目持续开发；完整业务验收、远端接入与生产应用仍待验证。'],
+type DiagramKind = keyof typeof readingGuide;
+const legacyKinds: Record<string, DiagramKind> = {
+  'risk-phase-0': 'risk-discovery', 'risk-phase-1': 'risk-validation', 'risk-phase-2': 'risk-validation',
+  'ai-case-0': 'fieldops-engineering', 'ai-case-1': 'fieldops-purpose',
+};
+const diagrams = {
+  'fieldops-purpose': FieldOpsPurpose, 'fieldops-engineering': FieldOpsEngineering,
+  'risk-discovery': RiskDiscovery, 'risk-validation': RiskValidation,
+  'field-governance': FieldMethodTransfer, 'risk-lab': PublicRiskLab,
 };
 
 export function ScientificDiagram({ kind, preview = false, idPrefix = '' }: { kind: string; preview?: boolean; idPrefix?: string }) {
-  const [title, description] = descriptions[kind];
-  const guide = readingGuide[kind as keyof typeof readingGuide];
+  const resolvedKind = legacyKinds[kind] ?? kind as DiagramKind;
+  const guide = readingGuide[resolvedKind];
+  if (!guide) return null;
+  const Diagram = diagrams[resolvedKind];
   const id = `${idPrefix}research-${kind}`;
-  return <figure className={`research-figure${preview ? ' research-preview' : ''}`}>
+  return <figure className={`research-figure${preview ? ' research-preview' : ''}`} data-research-kind={resolvedKind}>
     <figcaption className="research-heading"><span className="research-number">{guide.number}</span><div><span className="research-kicker">{guide.category}</span><strong>{guide.headline}</strong><p>{guide.summary}</p></div></figcaption>
     {!preview && <dl className="research-readout">{guide.lenses.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
-    <div className="research-pan" tabIndex={0} role="region" aria-label={`${title}，可左右滚动`}>
-      <svg className="research-svg" viewBox={kind.startsWith('ai-case-') || kind === 'risk-phase-2' || kind === 'field-governance' ? '0 0 1040 580' : '0 0 1040 420'} role="img" aria-labelledby={`${id}-title ${id}-desc`}>
-        <title id={`${id}-title`}>{title}</title><desc id={`${id}-desc`}>{description}</desc>
-        <defs>{(['neutral', 'teal', 'orange'] as const).map((tone) => <marker key={tone} id={`${id}-arrow-${tone}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 1L9 5L0 9" className={`arrow-${tone}`} /></marker>)}</defs>
-        {kind === 'risk-phase-0' && <>
-          <Group x={20} y={36} w={238} h={285} title="A / 观察对象" />
-          <g className="observation-states"><circle cx="92" cy="145" r="39" /><circle cx="188" cy="145" r="39" /><text x="92" y="145">拒绝</text><text x="188" y="145">通过</text><path d="M132 145h16" /><text x="140" y="220" className="state-caption">Rej → Pass</text><text x="140" y="245" className="state-caption small">这是观察入口，不是标签</text></g>
-          <Label x={42} y={289}>观察关系 ≠ 误伤标签</Label>
-          <Group x={302} y={36} w={400} h={285} title="B / 可比性与行为研究" tone="teal" />
-          <Block x={326} y={85} w={170} title="范围拆分" sub="保留业务背景" />
-          <Block x={326} y={218} w={170} title="同质样本比较" sub="先限定可比范围" tone="teal" />
-          <Block x={522} y={149} w={158} title="窗口特征" sub="分数切片 / 聚类" tone="teal" />
-          <Edge id={id} d="M227 145H280V123H326" /><Edge id={id} d="M411 161V218" />
-          <Edge id={id} d="M496 256H508V187H522" tone="teal" />
-          <Block x={762} y={149} w={248} h={110} title="复核候选 / 研究输出" sub="短窗口策略复盘优先级" tone="orange"><text x="16" y="83" className="block-sub">不直接形成可放行结论</text></Block>
-          <Edge id={id} d="M680 187H762" tone="teal" />
-          <path className="research-bracket" d="M326 341v12h354v-12" /><Label x={346} y={382}>研究范围与解释边界先于结论</Label>
-        </>}
-        {kind === 'risk-phase-1' && <>
-          <Group x={20} y={36} w={670} h={285} title="A / 分层解释证据" tone="teal" />
-          <g className="evidence-pyramid"><path d="M178 84H282L332 145H128Z" /><path d="M122 154H338L388 217H72Z" /><path d="M66 226H394L444 289H16Z" /><text x="230" y="119">规则上下文</text><text x="230" y="192">订单级条件覆盖</text><text x="230" y="264">分布与分位数画像</text></g>
-          <Label x={44} y={314}>三层证据分别解释，不能互相替代</Label>
-          <Block x={492} y={145} w={174} h={110} title="候选证据链" sub="保留窗口与分支" tone="teal"><text x="16" y="82" className="block-sub">曾达到 ≠ 同时发生</text></Block>
-          <Edge id={id} d="M444 255H469V200H492" tone="teal" />
-          <Block x={758} y={75} w={258} title="非限额信号与候选" sub="受约束建模 / 回放" tone="orange" />
-          <Block x={758} y={218} w={258} h={103} title="覆盖分析已交付" sub="HTML / 释义 / 可复跑资产" tone="orange" />
-          <Edge id={id} d="M887 151V218" tone="orange" /><Edge id={id} d="M666 200H715V265H758" tone="teal" />
-          <path className="research-bracket" d="M42 341v12h974v-12" /><Label x={215} y={383}>字段条件覆盖 ≠ 完整规则逻辑 ≠ 最终命中 · 不作因果或收益推断</Label>
-        </>}
-        {kind === 'risk-phase-2' && <ModelCandidateEvolution id={id} />}
-        {kind === 'field-governance' && <FieldKnowledgeEvolution id={id} />}
-        {kind === 'ai-case-0' && <AgentExperimentLoop id={id} />}
-        {kind === 'ai-case-1' && <AgentSemanticAtlas id={id} />}
+    <div className="research-pan" tabIndex={0} role="region" aria-label={`${guide.headline}，可左右滚动`}>
+      <svg className="research-svg" viewBox="0 0 1040 560" role="img" aria-labelledby={`${id}-title ${id}-desc`}>
+        <title id={`${id}-title`}>{guide.headline}</title><desc id={`${id}-desc`}>{guide.description}</desc>
+        <defs>{(['neutral', 'teal', 'orange'] as const).map(tone => <marker key={tone} id={`${id}-arrow-${tone}`} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 1L9 5L0 9" className={`arrow-${tone}`} /></marker>)}</defs>
+        <Diagram id={id} />
       </svg>
     </div>
-    {!preview && <><div className="research-interpretation"><span>读图结论</span><p>{guide.takeaway}</p></div>
-    <dl className="research-terms">{guide.terms.map(([term, explanation]) => <div key={term}><dt>{term}</dt><dd>{explanation}</dd></div>)}</dl>
-    <p className="research-legend"><span className="legend-teal">研究 / 执行</span><span className="legend-orange">审查 / 责任 / 准入</span><span>虚线：待验证、待开展或反馈约束</span></p>
-    <p className="research-note">方法关系示意，非公司系统架构；不含原始业务数据。手机可左右滑动查看完整图，全部说明也在下方直接呈现。</p></>}
+    {!preview && <>
+      <div className="research-interpretation"><span>读图结论</span><p>{guide.takeaway}</p></div>
+      <dl className="research-terms">{guide.terms.map(([term, explanation]) => <div key={term}><dt>{term}</dt><dd>{explanation}</dd></div>)}</dl>
+      <p className="research-legend"><span className="legend-teal">研究 / 执行</span><span className="legend-orange">审查 / 判断</span><span>虚线：反馈约束或推进中的工作</span></p>
+      <p className="research-note">公开方法关系示意。手机可左右滑动查看完整图；关键解释在图外直接呈现。</p>
+    </>}
   </figure>;
 }

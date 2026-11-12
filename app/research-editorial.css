@@ -161,3 +161,54 @@
   .creation-art { height: 220px; padding: 24px; }
   .creation-art b { font-size: 40px; }
 }
+
+/* Seg2: four cases, six directly readable research plates. */
+.seg2-directory { margin-top: 36px; gap: 18px; }
+.seg2-directory .portal-project { padding: 24px 28px; transition: border-color .18s, background-color .18s; }
+.seg2-directory .portal-project:first-child { background: #eff2e8; border-color: #9eaf96; }
+.seg2-directory .portal-project:hover { background: #f0f1e8; border-color: #7b9074; }
+.seg2-directory .portal-project:focus-visible { outline: 2px solid var(--editorial-green); outline-offset: 4px; }
+.seg2-directory .portal-project-meta { align-items: center; padding-bottom: 16px; }
+.seg2-directory .portal-project-number { font-size: 34px; }
+.seg2-directory .portal-project h3 { display: flex; justify-content: space-between; gap: 18px; margin: 18px 0 10px; font-size: 23px; }
+.case-entry-arrow { flex-shrink: 0; font-size: 22px; font-weight: 400; color: #56735b; }
+.seg2-directory .project-question { margin: 0; font-size: 14px; line-height: 1.8; }
+.seg2-cases { margin-top: 64px; }
+.seg2-case { padding-top: 38px; border-top: 1px solid #adbba5; margin-top: 64px; scroll-margin-top: 116px; min-width: 0; }
+.seg2-case:first-child { margin-top: 0; }
+.seg2-case-heading { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: start; gap: 32px 56px; }
+.seg2-case-heading h3 { font-size: clamp(26px, 3vw, 36px); font-weight: 550; line-height: 1.4; letter-spacing: -.04em; margin: 16px 0; color: #2d4638; }
+.seg2-case-heading p { color: #655e53; font-size: 16px; line-height: 1.85; margin: 0; }
+.seg2-case .status { font-size: 11px; letter-spacing: 0; line-height: 1.6; }
+.seg2-case-summary { margin: 0; display: grid; gap: 20px; }
+.seg2-case-summary dt, .seg2-figure-contribution dt { font-size: 13px; font-weight: 650; color: #355b4d; margin-bottom: 8px; }
+.seg2-case-summary dd, .seg2-figure-contribution dd { margin: 0; color: #625e54; font-size: 15px; line-height: 1.85; }
+.seg2-case-tags { margin-top: 24px; gap: 8px; }
+.seg2-case-tags span { border-radius: 3px; padding: 7px 11px; font-size: 12px; background: #f1f2ea; }
+.seg2-case-links { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 20px; }
+.seg2-case-links .button { margin: 0; font-size: 15px; min-height: 44px; padding: 10px 0; }
+.seg2-figure-section { min-width: 0; scroll-margin-top: 116px; margin-top: 38px; }
+.seg2-figure-section .research-figure { margin-bottom: 0; }
+.seg2-figure-contribution { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 40px; padding: 22px 0; margin: 0; border-bottom: 1px solid #dedfD3; }
+.seg2-figure-contribution dd { font-size: 14px; }
+.case-back-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 14px; font-size: 13px; color: #61755c; }
+.case-back-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 900px) {
+  .seg2-case-heading { grid-template-columns: 1fr; gap: 26px; }
+  .seg2-case-summary { grid-template-columns: 1fr 1fr; gap: 24px; }
+}
+@media (max-width: 640px) {
+  .seg2-directory { margin-top: 26px; gap: 12px; }
+  .seg2-directory .portal-project { padding: 20px; }
+  .seg2-directory .portal-project h3 { font-size: 21px; }
+  .seg2-directory .portal-project-meta { gap: 12px; flex-wrap: nowrap; }
+  .seg2-directory .portal-project-number { font-size: 30px; }
+  .seg2-directory .portal-project-meta .status { max-width: 78%; text-align: right; }
+  .seg2-cases { margin-top: 42px; }
+  .seg2-case { margin-top: 46px; padding-top: 26px; }
+  .seg2-case-summary, .seg2-figure-contribution { grid-template-columns: 1fr; gap: 20px; }
+  .seg2-case-heading p { font-size: 15px; }
+  .seg2-case-tags { gap: 6px; }
+  .seg2-case-tags span { font-size: 11px; }
+  .seg2-figure-section { margin-top: 26px; }
+}

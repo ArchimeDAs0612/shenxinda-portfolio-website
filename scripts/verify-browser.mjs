@@ -52,7 +52,7 @@ try {
     assert.equal(await page.getByText('沈鑫达', { exact: true }).count(), 0, 'Public view does not visibly disclose the career name');
     assert.equal(await page.locator('.hero .actions a').count(), 3);
     assert.equal(await page.locator('.hero .actions a').first().getAttribute('href'), '#internships', 'All visitors can discover career and projects');
-    assert(await page.evaluate(() => document.querySelector('#projects').compareDocumentPosition(document.querySelector('#ai')) & Node.DOCUMENT_POSITION_FOLLOWING), 'AI follows research');
+    assert(await page.evaluate(() => document.querySelector('#projects').contains(document.querySelector('#ai'))), 'Agent practice is part of the project cases');
     assert(await page.evaluate(() => document.querySelector('#ai').compareDocumentPosition(document.querySelector('#exploration')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Agent practice precedes AIGC');
     assert.equal(await page.locator('.nav-links a[href="#exploration"]').count(), 1);
     assert.equal(await page.locator('.mobile-nav a[href="#exploration"]').count(), 1);
@@ -70,14 +70,14 @@ try {
     // Public identity is an alias, not a gate that removes approved career content.
     for (const id of ['internships', 'projects', 'education']) assert.equal(await page.locator(`#${id}`).isVisible(), true, `Public ${id} must remain visible`);
     for (const company of ['didi', 'zeekr']) {
-      assert.equal(await page.locator(`.internship-${company} .internship-bullets > li`).count(), 4);
+      assert.equal(await page.locator(`.internship-${company} .internship-bullets > li`).count(), company === 'didi' ? 3 : 4);
       await page.locator(`.internship-${company}`).scrollIntoViewIfNeeded();
       await page.waitForFunction((name) => [...document.querySelectorAll(`.internship-${name} img`)].every(img => img.complete && img.naturalWidth > 0), company);
       assert.equal(await page.locator(`.internship-${company} .company-logo`).isVisible(), true);
       assert.equal(await page.locator(`.internship-${company} .brand-reference-image img`).isVisible(), true);
     }
     assert.match(await page.locator('#education').innerText(), /厦门大学.*浙江工商大学/s);
-    assert.equal(await page.locator('.portal-project').count(), 2);
+    assert.equal(await page.locator('.portal-project').count(), 4);
     await page.locator('#internships').scrollIntoViewIfNeeded();
     await page.screenshot({ path: `${output}/${viewport.width}-public-internships.png` });
     await page.locator('#education').scrollIntoViewIfNeeded();
@@ -117,33 +117,48 @@ try {
     assert.doesNotMatch(await page.locator('main').innerText(), /2027届校招|2027届应届/);
     assert.match(await page.locator('meta[name="description"]').getAttribute('content'), /阿基米达/);
     assert.equal(await page.locator('.hero-proof a').count(), 3);
-    for (const company of ['didi', 'zeekr']) assert.equal(await page.locator(`.internship-${company} .internship-bullets > li`).count(), 4);
-    assert.match(await page.locator('.internship-didi').innerText(), /支付风控候选研究.*钱包与外卖字段治理.*FieldOps.*我的职责/s);
-    for (const metric of ['3000+', '20万+', '20+', '约3小时 → 约5分钟']) assert((await page.locator('.internship-zeekr').innerText()).includes(metric));
-    assert.equal(await page.locator('.portal-project').count(), 2);
-    for (const card of await page.locator('.portal-project').all()) assert.match(await card.innerText(), /研究与交付已结项/);
-    assert.match(await page.locator('.portal-project').first().innerText(), /LGBM.*四阶段研究及恢复交付已结项.*不等于真实误伤认证.*生产上线/s);
-    assert.match(await page.locator('.portal-project').last().innerText(), /巴西钱包与外卖字段治理.*治理 SOP.*两业务知识库已交付.*不以归档完成代替全量业务验证.*FieldOps/s);
-    assert.match(await page.locator('#projects').innerText(), /两项研究已完成交付；FieldOps 在既有研究基础上持续推进工程建设/);
-    assert.doesNotMatch(await page.locator('#projects').innerText(), /进行中|WIP|LGBM未完成|只有GBT/);
+    for (const company of ['didi', 'zeekr']) assert.equal(await page.locator(`.internship-${company} .internship-bullets > li`).count(), company === 'didi' ? 3 : 4);
+    assert.match(await page.locator('.internship-didi').innerText(), /FieldOps.*FP.*钱包与外卖字段治理/s);
+    const zeekrText = await page.locator('.internship-zeekr').innerText();
+    assert.match(zeekrText, /日均3,?000\+条销售记录/);
+    assert.match(zeekrText, /周均20万\+条业务数据/);
+    assert.match(zeekrText, /2025\.02—2025\.06/);
+    for (const metric of ['20+', '约3小时 → 约5分钟']) assert(zeekrText.includes(metric));
+    assert.doesNotMatch(zeekrText, /3000\+销售终端|20万\+潜在购车用户/);
+    assert.equal(await page.locator('.portal-project').count(), 4);
+    assert.deepEqual(await page.locator('#projects .seg2-case').evaluateAll(nodes => nodes.map(n => n.id)), ['fieldops', 'risk-pattern', 'feature-research', 'risk-lab']);
+    for (const id of ['fieldops', 'risk-pattern', 'feature-research', 'risk-lab']) {
+      assert(await page.locator(`#${id}`).isVisible(), `${id} readable without disclosure`);
+      assert.equal(await page.locator(`a.portal-project[href="#${id}"]`).count(), 1, `${id} has a project entry`);
+      assert.equal(await page.locator(`#${id} details`).count(), 0, `${id} core content is not collapsed`);
+      await page.locator(`a.portal-project[href="#${id}"]`).click();
+      assert.equal(new URL(page.url()).hash, `#${id}`, `${id} project entry navigates`);
+      await page.waitForFunction(targetId => { const top = document.getElementById(targetId).getBoundingClientRect().top; return top >= 0 && top < innerHeight / 2; }, id);
+    }
+    for (const id of ['risk-pattern', 'feature-research']) assert.match(await page.locator(`#${id}`).innerText(), /研究与交付已结项/);
+    const riskText = await page.locator('#risk-pattern').innerText();
+    for (const concept of [/XGBoost/, /LightGBM/, /完整路径|完整条件/, /反证/, /候选/]) assert.match(riskText, concept);
+    const fieldText = await page.locator('#feature-research').innerText();
+    for (const concept of [/钱包.*外卖/s, /SOP/, /业务隔离|分业务|两业务/]) assert.match(fieldText, concept);
+    assert.doesNotMatch(await page.locator('#projects').innerText(), /LGBM未完成|只有GBT|钱包字段尚未做|钱包尚未开展|钱包待开展/);
     assert.equal(await page.locator('#research-details').evaluate(n => n.tagName), 'SECTION', 'Research is permanent content, not collapsible');
     assert.equal(await page.locator('#research-details > summary').count(), 0);
-    assert.equal(await page.locator('.research-directory a').count(), 6);
-    assert.equal(await page.locator('#risk-pattern').isVisible(), true);
-    assert.doesNotMatch(await page.locator('main').innerText(), /钱包字段尚未做|钱包尚未开展|钱包待开展|PySpark GBT/);
-    for (const id of ['risk-phase-0', 'risk-phase-1', 'risk-phase-2', 'feature-research', 'ai-case-0', 'ai-case-1']) assert(await page.locator(`#${id}`).isVisible(), `${id} visible without disclosure`);
-    assert.equal(await page.locator('#ai details').count(), 0, 'Core AI collaboration is never gated by a disclosure');
-    assert.equal(await page.locator('#ai .ai-case-readthrough').count(), 2);
-    for (const item of await page.locator('#ai .ai-case-readthrough').all()) assert(await item.isVisible(), 'Both AI projects are visible without clicking');
-    const fieldOpsText = await page.locator('#ai-case-1').innerText();
-    assert.match(fieldOpsText, /FieldOps：特征×策略联合治理 Agent/);
-    for (const capability of ['用途准入与三维评价', '完整条件解析与关系查询', '两类候选治理知识', '特征治理与策略治理']) assert(fieldOpsText.includes(capability), `FieldOps capability visible: ${capability}`);
-    assert.match(fieldOpsText, /核心架构通过评审.*已形成工程实现.*持续开发.*2026-11-06/s);
-    assert.match(fieldOpsText, /我的贡献/);
-    assert.match(fieldOpsText, /部分真实规则配置.*本地实现和测试记录/s);
-    assert.match(fieldOpsText, /尚未整体完成.*完整业务验收.*远端知识服务接入.*生产应用仍待验证/s);
+    for (const id of ['ai', 'risk-phase-0', 'risk-phase-1', 'risk-phase-2', 'ai-case-0', 'ai-case-1']) {
+      assert.equal(await page.locator(`#${id}`).count(), 1, `Legacy ${id} anchor remains unique`);
+      assert(await page.locator(`#${id}`).evaluate(n => {
+        const target = n.closest('.seg2-case');
+        return target && target.getBoundingClientRect().width > 0 && !target.closest('details:not([open])');
+      }), `Legacy ${id} lands in a visible case`);
+    }
+    const fieldOpsText = await page.locator('#fieldops').innerText();
+    for (const capability of [/核心架构与工程推进/, /已评审|通过评审/, /持续开发/, /评价/, /规则.*解析|解析.*规则/s, /知识/, /人工审核|人工审查/, /RAG/, /周期调度/, /仍在推进|继续推进|推进中/]) assert.match(fieldOpsText, capability);
+    assert.match(fieldOpsText, /生产.*(?:未|待)|不.*(?:上线|生产)|不代表.*(?:上线|生产)/s);
+    const labText = await page.locator('#risk-lab').innerText();
+    assert.match(labText, /Risk Decision Lab/);
+    assert.match(labText, /独立|个人公开/);
+    for (const href of ['https://github.com/ArchimeDAs0612/archimeda-risk-lab', 'https://archimedas0612.github.io/archimeda-risk-lab/']) assert.equal(await page.locator(`#risk-lab a[href="${href}"]`).count(), 1);
     assert.match(await page.locator('#film').innerText(), /2026年11月更新 · 阿基米达个人作品/);
-    assert.doesNotMatch(await page.locator('#projects, #ai').allInnerTexts().then(texts => texts.join(' ')), /独立 Agent 未实现部署|未实现、运行或部署该系统|不是已实现、运行或部署的独立系统|不宣称系统已经实现、运行或部署/);
+    assert.doesNotMatch(await page.locator('#projects').innerText(), /独立 Agent 未实现部署|未实现、运行或部署该系统|不是已实现、运行或部署的独立系统|不宣称系统已经实现、运行或部署/);
     for (const anchor of await page.locator('a[href^="#"]').evaluateAll((nodes) => nodes.map((a) => a.getAttribute('href')))) assert.equal(await page.locator(`[id="${anchor.slice(1)}"]`).count(), 1, anchor);
     assert(!/PDF|简历下载|RESUME/.test(await page.locator('main').innerText()));
     assert.match(await page.title(), /阿基米达.*统计.*AI 创作/);
@@ -171,18 +186,29 @@ try {
     await page.waitForFunction(() => document.querySelector('.portal-share [role="status"]').textContent === '请长按下方网址复制');
     assert.equal(await page.locator('.portal-share > a').getAttribute('href'), 'https://archimedas0612.github.io/career/');
     await page.evaluate(() => { delete navigator.clipboard.writeText; });
-    for (const id of ['internships', 'education', 'about', 'projects', 'ai', 'ai-case-1', 'exploration', 'contact']) { await page.locator(`#${id}`).scrollIntoViewIfNeeded(); await page.waitForTimeout(120); assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id} overflow ${viewport.width}`); await page.screenshot({ path: `${output}/${viewport.width}-${id}.png` }); }
-    assert(await page.locator('#risk-pattern').isVisible());
-    assert.equal(await page.locator('#research-details .research-svg[role="img"]').count(), 4);
-    await page.getByRole('button', { name: '03 · 模型发现与候选深化', exact: true }).click();
-    assert.match(await page.locator('#risk-phase-2 .research-svg').textContent(), /结构重现.*独立业务核验/s);
-    await page.locator('#risk-phase-2 .process-nodes button').last().click(); assert.match(await page.locator('#risk-phase-2 .process-detail').last().innerText(), /版本化交接.*恢复/s);
-    assert.match(await page.locator('#field-governance-detail-0').innerText(), /全量技术项.*业务目录/);
-    if (viewport.width < 900) { const pan = page.locator('#risk-phase-2 .research-pan'); await pan.evaluate((n) => { n.scrollLeft = n.scrollWidth; }); assert(await pan.evaluate((n) => n.scrollLeft > 0)); }
+    for (const id of ['internships', 'education', 'about', 'projects', 'fieldops', 'fieldops-engineering', 'risk-pattern', 'feature-research', 'risk-lab', 'exploration', 'contact']) { await page.locator(`#${id}`).scrollIntoViewIfNeeded(); await page.waitForTimeout(120); assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${id} overflow ${viewport.width}`); await page.screenshot({ path: `${output}/${viewport.width}-${id}.png` }); }
+    assert.equal(await page.locator('#projects .seg2-case .research-svg[role="img"]').count(), 6);
+    const figureIds = ['fieldops-purpose', 'fieldops-engineering', 'risk-discovery', 'risk-validation', 'field-governance', 'risk-lab-method'];
+    for (const id of figureIds) {
+      assert(await page.locator(`#${id} .research-figure`).isVisible(), `${id} main diagram is directly visible`);
+      assert.equal(await page.locator(`#${id} svg title`).count(), 1);
+      assert.equal(await page.locator(`#${id} svg desc`).count(), 1);
+      assert(await page.locator(`#${id} svg title`).textContent());
+      assert(await page.locator(`#${id} svg desc`).textContent());
+    }
+    assert.deepEqual(await page.locator('#projects .research-number').allTextContents(), ['01', '02', '03', '04', '05', '06']);
+    assert.match(await page.locator('#risk-discovery .research-svg').textContent(), /XGBoost/);
+    assert.match(await page.locator('#risk-discovery .research-svg').textContent(), /LightGBM/);
+    assert.match(await page.locator('#risk-validation .research-svg').textContent(), /反证/);
+    assert.match(await page.locator('#field-governance .research-svg').textContent(), /钱包.*外卖/s);
+    if (viewport.width < 900) {
+      for (const id of figureIds) {
+        const pan = page.locator(`#${id} .research-pan`);
+        await pan.evaluate(n => { n.scrollLeft = n.scrollWidth; });
+        assert(await pan.evaluate(n => n.scrollLeft > 0), `${id} is horizontally readable on a narrow screen`);
+      }
+    }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
-    assert.equal(await page.locator('#ai .research-svg[role="img"]').count(), 2);
-    for (const kind of ['experiment-feedback-loop', 'fieldops-governance-workbench', 'model-candidate-evolution', 'field-knowledge-admission']) assert.equal(await page.locator(`[data-diagram-layout="${kind}"]`).count(), 1);
-    for (const f of await page.locator('#ai .research-figure').all()) { assert.equal(await f.locator('svg title').count(), 1); assert.equal(await f.locator('svg desc').count(), 1); }
     await page.getByRole('button', { name: '下一张生活照片' }).click(); assert.match(await page.locator('.carousel-controls').innerText(), /02/);
     await page.getByRole('button', { name: '复制邮箱', exact: true }).click(); await page.getByRole('status').filter({ hasText: '已复制' }).waitFor(); assert.equal(await page.evaluate(() => navigator.clipboard.readText()), '19357506009@163.com');
     assert.equal(await page.getByRole('link', { name: /发送邮件/ }).getAttribute('href'), 'mailto:19357506009@163.com');
@@ -223,7 +249,15 @@ try {
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
   const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(new URL('?view=career', siteUrl).href, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${new URL('?view=career', siteUrl).href}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
-  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } }); const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' }); assert.equal(await n.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1); for (const id of ['internships', 'projects', 'education', 'risk-phase-0', 'risk-phase-1', 'risk-phase-2', 'feature-research', 'ai-case-0', 'ai-case-1']) assert.equal(await n.locator(`#${id}`).isVisible(), true, `No-JS ${id} remains readable`); assert.equal(await n.locator('#contact').evaluate((node) => getComputedStyle(node).opacity), '1'); await noJs.close();
+  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+  const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' });
+  assert.equal(await n.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1);
+  for (const id of ['internships', 'projects', 'education', 'fieldops', 'risk-pattern', 'feature-research', 'risk-lab']) assert.equal(await n.locator(`#${id}`).isVisible(), true, `No-JS ${id} remains readable`);
+  for (const id of ['ai', 'risk-phase-0', 'risk-phase-1', 'risk-phase-2', 'ai-case-0', 'ai-case-1']) assert.equal(await n.locator(`#${id}`).count(), 1, `No-JS legacy anchor ${id} retained`);
+  assert.equal(await n.locator('#projects .seg2-case .research-figure').count(), 6);
+  for (const f of await n.locator('#projects .seg2-case .research-figure').all()) assert(await f.isVisible(), 'No-JS main diagrams remain visible');
+  assert.equal(await n.locator('#contact').evaluate(node => getComputedStyle(node).opacity), '1');
+  await noJs.close();
   const phone = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   await phone.addInitScript(() => {
     window.__mobileOpeningCount = 0;
@@ -260,5 +294,5 @@ try {
 } finally { await browser.close(); }
 const permissive = await chromium.launch({ ...launch, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
 try { const p = await permissive.newPage(); await p.addInitScript(() => { window.__created = 0; const N = window.AudioContext; window.AudioContext = class extends N { constructor(...a) { super(...a); window.__created++; } }; }); await p.goto(siteUrl, { waitUntil: 'networkidle' }); await p.waitForTimeout(500); assert.equal(await p.evaluate(() => window.__created), 0, 'Default off even when autoplay allowed'); } finally { await permissive.close(); }
-const report = { passed: true, url: siteUrl, results, checks: '4 viewports; public/career views; restored public internships/projects/education and brand imagery; mobile CTAs; mobile opening/skip/session replay; optional diagrams/panning; navigation; images; clipboard; QR/focus; audio signal/volume/background pause; reduced motion and public no-JS reading', filmChecks: filmPublished ? 'Consent/playback/duration/collapse and BGM mutual exclusion passed' : 'Film absence passed; playback and mutual exclusion skipped because the film is unpublished', externalPlatforms: 'Physical devices, platform login and in-app browsers not verified' };
+const report = { passed: true, url: siteUrl, results, checks: '4 viewports; public/career views; restored public internships/projects/education and brand imagery; mobile CTAs; mobile opening/skip/session replay; four case entries and six directly visible diagrams/panning; legacy deep links; navigation; images; clipboard; QR/focus; audio signal/volume/background pause; reduced motion and public no-JS reading', filmChecks: filmPublished ? 'Consent/playback/duration/collapse and BGM mutual exclusion passed' : 'Film absence passed; playback and mutual exclusion skipped because the film is unpublished', externalPlatforms: 'Physical devices, platform login and in-app browsers not verified' };
 await writeFile(`${output}/browser-result.json`, JSON.stringify(report, null, 2)); console.log(JSON.stringify(report));

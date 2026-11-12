@@ -16,9 +16,14 @@ assert.doesNotMatch(html, /沈鑫达/, 'Public homepage must not disclose the ca
 assert.match(html, /2028年6月毕业 · 计划参加2027年秋招/);
 assert.doesNotMatch(html, /2027届校招|首集制作验收中|尚未作为已发布作品展示/);
 assert.match(html, /研究与交付已结项/);
-assert.match(html, /LGBM/);
-assert.match(html, /FieldOps：特征×策略联合治理 Agent/);
-for (const capability of ['核心架构通过评审', '持续开发', '用途准入与三维评价', '完整条件解析与关系查询', '两类候选治理知识', '生产应用仍待验证', '2026年11月更新 · 阿基米达个人作品。']) assert(html.includes(capability), `FieldOps content missing: ${capability}`);
+for (const method of ['XGBoost', 'LightGBM']) assert(html.includes(method), `Model method missing: ${method}`);
+for (const capability of ['FieldOps', '核心架构与工程推进', '持续开发', 'RAG 接入与周期调度仍在推进', '完整业务验收或生产上线', 'Risk Decision Lab', '2026年11月更新 · 阿基米达个人作品。']) assert(html.includes(capability), `Project content missing: ${capability}`);
+assert.match(html, /日均3,?000\+条销售记录/);
+assert.match(html, /周均20万\+条业务数据/);
+assert.match(html, /2025\.02—2025\.06/);
+assert.doesNotMatch(html, /3000\+销售终端|20万\+潜在购车用户/);
+for (const id of ['fieldops', 'risk-pattern', 'feature-research', 'risk-lab', 'fieldops-purpose', 'fieldops-engineering', 'risk-discovery', 'risk-validation', 'field-governance', 'risk-lab-method', 'ai', 'ai-case-0', 'ai-case-1', 'risk-phase-0', 'risk-phase-1', 'risk-phase-2']) assert(html.includes(`id="${id}"`), `Public case or legacy anchor missing: ${id}`);
+for (const href of ['https://github.com/ArchimeDAs0612/archimeda-risk-lab', 'https://archimedas0612.github.io/archimeda-risk-lab/']) assert(html.includes(`href="${href}"`), `Public lab link missing: ${href}`);
 assert.doesNotMatch(html, /独立 Agent 未实现部署|未实现、运行或部署该系统|不是已实现、运行或部署的独立系统/);
 assert.doesNotMatch(html, /EP001—EP012|只回了三条消息|Motion 重制版已完成/);
 assert.match(html, /230万/);
@@ -69,12 +74,13 @@ for (const [source, target] of [['xhs', '/?from=xhs'], ['douyin', '/?from=douyin
 }
 const career = await readFile('content/career-content.ts', 'utf8');
 const evidence = await readFile('content/project-evidence.ts', 'utf8');
+const cases = await readFile('content/seg2-cases.ts', 'utf8');
 const report = {
   checkedAt: new Date().toISOString(), publicUrl: url.href, careerUrl: careerUrl.href, passed: true,
   assetsChecked: assets.length,
   socialEntriesChecked: 2,
   // Fingerprints establish which approved public content was checked, not a new fact source.
-  approvedContentHash: createHash('sha256').update(career).update(evidence).digest('hex'),
+  approvedContentHash: createHash('sha256').update(career).update(evidence).update(cases).digest('hex'),
   mediaConfigHash: createHash('sha256').update(site).digest('hex'),
 };
 await mkdir('outputs/refresh-20260930', { recursive: true });

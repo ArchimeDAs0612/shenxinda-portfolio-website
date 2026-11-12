@@ -7,7 +7,6 @@ import { MaintainableImage } from './components/MaintainableImage';
 import { contactContent, mediaContent } from '../content/site-content';
 import { careerContent } from '../content/career-content';
 import { PublicProjects } from './components/PublicProjects';
-import { ProjectAIWorkflow } from './components/EvidenceExplorer';
 import { AmbientMusic } from './components/AmbientMusic';
 import { PortfolioHero } from './components/PortfolioHero';
 import { MobileOpening } from './components/MobileOpening';
@@ -19,12 +18,12 @@ import { promoContent } from '../content/promo-content';
 
 const careerNavItems = [
   ['top', '首页'], ['internships', '职业'], ['projects', '项目'],
-  ['ai', 'AI 协作'], ['exploration', '创作'], ['about', '关于我'],
+  ['ai', 'Agent 实践'], ['exploration', '创作'], ['about', '关于我'],
 ] as const;
 
 const publicNavItems = [
   ['top', '首页'], ['internships', '职业'], ['projects', '项目'],
-  ['ai', 'AI 实践'], ['exploration', '创作'], ['about', '关于我'],
+  ['ai', 'Agent 实践'], ['exploration', '创作'], ['about', '关于我'],
 ] as const;
 
 export type PortalView = 'public' | 'career';
@@ -155,21 +154,15 @@ export function PortfolioPage({ view = 'public' }: { view?: PortalView }) {
 
       <PortfolioHero view={view} />
       {promoContent.published && <PersonalFilm />}
-      <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">01</span><p className="eyebrow">实习经历</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从全国销售经营分析，到真实支付风险研究。用数据理解业务，让方法服务判断。</p></div><InternshipOverview /></section>
+      <section className="chapter portal-career" id="internships" aria-labelledby="internships-title"><span id="work" className="anchor-alias" /><div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">01</span><p className="eyebrow">实习经历</p><h2 id="internships-title">两段经历，一条能力路径。</h2><p className="portal-lead">从经营分析与自动化，到支付风险研究与 Agent 工程。</p></div><InternshipOverview /></section>
 
       <section className="chapter projects-section" id="projects" aria-labelledby="projects-title">
-        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">02</span><p className="eyebrow">研究与交付</p><h2 id="projects-title">从真实问题，走向可信判断。</h2><p className="portal-lead">两项研究已完成交付；FieldOps 在既有研究基础上持续推进工程建设。</p></div>
+        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">02</span><p className="eyebrow">项目与实践</p><h2 id="projects-title">研究形成方法，<br />工程承接判断。</h2><p className="portal-lead">三个职业案例，一个公开实验室。FieldOps 持续推进工程建设；风险研究与字段治理已完成研究交付。</p></div>
         <PublicProjects />
       </section>
 
-      <section className="chapter workflow-section" id="ai">
-        <div className="portal-section-heading"><span className="chapter-ordinal" aria-hidden="true">03</span><p className="eyebrow">Agent 实践</p><h2><span className="editorial-title-line">把 Agent 融入研究，</span><span className="editorial-title-line">而不外包判断。</span></h2><p className="portal-lead">从风险候选研究到 FieldOps 联合治理，我定义问题与评价边界，组织 AI 协作完成分析、实现和验证；关键业务判断与交付审查由人承担。</p></div>
-        <div className="portal-ai-summary"><div><p>{careerContent.agentUses}</p></div><ol>{['定义问题与约束', '组织 Context 与任务', 'Agent 执行与迭代', '人工审查与验证'].map((step, index) => <li key={step}><span>0{index + 1}</span>{step}</li>)}</ol></div>
-        <div className="portal-ai-cases"><ProjectAIWorkflow /></div>
-      </section>
-
       <section className="chapter exploration-section" id="exploration" aria-labelledby="exploration-title">
-        <div className="aigc-compact aigc-dual"><div><p className="eyebrow">AI 创作</p><h2 id="exploration-title">另一种表达，另一种实验。</h2></div><div className="aigc-collections"><article><div className="creation-art creation-absurd" role="img" aria-label="荒诞研究所栏目视觉，非作品截图"><span>AI / SOCIAL OBSERVATION</span><b>荒诞<br />研究所</b><i>想象，与现实对话。</i></div><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.description}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>{careerContent.aigc.metricScope}累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><small>截至 {careerContent.aigc.dataAsOf} · 非实时数据</small></article><article><div className="creation-art creation-probability" role="img" aria-label="概率引擎栏目视觉，非作品截图"><span>STATISTICS / EVERYDAY LIFE</span><b>概率<br />引擎</b><i>让抽象的理论，走进生活。</i></div><h3>《{careerContent.aigc.probabilityEngine.title}》</h3><p>{careerContent.aigc.probabilityEngine.description}</p></article></div><p className="aigc-production">{careerContent.aigc.production}</p><a className="portal-social-link" href={contactContent.xiaohongshuUrl} target="_blank" rel="noreferrer">到我的小红书主页，看看内容与生活 ↗</a><p className="metric-source">栏目视觉示意，非作品截图。</p><div className="creation-paths" aria-label="继续认识我"><a href="#ai">{career ? 'AI 如何参与我的研究' : 'AI 如何参与我的创作与实践'} <span aria-hidden="true">↗</span></a>{career && <a href="#projects">回看职业项目 <span aria-hidden="true">↗</span></a>}<a href="#about">认识工作之外的我 <span aria-hidden="true">↗</span></a><a href="#contact">交流与合作 <span aria-hidden="true">↗</span></a></div></div>
+        <div className="aigc-compact aigc-dual"><div><p className="eyebrow">AI 创作</p><h2 id="exploration-title">另一种表达，另一种实验。</h2></div><div className="aigc-collections"><article><div className="creation-art creation-absurd" role="img" aria-label="荒诞研究所栏目视觉，非作品截图"><span>AI / SOCIAL OBSERVATION</span><b>荒诞<br />研究所</b><i>想象，与现实对话。</i></div><h3>《{careerContent.aigc.title}》</h3><p>{careerContent.aigc.description}</p><div className="aigc-stats"><div><strong>{careerContent.aigc.views}</strong><span>{careerContent.aigc.metricScope}累计播放</span></div><div><strong>{careerContent.aigc.likes}</strong><span>累计点赞</span></div></div><small>截至 {careerContent.aigc.dataAsOf} · 非实时数据</small></article><article><div className="creation-art creation-probability" role="img" aria-label="概率引擎栏目视觉，非作品截图"><span>STATISTICS / EVERYDAY LIFE</span><b>概率<br />引擎</b><i>让抽象的理论，走进生活。</i></div><h3>《{careerContent.aigc.probabilityEngine.title}》</h3><p>{careerContent.aigc.probabilityEngine.description}</p></article></div><p className="aigc-production">{careerContent.aigc.production}</p><a className="portal-social-link" href={contactContent.xiaohongshuUrl} target="_blank" rel="noreferrer">到我的小红书主页，看看内容与生活 ↗</a><p className="metric-source">栏目视觉示意，非作品截图。</p><div className="creation-paths" aria-label="继续认识我"><a href="#ai">查看 Agent 工程实践 <span aria-hidden="true">↗</span></a>{career && <a href="#projects">回看职业项目 <span aria-hidden="true">↗</span></a>}<a href="#about">认识工作之外的我 <span aria-hidden="true">↗</span></a><a href="#contact">交流与合作 <span aria-hidden="true">↗</span></a></div></div>
       </section>
 
       <div className="identity-overview">

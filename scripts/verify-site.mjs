@@ -11,7 +11,7 @@ const requiredDirectories = [
   'public/images/projects',
   'public/images/contact',
 ];
-const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'public/career/index.html', 'content/career-content.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg', 'public/from/xhs/index.html', 'public/from/douyin/index.html'];
+const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'public/career/index.html', 'content/career-content.ts', 'content/seg2-cases.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg', 'public/from/xhs/index.html', 'public/from/douyin/index.html'];
 const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg']);
 const errors = [];
 const warnings = [];
@@ -31,15 +31,19 @@ for (const relativePath of [...requiredDirectories, ...requiredFiles]) {
   if (!existsSync(join(projectRoot, relativePath))) errors.push(`缺少：${relativePath}`);
 }
 
-const pageSource = readFileSync(pagePath, 'utf8') + readFileSync(join(projectRoot, 'app/components/PortfolioHero.tsx'), 'utf8');
+const pageSource = readFileSync(pagePath, 'utf8') + readFileSync(join(projectRoot, 'app/components/PortfolioHero.tsx'), 'utf8') + readFileSync(join(projectRoot, 'app/components/PublicProjects.tsx'), 'utf8');
 const portalSource = readFileSync(join(projectRoot, 'content/portal-content.ts'), 'utf8');
 const layoutSource = readFileSync(join(projectRoot, 'app/layout.tsx'), 'utf8');
 const contentSource = readFileSync(contentPath, 'utf8') + readFileSync(join(projectRoot, 'content/brand-content.ts'), 'utf8');
 const careerSource = readFileSync(join(projectRoot, 'content/career-content.ts'), 'utf8');
+const caseSource = readFileSync(join(projectRoot, 'content/seg2-cases.ts'), 'utf8');
 if (/2027届校招|2028年毕业/.test(pageSource + portalSource)) errors.push('毕业与秋招口径未同步');
 if (!pageSource.includes('2028年6月毕业 · 计划参加2027年秋招')) errors.push('缺少已确认毕业与秋招时间');
 if (/status:\s*'WIP'|首集制作验收中/.test(careerSource)) errors.push('仍保留过期项目或创作总状态');
-if ((careerSource.match(/status: '研究与交付已结项'/g) || []).length !== 2) errors.push('两大项目应明确标为研究与交付已结项');
+if ((caseSource.match(/status: '研究与交付已结项'/g) || []).length !== 2) errors.push('两个研究案例应明确标为研究与交付已结项');
+if (/3000\+销售终端|20万\+潜在购车用户/.test(careerSource)) errors.push('极氪保留了旧的数据单位');
+for (const method of ['XGBoost', 'LightGBM', 'RAG', '周期调度']) if (!caseSource.includes(method)) errors.push(`缺少已审核的项目方法或建设状态：${method}`);
+for (const href of ['https://github.com/ArchimeDAs0612/archimeda-risk-lab', 'https://archimedas0612.github.io/archimeda-risk-lab/']) if (!caseSource.includes(href)) errors.push('缺少公开实验室的真实入口');
 const ids = new Set([...pageSource.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
 const literalAnchors = [...pageSource.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]);
 
