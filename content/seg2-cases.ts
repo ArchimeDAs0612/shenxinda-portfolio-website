@@ -14,27 +14,27 @@ export type Seg2Case = {
 };
 
 // 页面与本人新简历对齐的日期，不替代各项目的阶段验收日期。
-export const seg2ContentUpdatedAt = '2026-11-12';
+export const seg2ContentUpdatedAt = '2026-11-20';
 
 export const seg2Cases: readonly Seg2Case[] = [
   {
     id: 'fieldops', number: '01',
     title: 'FieldOps：特征 × 策略联合治理',
-    status: '核心方案已评审 · 持续开发',
+    status: '离线导出已验收 · 集成验证中',
     problem: '让分散的特征、规则和使用证据，成为可持续更新、可审查的治理知识，为 Pattern 发现与策略研究提供可信输入。',
-    contribution: '负责 FieldOps 核心架构与工程推进：明确治理对象、评价约束与业务隔离，组织规则理解、关系图谱和知识交付；与团队协作，通过 AI Coding 推进实现、测试与纠偏。',
-    delivery: '核心方案已通过评审，已形成用途评价、宗族图谱、证据联查和首页看板等工程能力。RAG 接入与周期调度仍在推进；本地实现与测试不等于完整业务验收或生产上线。',
+    contribution: '我负责 FieldOps 特征与策略治理子系统的设计与离线验收。我的工作也从单个子系统延伸到多个 Agent 子模块的编排与集成。',
+    delivery: '系统已能按特征和策略批量生成、导出治理知识文档。端到端验证仍在推进；离线导出不等于远端入库或生产上线。',
     tags: ['特征与策略治理', '用途评价', '证据与版本'],
     figures: [
       {
         kind: 'fieldops-purpose', title: '联合治理目标',
         contribution: '将“整理字段”推进为特征与策略联合治理：先明确用途，再评价质量、关系与使用证据，保留业务隔离和人工审核。',
-        delivery: '形成可追溯的特征知识与策略知识，支持评价、图谱和联查；未知依据保留待核验状态。',
+        delivery: '核心方案已通过评审，可用性评分与首页看板已验收；宗族图谱和证据联查用于追溯依据。',
       },
       {
         kind: 'fieldops-engineering', title: '工程交付与迭代',
         contribution: '把增量接入、版本变化、规则解析、历史验证与人工审查组织为工程流程；使用测试与 Checkpoint 恢复约束 AI 辅助执行。',
-        delivery: '已形成候选治理文档及本地离线测试记录。知识接入与调度作为后续建设单独记录，避免把模块实现等同于全系统验收。',
+        delivery: '离线验收覆盖特征文档和策略文档的批量生成与导出。RAG 接入与周期调度仍在推进，未计入此次验收。',
       },
     ],
   },
@@ -43,14 +43,14 @@ export const seg2Cases: readonly Seg2Case[] = [
     title: 'FP 研究与 Pattern 发现',
     status: '研究与交付已结项',
     problem: '围绕短窗口支付受阻，寻找既有策略命中群中的额外信息，判断哪些候选值得进一步复核。',
-    contribution: '开展样本比较、特征对照及 XGBoost / LightGBM 研究；负责问题拆解、方法纠偏、完整路径审查和候选取舍。团队提供业务支持，AI 辅助代码、分析与报告。',
+    contribution: '我将背景样本与补充样本合并去重，并核对代理标签的来源：用于研究的正例均来自补充样本。因此，模型可能学到的是样本来源差异，而非真实风险。',
     delivery: '短窗口复盘、非限额建模、宽特征消融、候选回放与反证，以及恢复交接均已完成，沉淀为 Pattern Discovery SOP。研究结项不等于误伤认证、真实 OOT 验证、正式策略上线或业务收益。',
     tags: ['XGBoost / LightGBM', '特征消融', '完整路径回放'],
     figures: [
       {
         kind: 'risk-discovery', title: '问题定义与模型发现',
-        contribution: '从 Rej → Pass 观察入口限定可比对象，检查来源与标签差异；通过输入对照、模型比较和消融研究额外信息，而非只追求模型分数。',
-        delivery: '形成分阶段样本、特征和模型研究记录，明确候选发现依据。先拒后过是观察线索，离线区分效果不直接解释为风险识别能力。',
+        contribution: '移除一组特征后，LightGBM 的平均精度（AP）比 AUC 下降得更明显。',
+        delivery: '我据此把模型路径用于筛选值得回放的候选，不把离线分数写成已识别的误伤或策略收益。',
       },
       {
         kind: 'risk-validation', title: '候选复核与交付',

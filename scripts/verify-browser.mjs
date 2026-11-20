@@ -151,7 +151,7 @@ try {
       }), `Legacy ${id} lands in a visible case`);
     }
     const fieldOpsText = await page.locator('#fieldops').innerText();
-    for (const capability of [/核心架构与工程推进/, /已评审|通过评审/, /持续开发/, /评价/, /规则.*解析|解析.*规则/s, /知识/, /人工审核|人工审查/, /RAG/, /周期调度/, /仍在推进|继续推进|推进中/]) assert.match(fieldOpsText, capability);
+    for (const capability of [/治理子系统的设计与离线验收/, /已评审|通过评审/, /集成验证中/, /编排与集成/, /评价/, /规则.*解析|解析.*规则/s, /知识/, /人工审核|人工审查/, /RAG/, /周期调度/, /仍在推进|继续推进|推进中/]) assert.match(fieldOpsText, capability);
     assert.match(fieldOpsText, /生产.*(?:未|待)|不.*(?:上线|生产)|不代表.*(?:上线|生产)/s);
     const labText = await page.locator('#risk-lab').innerText();
     assert.match(labText, /Risk Decision Lab/);
@@ -202,6 +202,13 @@ try {
     assert.deepEqual(await page.locator('#projects .research-number').allTextContents(), ['01', '02', '03', '04', '05', '06']);
     assert.match(await page.locator('#risk-discovery .research-svg').textContent(), /XGBoost/);
     assert.match(await page.locator('#risk-discovery .research-svg').textContent(), /LightGBM/);
+    for (const [id, concepts] of Object.entries({
+      'risk-discovery': [/背景订单/, /补充样本/, /合并去重/, /来源偏差/, /AP 降幅大于 AUC/],
+      'fieldops-engineering': [/特征治理文档/, /策略治理文档/, /离线批量导出 · 已验收/, /跨 Agent 端到端验证 · 进行中/, /不等于远端导入、下游采用或生产上线/],
+    })) {
+      const labels = (await page.locator(`#${id} .research-svg text`).allTextContents()).join(' ');
+      for (const concept of concepts) assert.match(labels, concept, `${id}: missing visible evidence label ${concept}`);
+    }
     assert.match(await page.locator('#risk-validation .research-svg').textContent(), /反证/);
     assert.match(await page.locator('#field-governance .research-svg').textContent(), /钱包.*外卖/s);
     if (viewport.width < 900) {

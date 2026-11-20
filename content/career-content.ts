@@ -1,10 +1,10 @@
 /** 公开职业内容：只维护去敏摘要，不存放内部资料、字段或实验数值。 */
 export const careerContent = {
-  updatedAt: '2026-11-12',
+  updatedAt: '2026-11-20',
   internshipOverview: {
     didi: {
       bullets: [
-        { title: 'FieldOps 联合治理', text: '负责特征与策略联合治理 Agent 的核心架构与工程推进，将字段治理方法组织为评价、规则解析和知识交付流程。' },
+        { title: 'FieldOps 联合治理', text: '负责特征与策略治理子系统设计，验收两类知识文档的离线批量导出；现推进多个 Agent 子模块的编排与集成。' },
         { title: 'FP 研究与 Pattern 发现', text: '开展 XGBoost / LightGBM 对照、消融及完整路径研究，审查候选取舍与反证，沉淀 Pattern Discovery SOP。' },
         { title: '钱包与外卖字段治理', text: '组织字段语义、使用条件与质量关系研究，将钱包方法迁移到外卖，完成治理 SOP 和分业务知识交付。' },
       ],

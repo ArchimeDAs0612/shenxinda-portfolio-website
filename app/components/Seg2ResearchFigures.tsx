@@ -25,33 +25,34 @@ export function FieldOpsPurpose({ id }: { id: string }) {
 
 export function FieldOpsEngineering({ id }: { id: string }) {
   return <g data-diagram-layout="fieldops-engineering">
-    <Caption x={24} y={30}>已形成工程实现的工作链</Caption>
+    <Caption x={24} y={30}>治理子系统 · 离线验收范围</Caption>
     <Plate x={24} y={62} w={220} title="增量与版本" lines={['接入新增资料', '比较版本变化', '固定本轮输入']} />
     <Plate x={280} y={62} w={220} title="解析与验证" lines={['字段与完整规则', '历史证据核对', '局部离线测试']} />
     <Plate x={536} y={62} w={220} title="人工审核" lines={['来源与解释审查', '确认用途和限制', '保留未知与分歧']} tone="orange" />
-    <Plate x={792} y={62} w={220} title="知识产物" lines={['候选治理文档', '证据与版本索引', '可继续接管的记录']} />
-    <Edge id={id} d="M244 127H280" /><Edge id={id} d="M500 127H536" /><Edge id={id} d="M756 127H792" tone="orange" />
-    <Plate x={24} y={264} w={476} title="AI 协作执行" lines={['按任务约束完成代码、调试与材料整理', '测试回执和失败记录随版本保留']} />
-    <Plate x={536} y={264} w={476} title="我定义与审查" lines={['明确架构、评价口径与验收条件', '审查执行结果，决定修订与继续推进']} tone="orange" />
-    <Edge id={id} d="M500 309H536" /><Edge id={id} d="M774 374V405H130V374" tone="orange" feedback />
-    <text x="190" y="431" className="agent-copy">纠偏 → 版本追溯 → Checkpoint 恢复</text>
-    <Plate x={536} y={445} w={476} title="继续推进" lines={['RAG 接入 · 周期调度']} pending />
-    <text x="24" y="491" className="agent-copy">核心方案通过评审，工程持续开发。</text><text x="24" y="516" className="agent-copy">本地测试与生产应用分别记录。</text>
+    <Plate x={792} y={42} w={220} title="特征治理文档" lines={['按特征批量生成']} />
+    <Plate x={792} y={153} w={220} title="策略治理文档" lines={['按策略批量生成']} />
+    <Edge id={id} d="M244 127H280" /><Edge id={id} d="M500 127H536" /><Edge id={id} d="M756 127H773V87H792" tone="orange" /><Edge id={id} d="M773 127V198H792" tone="orange" />
+    <Plate x={24} y={285} w={476} title="我的职责" lines={['负责治理子系统设计、工程推进与离线验收', '进一步承担跨 Agent 编排与集成推进']} tone="orange" />
+    <Plate x={536} y={285} w={476} title="离线批量导出 · 已验收" lines={['分别导出两类治理文档', '保留来源、版本及审查依据']} />
+    <Edge id={id} d="M902 243V285" /><Edge id={id} d="M1012 87H1026V261H942V285" />
+    <Edge id={id} d="M262 395V422H640V445" tone="orange" /><Edge id={id} d="M774 395V445" feedback />
+    <Plate x={536} y={445} w={476} title="跨 Agent 端到端验证 · 进行中" lines={['离线交付不等于远端导入、下游采用或生产上线']} pending />
   </g>;
 }
 
 export function RiskDiscovery({ id }: { id: string }) {
   return <g data-diagram-layout="risk-discovery">
     <Caption x={24} y={30}>问题与样本</Caption><Caption x={356} y={30}>输入与模型对照</Caption><Caption x={758} y={30}>候选发现</Caption>
-    <Plate x={24} y={58} w={264} title="短窗口受阻观察" lines={['Rej → Pass 配对与复盘', '先限定可比较的业务背景', '观察线索不等于误伤标签']} />
-    <Plate x={356} y={58} w={334} title="可比输入与受约束实验" lines={['评分 / 原始行为 / 混合输入', '非限额信号与宽特征研究', '分别检查来源、标签和泄漏']} />
+    <Plate x={24} y={42} w={264} title="背景订单" lines={['短窗口拒绝后通过：配对复盘']} />
+    <Plate x={24} y={153} w={264} title="补充样本" lines={['代理正例均来自此来源']} tone="orange" />
+    <Plate x={356} y={58} w={334} title="合并去重，保留来源" lines={['对照不同输入组合', '分别检查标签、来源和特征依赖', '不能把代理标签当作真实误伤']} />
     <Plate x={758} y={58} w={258} title="树模型发现" lines={['XGBoost / LightGBM', '对照、特征族消融', '解释完整路径条件']} />
-    <Edge id={id} d="M288 123H356" /><Edge id={id} d="M690 123H758" />
+    <Edge id={id} d="M288 87H322V102H356" /><Edge id={id} d="M288 198H322V146H356" tone="orange" /><Edge id={id} d="M690 123H758" />
     <g className="research-model" transform="translate(43 282)"><path d="M112 0L54 49M112 0L170 49M54 49L22 98M54 49L85 98M170 49L137 98M170 49L202 98" />{[[112, 0], [54, 49], [170, 49], [22, 98], [85, 98], [137, 98], [202, 98]].map(([cx, cy], index) => <circle key={index} cx={cx} cy={cy} r={index < 3 ? 8 : 5} />)}<text x="112" y="137" className="model-caption">路径用于探索特征组合</text></g>
-    <Plate x={356} y={286} w={334} title="方法审查与反证" lines={['检查模型究竟区分了什么', '比较输入贡献与依赖条件', '重新约束下一轮实验']} tone="orange" />
+    <Plate x={356} y={286} w={334} title="消融结果 × 来源偏差" lines={['移除一组特征后，AP 降幅大于 AUC', '模型可能在区分样本来源，而非风险', '据此审查完整路径与候选取舍']} tone="orange" />
     <Plate x={758} y={286} w={258} title="候选研究输出" lines={['可解释的组合与路径', '交给回放与业务复核', '不直接变成上线规则']} />
     <Edge id={id} d="M887 188V240H523V286" tone="orange" /><Edge id={id} d="M690 351H758" tone="orange" />
-    <Edge id={id} d="M523 416V467H316V123H356" tone="orange" feedback />
+    <Edge id={id} d="M288 211H306V327H356" tone="orange" feedback />
     <text x="370" y="500" className="agent-copy">本人确定问题、对照与候选取舍；AI 辅助实验、调试和证据整理。</text>
   </g>;
 }
