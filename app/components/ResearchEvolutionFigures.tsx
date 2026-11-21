@@ -8,10 +8,10 @@ function Path({ d, id, pending = false }: { d: string; id: string; pending?: boo
 
 export function ModelCandidateEvolution({ id }: { id: string }) {
   return <g data-diagram-layout="model-candidate-evolution">
-    <text x="28" y="32" className="agent-overline">已完成 / LGBM STUDY</text>
+    <text x="28" y="32" className="agent-overline">已完成 / FEATURE ABLATION</text>
     <text x="388" y="32" className="agent-overline">已交付 / CANDIDATE REPLAY</text>
     <text x="810" y="32" className="agent-overline">另计 / BUSINESS VALIDATION</text>
-    <Plate x={22} y={55} w={286} title="LGBM 对照与路径审查" lines={['评分 / 原始行为 / 混合输入', '特征族消融 · 完整路径反证', '祖先条件 · 比较符 · 缺失路由']} />
+    <Plate x={22} y={55} w={286} title="输入对照与路径审查" lines={['评分 / 原始行为 / 混合输入', '特征族消融 · 完整路径反证', '祖先条件 · 比较符 · 缺失路由']} />
     <g className="research-model" transform="translate(42 239)">
       <path d="M112 0L54 55M112 0L170 55M54 55L22 105M54 55L85 105M170 55L137 105M170 55L202 105" />
       {[[112, 0], [54, 55], [170, 55], [22, 105], [85, 105], [137, 105], [202, 105]].map(([cx, cy], i) => <circle cx={cx} cy={cy} r={i < 3 ? 9 : 6} key={i} />)}

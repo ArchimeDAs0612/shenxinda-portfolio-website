@@ -5,7 +5,7 @@ export const careerContent = {
     didi: {
       bullets: [
         { title: 'FieldOps 联合治理', text: '负责特征与策略治理子系统设计，验收两类知识文档的离线批量导出；现推进多个 Agent 子模块的编排与集成。' },
-        { title: 'FP 研究与 Pattern 发现', text: '开展 XGBoost / LightGBM 对照、消融及完整路径研究，审查候选取舍与反证，沉淀 Pattern Discovery SOP。' },
+        { title: 'FP 研究与 Pattern 发现', text: '用 PySpark GBT 开展树模型实验；在宽特征研究中对照输入、检查消融和完整路径，审查候选取舍与反证，沉淀 Pattern Discovery SOP。' },
         { title: '钱包与外卖字段治理', text: '组织字段语义、使用条件与质量关系研究，将钱包方法迁移到外卖，完成治理 SOP 和分业务知识交付。' },
       ],
       progress: '两项研究已完成交付；FieldOps 已形成工程实现并持续开发。',
@@ -37,7 +37,7 @@ export const careerContent = {
   didiFocus: [
     '完成 Rej → Pass 配对与短窗口策略复盘，限定观察与解释范围',
     '完成非限额信号建模、候选回放与策略条件覆盖分析',
-    '开展 XGBoost / LightGBM 对照，完成宽特征消融、完整路径审查与金额反证',
+    '历史树模型实验使用 PySpark GBT；另完成宽特征消融、完整路径审查与金额反证',
     '完成前置细分、候选取舍与恢复交接，保留独立业务验证边界',
   ],
   projects: [
@@ -46,12 +46,12 @@ export const careerContent = {
       title: '支付风控短窗口策略误伤复盘与增益识别',
       english: 'Payment Risk Pattern Discovery & Decision Analysis',
       problem: '围绕短窗口支付受阻，研究原策略命中群中的额外信息，识别值得进一步复核的调查候选。',
-      work: '开展配对复盘、非限额信号研究、XGBoost / LightGBM 对照、宽特征消融和完整路径回放；负责问题拆解、方法纠偏、候选取舍与交付审查，AI 辅助分析和报告实现。',
+      work: '开展配对复盘、非限额信号研究、历史 PySpark GBT 实验、分阶段宽特征消融和完整路径回放；负责问题拆解、方法纠偏、候选取舍与交付审查，AI 辅助分析和报告实现。',
       evidence: '四阶段研究及恢复交付已结项，形成可复核的候选说明、回放、反证与版本化交接材料。研究交付不等于真实误伤认证、独立业务效果或生产上线。',
-      tags: ['Python / SQL', 'XGBoost / LightGBM', 'Feature Ablation', 'Candidate Replay'],
+      tags: ['Python / SQL', 'PySpark GBT', 'Feature Ablation', 'Candidate Replay'],
       details: [
         ['Context / 角色', '在国际支付风控实习中参与分析与验证，以公开摘要解释方法，不披露内部样本、规则或业务指标。'],
-        ['Method / 方法', '研究覆盖早期分布式树模型实验与后续 XGBoost / LightGBM 对照；结合特征消融、完整路径、集合核对和主动反证。各阶段总体与标签不同，不拼接成效果增长曲线。'],
+        ['Method / 方法', '历史树模型实际运行于 PySpark GBT，LightGBM 是尝试过的方案。另在宽特征研究中完成特征消融、完整路径审查与反证；不把该阶段的消融结果归到早期模型上。各阶段总体与标签不同，不拼接成效果增长曲线。'],
         ['Evaluation / 判断', '不把高模型分数直接当作风险识别能力。检查样本可比性、来源差异、信息泄漏与验证口径，区分实验可复现和业务可应用。'],
         ['Reflection / 边界', '研究已完成，业务验证另计。结构重现、搜索流程留出与固定最终规则的独立验证分开记录；不宣称真实误伤认证、真实 OOT、业务正式接收、策略上线或收益。'],
       ],

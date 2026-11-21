@@ -45,11 +45,11 @@ export const seg2Cases: readonly Seg2Case[] = [
     problem: '围绕短窗口支付受阻，寻找既有策略命中群中的额外信息，判断哪些候选值得进一步复核。',
     contribution: '我将背景样本与补充样本合并去重，并核对代理标签的来源：用于研究的正例均来自补充样本。因此，模型可能学到的是样本来源差异，而非真实风险。',
     delivery: '短窗口复盘、非限额建模、宽特征消融、候选回放与反证，以及恢复交接均已完成，沉淀为 Pattern Discovery SOP。研究结项不等于误伤认证、真实 OOT 验证、正式策略上线或业务收益。',
-    tags: ['XGBoost / LightGBM', '特征消融', '完整路径回放'],
+    tags: ['PySpark GBT', '特征消融', '完整路径回放'],
     figures: [
       {
         kind: 'risk-discovery', title: '问题定义与模型发现',
-        contribution: '移除一组特征后，LightGBM 的平均精度（AP）比 AUC 下降得更明显。',
+        contribution: '历史树模型实验使用 PySpark GBT；LightGBM 是尝试过的方案。另在宽特征消融中，移除一组特征后，平均精度（AP）比 AUC 下降得更明显。',
         delivery: '我据此把模型路径用于筛选值得回放的候选，不把离线分数写成已识别的误伤或策略收益。',
       },
       {

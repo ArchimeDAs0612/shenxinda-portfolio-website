@@ -1,5 +1,6 @@
 import { seg2Cases } from '../../content/seg2-cases';
 import { ScientificDiagram } from './ScientificDiagram';
+import { deepDiveHref } from './deepDiveHref';
 
 // Previously shared links keep pointing to their corresponding research topic.
 const entryTitles: Record<string, string> = {
@@ -18,6 +19,10 @@ const legacyAnchors: Record<string, string[]> = {
 
 export function PublicProjects() {
   return <>
+    <nav className="seg2-case-links" aria-label="项目深读">
+      <a className="button quiet" href={deepDiveHref('p04')}>FieldOps：字段能用在哪条策略里？</a>
+      <a className="button quiet" href={deepDiveHref('p02')}>支付风控：被拒后又通过，算误伤吗？</a>
+    </nav>
     <nav className="portal-project-grid seg2-directory" aria-label="项目目录">
       {seg2Cases.map((project) => <a className="portal-project" href={`#${project.id}`} key={project.id}>
         <div className="portal-project-meta"><span className="portal-project-number">{project.number}</span><span className="status">{project.status}</span></div>

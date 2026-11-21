@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>被拒后又通过，算误伤吗？｜阿基米达</title><meta name="description" content="短时间内配对到先拒绝、后通过的订单，可以作为调查的起点，却不能证明第一次就应该放行。我研究的是：在既有策略命中的订单中，哪些差异值得业务再看一次？"><link rel="stylesheet" href="../project.css"></head>
+<body><a class="skip" href="#main">跳到案例正文</a><nav aria-label="案例导航"><a href="https://archimedas0612.github.io/#projects">返回公开主页 · 项目</a><a href="#status">查看交付状态</a></nav><main id="main">
+<header><p class="kicker">P02 / 支付风控</p><h1>被拒后又通过，算误伤吗？</h1><p class="intro">短时间内配对到先拒绝、后通过的订单，可以作为调查的起点，却不能证明第一次就应该放行。我研究的是：在既有策略命中的订单中，哪些差异值得业务再看一次？</p></header>
+
+<dl class="summary"><div><dt>我的职责</dt><dd>定义比较范围，组织模型对照，核查完整路径和反例，决定哪些候选交给团队复核。AI 辅助代码与报告，业务判断不由模型代替。</dd></div><div><dt>交付状态</dt><dd>候选研究及交接已结项。交付的是复核材料和研究方法，不是已上线的放行策略。</dd></div></dl>
+<section aria-labelledby="inputs"><h2 id="inputs">样本如何进入实验</h2><p>先用短窗拒绝→通过的配对关系定位复盘范围，再把背景订单与补充样本合并、去重，保留样本来源。研究中的代理正例都来自补充来源；其余订单也不是经过逐单确认的真实负例。</p><p>即使模型在留出的订单上分得很开，它也可能学到两批样本是怎样被收集的。随机划分不自动消除这个偏差。</p></section>
+<section aria-label="研究流程"><figure class="flow"><figcaption>从一次配对，到一份可供复核的候选说明</figcaption><ol>
+<li><h3>限定可比订单</h3><p>以原策略命中群为范围，将配对线索与代理标签分开记录。</p></li>
+<li><h3>比较输入</h3><p>对照评分、原始行为及混合输入，检查直接触发信息、字段来源与使用时点。</p></li>
+<li><h3>解释模型路径</h3><p>回到完整的树路径，而不是把单一分裂或重要性排名直接命名为风险模式。</p></li>
+<li><h3>回放与反证</h3><p>在研究总体检查条件覆盖、候选重叠和金额聚集，记录保留与舍弃的理由。</p></li></ol></figure></section>
+<section aria-labelledby="methods"><h2 id="methods">方法与验证</h2>
+<details open><summary>实际执行的树模型是什么？</summary><p>早期受约束的树模型实验实际使用 PySpark GBT。LightGBM 是当时考虑过的方案，不是这轮实验成功运行的后端。后续宽特征消融和路径复核按研究结论呈现，不据此倒推早期实现。</p></details>
+<details><summary>消融比一次重要性排序多回答了什么？</summary><p>宽特征对照关注同一实验口径下，保留或移除一组相关输入之后，模型仍能区分什么。去除一组特征后，平均精度（AP）的降幅大于 ROC AUC。这个差异提示模型依赖可能不均匀；它本身既不能证明来源偏差，也不是线上效果。</p></details>
+<details><summary>订单级 K-Fold 和多次重复解决不了什么？</summary><p>订单级划分和更换随机种子检验同一研究总体中结论是否随划分变化。它们不能替代固定规则在独立样本或后续时间窗（OOT）的验证，也无法补回未观测到的真实误伤标签。</p></details></section>
+<section aria-labelledby="deliverables"><h2 id="deliverables">交给团队的不是一个分数</h2><p>每个保留候选附完整条件、回放范围、重叠与反例说明。配对口径、实验比较、候选取舍和版本交接被整理成可复用的 Pattern Discovery SOP。</p></section>
+<section class="status" id="status"><h2>候选到策略，中间还隔着什么？</h2><ol class="steps"><li><strong>探索性候选：</strong>模型提供值得调查的组合。</li><li><strong>业务复核候选：</strong>已整理并交付回放证据；不等于业务已认定误伤。</li><li><strong>独立验证的模式：</strong>现有材料不足以宣称固定最终规则通过真实 OOT。</li><li><strong>生产策略：</strong>没有把离线覆盖写成真实动作、上线收益或放行承诺。</li></ol></section>
+</main><footer><a href="../p04/index.html">另一篇：FieldOps 特征与策略治理</a><a href="https://archimedas0612.github.io/#contact">联系阿基米达</a></footer></body></html>

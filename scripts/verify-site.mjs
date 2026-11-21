@@ -11,7 +11,7 @@ const requiredDirectories = [
   'public/images/projects',
   'public/images/contact',
 ];
-const requiredFiles = ['public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'public/career/index.html', 'content/career-content.ts', 'content/seg2-cases.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg', 'public/from/xhs/index.html', 'public/from/douyin/index.html'];
+const requiredFiles = ['public/work/p02/index.html', 'public/work/p04/index.html', 'public/work/project.css', 'public/favicon.svg', 'app/globals.css', 'app/layout.tsx', 'public/career/index.html', 'content/career-content.ts', 'content/seg2-cases.ts', 'public/images/brands/didi.svg', 'public/images/brands/zeekr.svg', 'public/from/xhs/index.html', 'public/from/douyin/index.html'];
 const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.svg']);
 const errors = [];
 const warnings = [];
@@ -42,7 +42,10 @@ if (!pageSource.includes('2028年6月毕业 · 计划参加2027年秋招')) erro
 if (/status:\s*'WIP'|首集制作验收中/.test(careerSource)) errors.push('仍保留过期项目或创作总状态');
 if ((caseSource.match(/status: '研究与交付已结项'/g) || []).length !== 2) errors.push('两个研究案例应明确标为研究与交付已结项');
 if (/3000\+销售终端|20万\+潜在购车用户/.test(careerSource)) errors.push('极氪保留了旧的数据单位');
-for (const method of ['XGBoost', 'LightGBM', 'RAG', '周期调度']) if (!caseSource.includes(method)) errors.push(`缺少已审核的项目方法或建设状态：${method}`);
+for (const method of ['历史树模型实验使用 PySpark GBT', 'LightGBM 是尝试过的方案', '另在宽特征消融中', 'RAG', '周期调度']) if (!caseSource.includes(method)) errors.push(`缺少已审核的项目方法或建设状态：${method}`);
+// Do not let an old card, chart annotation or accessibility description reattribute the ablation.
+const riskSources = [careerSource, caseSource, ...['content/project-evidence.ts', ...['ScientificDiagram', 'Seg2ResearchFigures', 'ProjectPreview', 'ResearchEvolutionFigures', 'AgentResearchFigures', 'EvidenceExplorer'].map(name => `app/components/${name}.tsx`)].map(path => readFileSync(join(projectRoot, path), 'utf8'))];
+if (riskSources.some(source => /XGBoost\s*\/\s*LightGBM|LGBM\s*(?:宽特征)?消融|LightGBM 的平均精度|LightGBM 移除一组特征/.test(source))) errors.push('旧模型归属仍出现在 P02 文案或图解中');
 for (const href of ['https://github.com/ArchimeDAs0612/archimeda-risk-lab', 'https://archimedas0612.github.io/archimeda-risk-lab/']) if (!caseSource.includes(href)) errors.push('缺少公开实验室的真实入口');
 const ids = new Set([...pageSource.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
 const literalAnchors = [...pageSource.matchAll(/href="#([^"]+)"/g)].map((match) => match[1]);

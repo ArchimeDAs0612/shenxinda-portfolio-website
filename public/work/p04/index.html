@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>字段能用在哪条策略里？｜阿基米达</title><meta name="description" content="字段名称像，不代表口径相同；两个字段常一起出现，也不代表规则彼此依赖。FieldOps 把字段、规则与历史证据放在一起，让研究者查得到一项判断的依据。"><link rel="stylesheet" href="../project.css"></head>
+<body><a class="skip" href="#main">跳到案例正文</a><nav aria-label="案例导航"><a href="https://archimedas0612.github.io/#projects">返回公开主页 · 项目</a><a href="#status">查看交付状态</a></nav><main id="main">
+<header><p class="kicker">P04 / FieldOps</p><h1>字段能用在哪条策略里？</h1><p class="intro">字段名称像，不代表口径相同；两个字段常一起出现，也不代表规则彼此依赖。FieldOps 把字段、规则与历史证据放在一起，让研究者查得到一项判断的依据。</p></header>
+
+<dl class="summary"><div><dt>我的职责</dt><dd>负责联合治理子系统的设计、工程推进和离线验收；明确用途边界、对象关系及人工审核条件。后续承担多个 Agent 子模块的编排与集成推进。</dd></div><div><dt>交付状态</dt><dd>联合治理系统可在本地运行。按特征与按策略批量生成、导出治理文档已离线验收；跨 Agent 端到端验证仍在推进。</dd></div></dl>
+<section aria-labelledby="inputs"><h2 id="inputs">三类输入，各回答一个问题</h2><ul class="inputs"><li><strong>特征资产：</strong>字段描述什么对象、如何统计，有哪些使用条件？</li><li><strong>历史快照：</strong>在已观察的版本与时段里，质量、关系与历史表现如何？</li><li><strong>策略配置：</strong>哪项条件实际引用了这个字段，它在什么逻辑组合里起作用？</li></ul><p>P03 钱包与外卖字段研究先交付了语义、使用条件和分业务治理方法。本项目的新增工作是把这些方法同策略解析、历史证据和对象级知识交付连成可运行的系统。</p></section>
+<section aria-label="工程架构"><figure class="flow"><figcaption>进入系统的资产如何变成两类知识文档</figcaption><ol>
+<li><span class="tag">确定性程序 · 本地实现</span><h3>还原条件与引用</h3><p>从已支持的策略配置解析条件组合，追溯规则实际引用的字段，保留版本。</p></li>
+<li><span class="tag">统计计算 · 本地验证</span><h3>度量质量与历史关系</h3><p>在可比业务和观察范围内检查字段质量、共现及历史效能，不据相关性画依赖边。</p></li>
+<li><span class="tag">语义判断 · 人工审核</span><h3>形成可复核的宗族解释</h3><p>结合对象、口径与使用条件，审查哪些字段可以放在同一语义族；不凭相似名称归并。</p></li>
+<li><span class="tag">知识交付 · 已离线验收</span><h3>按特征、按策略导出</h3><p>将解释、来源、版本和审查依据编入对象文档，便于核对与交接。</p></li>
+<li class="planned"><span class="tag">集成中 · 未计入离线验收</span><h3>供跨 Agent 和检索使用</h3><p>知识产物可作为后续检索输入。远端导入、实际消费与生产部署分别验证。</p></li></ol><p class="note">这是公开的方法示意，不是内部部署图。规则解析和统计计算不归为大模型推理。</p></figure></section>
+<section aria-labelledby="methods"><h2 id="methods">三类容易混淆的判断</h2>
+<details open><summary>引用、依赖与共现，如何区分？</summary><p>配置中出现某字段，是可回查的引用；它与其他条件如何共同决定规则是否满足，要看逻辑结构。共现只说明对象在指定范围一起出现。Lift 描述相对于独立情形的共现强度，不证明因果；不把整个资产库或生产流量上的 Lift 验证写成既成事实。</p></details>
+<details><summary>LLM 在字段语义识别中处在什么位置？</summary><p>机器可以提出语义候选，但名称相似不能代替字段合同、计算口径与使用时点。即使利用 LLM 辅助解释，没有可追溯依据的结论也应留待人工确认。这里不宣称 LLM 自动完成了字段归类或策略审批。</p></details>
+<details><summary>离线验收具体验了什么？</summary><p>评分与首页看板已有功能验收；部分配置的条件解析、关系查询和历史评价有本地工程验证记录。对象文档能够分别按特征与策略批量生成并导出。以上不等于所有来源均已接入，或远端 RAG 已经消费这些文档。</p></details></section>
+<section aria-labelledby="deliverables"><h2 id="deliverables">研究者可以带走什么</h2><p>查一个字段，可以带走它的使用条件及被哪些规则引用的依据；查一条策略，可以回看它依赖的条件、涉及的对象和对应证据。这两类文档为后续 Pattern 候选研究提供输入，而不是自动生成已验证的模式。</p></section>
+<section class="status" id="status"><h2>系统部署在哪里？</h2><p><strong>已确认的是本地工程实现与离线交付。</strong>跨 Agent 集成仍在验证中。没有把远端知识入库、下游检索消费、无人值守运行或完整生产上线列为已完成成果。</p></section>
+</main><footer><a href="../p02/index.html">另一篇：支付风控候选研究</a><a href="https://archimedas0612.github.io/#contact">联系阿基米达</a></footer></body></html>

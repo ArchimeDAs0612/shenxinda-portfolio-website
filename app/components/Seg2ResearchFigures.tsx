@@ -46,12 +46,12 @@ export function RiskDiscovery({ id }: { id: string }) {
     <Plate x={24} y={42} w={264} title="背景订单" lines={['短窗口拒绝后通过：配对复盘']} />
     <Plate x={24} y={153} w={264} title="补充样本" lines={['代理正例均来自此来源']} tone="orange" />
     <Plate x={356} y={58} w={334} title="合并去重，保留来源" lines={['对照不同输入组合', '分别检查标签、来源和特征依赖', '不能把代理标签当作真实误伤']} />
-    <Plate x={758} y={58} w={258} title="树模型发现" lines={['XGBoost / LightGBM', '对照、特征族消融', '解释完整路径条件']} />
-    <Edge id={id} d="M288 87H322V102H356" /><Edge id={id} d="M288 198H322V146H356" tone="orange" /><Edge id={id} d="M690 123H758" />
+    <Plate x={758} y={58} w={258} title="历史树模型实验" lines={['实际后端：PySpark GBT', 'LightGBM：方案尝试', '路径用于发现候选组合']} />
+    <Edge id={id} d="M288 87H322V102H356" /><Edge id={id} d="M288 198H322V146H356" tone="orange" /><Edge id={id} d="M690 123H758" /><Edge id={id} d="M523 188V286" tone="orange" />
     <g className="research-model" transform="translate(43 282)"><path d="M112 0L54 49M112 0L170 49M54 49L22 98M54 49L85 98M170 49L137 98M170 49L202 98" />{[[112, 0], [54, 49], [170, 49], [22, 98], [85, 98], [137, 98], [202, 98]].map(([cx, cy], index) => <circle key={index} cx={cx} cy={cy} r={index < 3 ? 8 : 5} />)}<text x="112" y="137" className="model-caption">路径用于探索特征组合</text></g>
-    <Plate x={356} y={286} w={334} title="消融结果 × 来源偏差" lines={['移除一组特征后，AP 降幅大于 AUC', '模型可能在区分样本来源，而非风险', '据此审查完整路径与候选取舍']} tone="orange" />
+    <Plate x={356} y={286} w={334} title="宽特征消融 × 来源偏差" lines={['移除一组特征后，AP 降幅大于 AUC', '模型可能在区分样本来源，而非风险', '据此审查完整路径与候选取舍']} tone="orange" />
     <Plate x={758} y={286} w={258} title="候选研究输出" lines={['可解释的组合与路径', '交给回放与业务复核', '不直接变成上线规则']} />
-    <Edge id={id} d="M887 188V240H523V286" tone="orange" /><Edge id={id} d="M690 351H758" tone="orange" />
+    <Edge id={id} d="M887 188V286" tone="orange" /><Edge id={id} d="M690 351H758" tone="orange" />
     <Edge id={id} d="M288 211H306V327H356" tone="orange" feedback />
     <text x="370" y="500" className="agent-copy">本人确定问题、对照与候选取舍；AI 辅助实验、调试和证据整理。</text>
   </g>;

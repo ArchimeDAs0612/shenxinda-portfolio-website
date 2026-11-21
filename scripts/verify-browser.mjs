@@ -50,6 +50,8 @@ try {
     await page.waitForFunction(() => [...document.querySelectorAll('.hero img')].every((image) => image.complete && image.naturalWidth > 0));
     assert.equal(await page.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1);
     assert.equal(await page.getByText('沈鑫达', { exact: true }).count(), 0, 'Public view does not visibly disclose the career name');
+    assert.equal(await page.locator('.hero-role').innerText(), '用统计理解世界，用 AI 创作表达。');
+    assert.equal(await page.locator('.hero a[href*="work/p0"]').count(), 0, 'Deep dives belong in the project section only');
     assert.equal(await page.locator('.hero .actions a').count(), 3);
     assert.equal(await page.locator('.hero .actions a').first().getAttribute('href'), '#internships', 'All visitors can discover career and projects');
     assert(await page.evaluate(() => document.querySelector('#projects').contains(document.querySelector('#ai'))), 'Agent practice is part of the project cases');
@@ -137,7 +139,7 @@ try {
     }
     for (const id of ['risk-pattern', 'feature-research']) assert.match(await page.locator(`#${id}`).innerText(), /研究与交付已结项/);
     const riskText = await page.locator('#risk-pattern').innerText();
-    for (const concept of [/XGBoost/, /LightGBM/, /完整路径|完整条件/, /反证/, /候选/]) assert.match(riskText, concept);
+    for (const concept of [/历史树模型实验使用 PySpark GBT/, /LightGBM 是尝试过的方案/, /另在宽特征消融中/, /完整路径|完整条件/, /反证/, /候选/]) assert.match(riskText, concept);
     const fieldText = await page.locator('#feature-research').innerText();
     for (const concept of [/钱包.*外卖/s, /SOP/, /业务隔离|分业务|两业务/]) assert.match(fieldText, concept);
     assert.doesNotMatch(await page.locator('#projects').innerText(), /LGBM未完成|只有GBT|钱包字段尚未做|钱包尚未开展|钱包待开展/);
@@ -200,8 +202,8 @@ try {
       assert(await page.locator(`#${id} svg desc`).textContent());
     }
     assert.deepEqual(await page.locator('#projects .research-number').allTextContents(), ['01', '02', '03', '04', '05', '06']);
-    assert.match(await page.locator('#risk-discovery .research-svg').textContent(), /XGBoost/);
-    assert.match(await page.locator('#risk-discovery .research-svg').textContent(), /LightGBM/);
+    assert.match(await page.locator('#risk-discovery .research-svg').textContent(), /实际后端：PySpark GBT/);
+    assert.match(await page.locator('#risk-discovery .research-svg').textContent(), /LightGBM：方案尝试/);
     for (const [id, concepts] of Object.entries({
       'risk-discovery': [/背景订单/, /补充样本/, /合并去重/, /来源偏差/, /AP 降幅大于 AUC/],
       'fieldops-engineering': [/特征治理文档/, /策略治理文档/, /离线批量导出 · 已验收/, /跨 Agent 端到端验证 · 进行中/, /不等于远端导入、下游采用或生产上线/],
@@ -255,6 +257,20 @@ try {
       assert.equal(new URL(page.url()).hash, '');
       assert(await page.evaluate(() => scrollY < 10), 'Social arrivals start at the homepage top');
       assert(await page.locator('.hero .actions').isVisible());
+    }
+    const projectNotes = page.getByRole('navigation', { name: '项目深读' });
+    for (const [slug, question] of [['p04', '字段能用在哪条策略里？'], ['p02', '被拒后又通过，算误伤吗？']]) {
+      const link = projectNotes.locator(`a[href="work/${slug}/index.html"]`);
+      assert.equal(await link.count(), 1);
+      await link.click();
+      await page.getByRole('heading', { level: 1, name: question, exact: true }).waitFor();
+      assert.equal(new URL(page.url()).pathname, `/work/${slug}/index.html`);
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      const closed = page.locator('details:not([open])').first();
+      const label = await closed.locator('summary').innerText();
+      await closed.locator('summary').click();
+      assert.equal(await page.locator('details[open] summary').filter({ hasText: label }).count(), 1);
+      await page.goBack({ waitUntil: 'domcontentloaded' });
     }
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }

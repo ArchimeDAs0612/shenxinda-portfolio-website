@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ScientificDiagram } from './ScientificDiagram';
 
 const previews = [
-  { kind: 'risk-phase-2', target: 'risk-phase-2', label: '风险研究 · 结项交付', summary: 'LGBM 消融、完整回放、候选取舍与金额反证已完成研究交付，独立业务验证另计。' },
+  { kind: 'risk-phase-2', target: 'risk-phase-2', label: '风险研究 · 结项交付', summary: '宽特征消融、完整回放、候选取舍与金额反证已完成研究交付，独立业务验证另计。' },
   { kind: 'field-governance', target: 'feature-research', label: '特征研究 · FieldOps', summary: '字段研究与知识资产已完成交付；后续 FieldOps 联合治理核心方案通过评审，已形成工程实现并持续开发。' },
   { kind: 'ai-case-0', target: 'ai-case-0', label: 'AI 协作 · 研究纠偏', summary: 'Agent 扩大代码与实验执行能力；我设定对照、审查证据并保留最终判断。' },
 ] as const;

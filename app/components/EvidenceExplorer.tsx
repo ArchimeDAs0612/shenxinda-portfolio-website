@@ -27,7 +27,7 @@ export function ProjectEvidence() {
   const [phase, setPhase] = useState(0);
   return <div className="project-evidence-library">
     <article id="risk-pattern" className="risk-case">
-      <div className="case-heading"><span className="status">研究与交付已结项</span><h3>支付风控短窗口策略<br />误伤复盘与增益识别</h3><p>配对复盘 → 非限额信号与候选回放 → LGBM 消融与路径审查 → 前置细分、金额反证与交接，四阶段及恢复收尾均已完成。它们是同一母项目的演进，不重复计作独立项目。</p></div>
+      <div className="case-heading"><span className="status">研究与交付已结项</span><h3>支付风控短窗口策略<br />误伤复盘与增益识别</h3><p>配对复盘 → 非限额信号与候选回放 → 宽特征消融与路径审查 → 前置细分、金额反证与交接，四阶段及恢复收尾均已完成。它们是同一母项目的演进，不重复计作独立项目。</p></div>
       <aside className="research-context"><strong>业务理解的底座：风控 Landing 知识体系</strong><p>将风险信息、模型与策略判断、动作及反馈组织成完整决策链解释，形成阶段知识沉淀。我确定范围与正文，团队提供知识与评审，AI 辅助解释、绘图和整理；不等于生产系统建设或正式推广。</p></aside>
       <p className="metric-source">以下数字仅对应既有阶段实验与交付，不代表最新全部研究规模或业务收益。</p>
       <ContributionMetrics />

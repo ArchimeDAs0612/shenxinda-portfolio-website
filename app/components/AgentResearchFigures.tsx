@@ -29,7 +29,7 @@ export function AgentExperimentLoop({ id }: { id: string }) {
     <Plate x={30} y={52} w={240} h={116} label="01 / HUMAN · SPECIFICATION" title="问题与实验约束" lines={['定义对照与验证目标', '不是“跑出高分”就结束']} tone="orange" />
     <g className="agent-comparison" transform="translate(330 38)">
       <rect width="345" height="154" rx="8" />
-      <text x="20" y="26" className="agent-overline">02 / LGBM · ABLATION · REPLAY</text>
+      <text x="20" y="26" className="agent-overline">02 / INPUTS · ABLATION · REPLAY</text>
       <text x="20" y="51" className="agent-title">三组输入，分别验证信息来源</text>
       {['Score-only', 'Raw-all', 'Hybrid'].map((name, i) => <g key={name} transform={`translate(20 ${65 + i * 27})`}>
         <rect width="305" height="23" rx="3" />

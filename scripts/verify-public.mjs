@@ -16,7 +16,8 @@ assert.doesNotMatch(html, /沈鑫达/, 'Public homepage must not disclose the ca
 assert.match(html, /2028年6月毕业 · 计划参加2027年秋招/);
 assert.doesNotMatch(html, /2027届校招|首集制作验收中|尚未作为已发布作品展示/);
 assert.match(html, /研究与交付已结项/);
-for (const method of ['XGBoost', 'LightGBM']) assert(html.includes(method), `Model method missing: ${method}`);
+for (const method of ['历史树模型实验使用 PySpark GBT', 'LightGBM 是尝试过的方案', '另在宽特征消融中']) assert(html.includes(method), `Model method missing: ${method}`);
+assert.doesNotMatch(html, /XGBoost\s*\/\s*LightGBM|LightGBM 的平均精度|LightGBM 移除一组特征/);
 for (const capability of ['FieldOps', '治理子系统的设计与离线验收', '多个 Agent 子模块的编排与集成', '离线导出已验收 · 集成验证中', 'RAG 接入与周期调度仍在推进', '离线导出不等于远端入库或生产上线', 'Risk Decision Lab', '2026年11月更新 · 阿基米达个人作品。']) assert(html.includes(capability), `Project content missing: ${capability}`);
 for (const finding of ['合并去重', '正例均来自补充样本', '样本来源差异', '平均精度（AP）比 AUC 下降得更明显', '研究结项不等于误伤认证']) assert(html.includes(finding), `Risk research evidence missing: ${finding}`);
 assert.match(html, /日均3,?000\+条销售记录/);
@@ -51,7 +52,16 @@ const moviePath = promo.match(/video:\s*'([^']+)'/)?.[1];
 const posterPath = promo.match(/poster:\s*'([^']+)'/)?.[1];
 const movieHash = promo.match(/sha256:\s*'([a-f0-9]{64})'/)?.[1];
 const images = [...new Set([...site.matchAll(/(?:src|wechatQrImage):\s*['"]([^'"]+)['"]/g)].map((match) => match[1]))];
-const assets = [...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', posterPath, '404.html', 'from/intro.css', 'from/intro.js'];
+// A shared homepage URL is a résumé entry point; verify the standalone cases rather than only their anchors.
+for (const [slug, evidence] of [['p02', ['PySpark GBT', '真实 OOT']], ['p04', ['确定性', '离线交付', '远端']]]) {
+  const relative = 'work/' + slug + '/index.html';
+  assert(html.includes('href="' + relative + '"'), 'Missing case entry: ' + relative);
+  const detail = await (await get(new URL(relative, url))).text();
+  assert(detail.includes('<details') && detail.includes('../project.css'));
+  assert(!detail.includes('沈鑫达'), 'Public case leaked career identity');
+  for (const item of evidence) assert(detail.includes(item), 'Case evidence missing: ' + item);
+}
+const assets = ['work/project.css', ...styles, ...images, 'favicon.svg', 'images/brands/didi.svg', 'images/brands/zeekr.svg', posterPath, '404.html', 'from/intro.css', 'from/intro.js'];
 await Promise.all(assets.map(async (asset) => {
   const response = await get(new URL(asset, url));
   if (images.includes(asset)) assert.match(response.headers.get('content-type'), /^image\//);
