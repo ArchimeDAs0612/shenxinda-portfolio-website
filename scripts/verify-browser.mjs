@@ -51,9 +51,13 @@ try {
     assert.equal(await page.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1);
     assert.equal(await page.getByText('沈鑫达', { exact: true }).count(), 0, 'Public view does not visibly disclose the career name');
     assert.equal(await page.locator('.hero-role').innerText(), '用统计理解世界，用 AI 创作表达。');
-    assert.equal(await page.locator('.hero a[href*="work/p0"]').count(), 0, 'Deep dives belong in the project section only');
-    assert.equal(await page.locator('.hero .actions a').count(), 3);
-    assert.equal(await page.locator('.hero .actions a').first().getAttribute('href'), '#internships', 'All visitors can discover career and projects');
+    const projectEntry = page.getByRole('navigation', { name: '首页项目入口' });
+    for (const [name, href] of [['查看项目', '#projects'], ['FieldOps 联合治理', 'work/p04/index.html'], ['支付风控研究', 'work/p02/index.html']]) {
+      const link = projectEntry.getByRole('link', { name, exact: true });
+      assert.equal(await link.getAttribute('href'), href);
+      const box = await link.boundingBox();
+      assert(box && box.height >= 44 && box.y >= 0 && box.y + box.height <= viewport.height && box.x >= 0 && box.x + box.width <= viewport.width, name);
+    }
     assert(await page.evaluate(() => document.querySelector('#projects').contains(document.querySelector('#ai'))), 'Agent practice is part of the project cases');
     assert(await page.evaluate(() => document.querySelector('#ai').compareDocumentPosition(document.querySelector('#exploration')) & Node.DOCUMENT_POSITION_FOLLOWING), 'Agent practice precedes AIGC');
     assert.equal(await page.locator('.nav-links a[href="#exploration"]').count(), 1);
@@ -180,7 +184,7 @@ try {
     assert.equal(await page.locator('.aigc-collections article').last().locator('h3').innerText(), '《阿基米达的概率引擎》');
     assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(251, 249, 244)');
     await page.screenshot({ path: `${output}/${viewport.width}-hero.png` });
-    await page.locator('.hero .actions a').nth(1).click();
+    await page.locator('.hero').getByRole('link', { name: '看 AI 创作与生活', exact: true }).click();
     assert.equal(new URL(page.url()).hash, '#exploration');
     await page.waitForFunction(() => { const top = document.querySelector('#exploration').getBoundingClientRect().top; return top >= 0 && top < innerHeight / 2; });
     await page.getByRole('button', { name: '复制职业页链接' }).click();
@@ -258,11 +262,18 @@ try {
       assert(await page.evaluate(() => scrollY < 10), 'Social arrivals start at the homepage top');
       assert(await page.locator('.hero .actions').isVisible());
     }
+    await projectEntry.getByRole('link', { name: '查看项目', exact: true }).click();
+    assert.equal(new URL(page.url()).hash, '#projects');
+    await page.waitForFunction(() => {
+      const top = document.querySelector('#projects').getBoundingClientRect().top;
+      return top >= 0 && top < innerHeight / 2;
+    });
     const projectNotes = page.getByRole('navigation', { name: '项目深读' });
     for (const [slug, question] of [['p04', '字段能用在哪条策略里？'], ['p02', '被拒后又通过，算误伤吗？']]) {
       const link = projectNotes.locator(`a[href="work/${slug}/index.html"]`);
       assert.equal(await link.count(), 1);
-      await link.click();
+      assert(await link.isVisible());
+      await projectEntry.locator(`a[href="work/${slug}/index.html"]`).click();
       await page.getByRole('heading', { level: 1, name: question, exact: true }).waitFor();
       assert.equal(new URL(page.url()).pathname, `/work/${slug}/index.html`);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
@@ -274,7 +285,7 @@ try {
     }
     assert.deepEqual(errors, []); results.push({ viewport, images: images.length, audioSignal: signal, passed: true }); await context.close();
   }
-  const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(new URL('?view=career', siteUrl).href, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.getByRole('link', { name: /职业与项目/ }).isVisible()); await p.goto(`${new URL('?view=career', siteUrl).href}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
+  const motion = await browser.newContext({ viewport: { width: 1440, height: 900 } }); const p = await motion.newPage(); await p.goto(new URL('?view=career', siteUrl).href, { waitUntil: 'networkidle' }); await p.waitForTimeout(1600); assert.equal(await p.locator('.hero-identity').evaluate((n) => getComputedStyle(n).opacity), '1'); assert(await p.locator('.hero').getByRole('link', { name: '查看项目', exact: true }).isVisible()); await p.goto(`${new URL('?view=career', siteUrl).href}#contact`, { waitUntil: 'networkidle' }); assert.equal(await p.locator('.portrait-aperture').evaluate((n) => getComputedStyle(n).animationName), 'none'); await motion.close();
   const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   const n = await noJs.newPage(); await n.goto(siteUrl, { waitUntil: 'networkidle' });
   assert.equal(await n.getByRole('heading', { name: '阿基米达', exact: true }).count(), 1);

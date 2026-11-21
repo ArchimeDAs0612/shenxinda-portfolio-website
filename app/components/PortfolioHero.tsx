@@ -3,6 +3,7 @@ import { MaintainableImage } from './MaintainableImage';
 import { mediaContent } from '../../content/site-content';
 import { SocialSourceWelcome } from './SocialSourceWelcome';
 import { ResearchMotif } from './ResearchMotif';
+import { deepDiveHref } from './deepDiveHref';
 
 type HeroView = 'public' | 'career';
 
@@ -23,7 +24,15 @@ export function PortfolioHero({ view = 'public' }: { view?: HeroView }) {
         <p className="hero-role hero-intro-copy">{career ? '应用统计背景，聚焦支付风险研究与 Agent 工程实践。' : '用统计理解世界，用 AI 创作表达。'}</p>
         <div className="hero-identity hero-intro-copy"><p>厦门大学 · 应用统计硕士 · 2028年6月毕业 · 计划参加2027年秋招</p><p>滴滴国际支付风控算法实习 · Risk / Decision Algorithm</p><p>支付风控研究 · 特征治理 · Agent 工程实践</p></div>
         <SocialSourceWelcome />
-        <div className="actions hero-intro-copy"><a className="button primary" href="#internships">职业与项目 <span aria-hidden="true">↗</span></a><a className="button quiet" href="#exploration">看 AI 创作与生活</a><a className="button quiet" href="#contact">联系我</a></div>
+        <nav className="actions hero-project-links hero-intro-copy" aria-label="首页项目入口">
+          <a className="button primary" href="#projects">查看项目 <span aria-hidden="true">↓</span></a>
+          <a href={deepDiveHref('p04')}>FieldOps 联合治理 <span aria-hidden="true">→</span></a>
+          <a href={deepDiveHref('p02')}>支付风控研究 <span aria-hidden="true">→</span></a>
+        </nav>
+        <div className="hero-secondary-links hero-intro-copy">
+          <a href="#exploration">看 AI 创作与生活</a>
+          <a href="#contact">联系我</a>
+        </div>
       </div>
       <div className="portrait-wrap">
         <div className="portrait-aperture"><MaintainableImage className="portrait-frame" priority {...mediaContent.profile} /></div>
